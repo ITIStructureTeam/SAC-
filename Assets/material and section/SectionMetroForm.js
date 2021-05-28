@@ -545,7 +545,7 @@ function DeleteSection(secId) {
         Section.SectionList.get(String(secId)).Delete();
         ReloadSecMainWindow();
     } catch (error) {
-        document.querySelector('#sec-main-window').append(`<p style="color:#CE352C;">${error.message}</p>`);
+        $('#sec-main-window').append(`<p style="color:#CE352C;">${error.message}</p>`);
     }
 }
 

@@ -1,11 +1,12 @@
 
-//#region Material Type Enum
+//#region MaterialClass
+
 const EmaterialType = {
     Concrete: 0,
     Steel: 1
 };
 Object.freeze(EmaterialType);
-//#endregion
+
 
 
 class Material {
@@ -173,3 +174,4 @@ class Material {
     }
 
 }
+//#endregion
