@@ -235,6 +235,7 @@ class Section {
     #secType;
     #dimensions;
     #propModifiers;
+    #assignedToFrames
     static #sectionId=1;
     static #secList = new Map();
 
@@ -252,6 +253,7 @@ class Section {
         this.Dimensions=dimensions;
         this.PropModifiers=modifiers;
         this.#material.AssignedToSections.push(this);
+        this.#assignedToFrames= []
         Section.#secList.set(String(this.#id), this);
         Section.#sectionId++;
     }
@@ -338,6 +340,10 @@ class Section {
         return String(this.#id);
     }
 
+    get AssignedToFrames(){
+        return this.#assignedToFrames;
+    }
+
     static get SectionList(){
         return Section.#secList;
     }
@@ -348,7 +354,13 @@ class Section {
     }
 
     Delete(){
-        Section.#secList.delete(this.ID);
+        if(this.AssignedToFrames.length) throw new Error('this section is assigned to frame/s');
+        else{
+            let secIndex = this.Material.AssignedToSections.indexOf(this);
+            this.Material.AssignedToSections.splice(secIndex,secIndex);
+            Section.#secList.delete(this.ID);
+        }
+        
     }
 
     #ValidateDimenions(sectionType, dimArray) {
@@ -453,6 +465,7 @@ class FrameElement
     {
         this.Label = FrameElement.#num;
         this.Section = crossSection ;
+        this.Section.AssignedToFrames.push(this);
         var startPosition = [points[0], points[1], points[2]];
         var endPosition = [points[3], points[4], points[5]];
         this.StartPoint;
@@ -510,6 +523,8 @@ class FrameElement
         this.Label = null;
         this.StartPoint.remove();
         this.EndPoint.remove();
+        let frameIndex = this.Sections.AssignedToFrames.indexOf(this);
+        this.Sections.AssignedToFrames.splice(frameIndex,frameIndex);
         this.Section = null;
         for(let i = 0; i <this.AssociatedPoints.length; i++){
             this.AssociatedPoints[i].remove();
@@ -796,10 +811,10 @@ class DrawLine
         this.#extrude.position.set(points[0].x,points[0].y,points[0].z);
         this.#extrude.lookAt(points[1])
 
-        if(points[1] - points[4] != 0 && points[2]-points[5] == 0 && points[0]-points[3] == 0){
+        /*if(points[1] - points[4] != 0 && points[2]-points[5] == 0 && points[0]-points[3] == 0){
             this.#extrude.material.color.setHex(0xa200ab);
             this.#extrude.rotation.z = (Math.PI/2);
-        }
+        }*/
     }
 
     #GetThreeShape(){
@@ -913,7 +928,7 @@ class DrawLine
     }
 
     static ExtrudeView(){
-        console.log(DrawLine.DrawLinesArray);
+
         DrawLine.DrawLinesArray.forEach(drawLine => drawLine.Extrude.visible=true);
         DrawLine.DrawLinesArray.forEach(drawLine => drawLine.line.visible=false);
     }
@@ -1436,7 +1451,7 @@ document.addEventListener('keydown',  function ( event ) {
     }
 })
 
-function ClickToDrawLine(event) 
+function ClickToDrawLine(event)  
 {
 	// update the picking ray with the camera and mouse position
 	raycaster.setFromCamera( mouse, camera );
@@ -1467,7 +1482,7 @@ function ClickToDrawLine(event)
                 }
                 else if(points.length == 6)
                 {
-                    commands.excuteCommand(new DrawLine(new FrameElement(points,GetActiveSection(),state)));
+                    commands.excuteCommand(new DrawLine(new FrameElement(points,GetSelectedSection(),state)));
                     points = [];
                 }
             }

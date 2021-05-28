@@ -182,6 +182,7 @@ const ESectionShape = {
     Circular: 1,
     ISec: 2,
     TSec: 3,
+    Tapered:4
 }
 
 Object.freeze(ESectionShape);
@@ -196,12 +197,13 @@ class Section {
     #secType;
     #dimensions;
     #propModifiers;
+    #assignedToFrames
     static #sectionId=1;
     static #secList = new Map();
 
     static #DefaultSections = (function(){
-        new Section('Fsec1',Material.MaterialsList.get('1'),ESectionShape.Rectangular,[500,500],[0.7,0.5,0.01,1,1,1,1,1] );
-        new Section('Fsec2',Material.MaterialsList.get('2'),ESectionShape.ISec,[360,170,12.7,8,170,12.7]);
+        new Section('Fsec1',Material.MaterialsList.get('1'),ESectionShape.Rectangular,[0.5,0.5],[0.7,0.5,0.01,1,1,1,1,1] );
+        new Section('Fsec2',Material.MaterialsList.get('2'),ESectionShape.ISec,[0.360,0.170,0.0127,0.008,0.170,0.0127]);
     })();
 
     constructor(name, material, secType, dimensions, modifiers=[1,1,1,1,1,1,1,1]) {
@@ -213,6 +215,7 @@ class Section {
         this.Dimensions=dimensions;
         this.PropModifiers=modifiers;
         this.#material.AssignedToSections.push(this);
+        this.#assignedToFrames= []
         Section.#secList.set(String(this.#id), this);
         Section.#sectionId++;
     }
@@ -256,7 +259,7 @@ class Section {
         if (!(value instanceof Array))
             throw new TypeError("Section Dimensions must be in form of array");
 
-        ValidateDimenions(this.SecType,value);
+        this.#ValidateDimenions(this.SecType,value);
 
         this.#dimensions=value;
     }
@@ -299,6 +302,10 @@ class Section {
         return String(this.#id);
     }
 
+    get AssignedToFrames(){
+        return this.#assignedToFrames;
+    }
+
     static get SectionList(){
         return Section.#secList;
     }
@@ -309,46 +316,53 @@ class Section {
     }
 
     Delete(){
-        Section.#secList.delete(this.ID);
-    }
-
-}
-
-function ValidateDimenions(sectionType, dimArray) {
-
-    if (sectionType == ESectionShape.Rectangular )
-    {
-        if(dimArray.length < 2 || dimArray.slice(0,2).some(val=> isNaN(val) || val<=0))
-            throw new Error("Rectangular Sections must be instantiated with 2 dimensions");
-
-    }
-
-    if (sectionType == ESectionShape.Circular)
-    {
-        if(dimArray.length < 1 || dimArray.slice(0,1).some(val=> isNaN(val) || val<=0))
-            throw new Error("Circular Sections must be instantiated with 1 dimension");
-    }
+        if(this.AssignedToFrames.length) throw new Error('this section is assigned to frame/s');
+        else{
+            let secIndex = this.Material.AssignedToSections.indexOf(this);
+            this.Material.AssignedToSections.splice(secIndex,secIndex);
+            Section.#secList.delete(this.ID);
+        }
         
-
-    if (sectionType == ESectionShape.ISec) {
-
-        
-        if(dimArray.length < 6 || dimArray.slice(0,6).some(val=> isNaN(val) || val<=0))
-            throw new Error("I Sections must be instantiated with 6 dimensions");
-
-        if (dimArray[0] <= dimArray[2] + dimArray[5] || dimArray[1] <= dimArray[3] || dimArray[4] < dimArray[3])
-            throw new Error("Input dimensions are not valid to instantiate I-Section");
-
     }
 
-    if (sectionType == ESectionShape.TSec) {
+    #ValidateDimenions(sectionType, dimArray) {
 
-        if(dimArray.length < 4 || dimArray.slice(0,4).some(val=> isNaN(val) || val<=0))
-            throw new Error("T Sections must be instantiated with 4 dimensions");
-        if (dimArray[0] <= dimArray[2] || dimArray[1] <= dimArray[3])
-            throw new Error("Input dimensions are not valid to instantiate T-Section");
-
+        if (sectionType == ESectionShape.Rectangular )
+        {
+            if(dimArray.length < 2 || dimArray.slice(0,2).some(val=> isNaN(val) || val<=0))
+                throw new Error("Rectangular Sections must be instantiated with 2 dimensions");
+    
+        }
+    
+        if (sectionType == ESectionShape.Circular)
+        {
+            if(dimArray.length < 1 || dimArray.slice(0,1).some(val=> isNaN(val) || val<=0))
+                throw new Error("Circular Sections must be instantiated with 1 dimension");
+        }
+            
+    
+        if (sectionType == ESectionShape.ISec) {
+    
+            
+            if(dimArray.length < 6 || dimArray.slice(0,6).some(val=> isNaN(val) || val<=0))
+                throw new Error("I Sections must be instantiated with 6 dimensions");
+    
+            if (dimArray[0] <= dimArray[2] + dimArray[5] || dimArray[1] <= dimArray[3] || dimArray[4] < dimArray[3])
+                throw new Error("Input dimensions are not valid to instantiate I-Section");
+    
+        }
+    
+        if (sectionType == ESectionShape.TSec) {
+    
+            if(dimArray.length < 4 || dimArray.slice(0,4).some(val=> isNaN(val) || val<=0))
+                throw new Error("T Sections must be instantiated with 4 dimensions");
+            if (dimArray[0] <= dimArray[2] || dimArray[1] <= dimArray[3])
+                throw new Error("Input dimensions are not valid to instantiate T-Section");
+    
+        }
+    
     }
+    
 
 }
 //#endregion

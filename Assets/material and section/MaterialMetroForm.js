@@ -54,6 +54,7 @@ var materialWindowHtml = `
             data-width="375">
             
                <table class="table compact" id="mat-form">
+               <tbody style="height:370px;">
                 <tr>
                 
                     <th>
@@ -140,7 +141,7 @@ var materialWindowHtml = `
                             <button id="new-mat-save">Save Changes</button>
                         </th>
                     </tr-->
-               
+               </tbody>
                </table>
 
                <div style="text-align: center;">
