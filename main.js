@@ -1,4 +1,5 @@
 import {MapControls} from './Assets/Three.js files/OrbitControls.js'
+import { DoubleSide } from './Assets/Three.js files/three.module.js';
 
 // Global variables for init function
 var group,
@@ -2333,18 +2334,6 @@ function GridLine(spacingX, spacingY, spacingZ, lengthX, lengthY, lengthZ)
 
 
 
-//   var from = new THREE.Vector3( 2, 2, 2 );
-// var to = new THREE.Vector3( 0, 0, 0 );
-// var direction = to.clone().sub(from);
-// var length22 = direction.length();
-// var arrowHelper = new THREE.ArrowHelper(direction.normalize(), from, length, 0xff0000 );
-// scene.add( arrowHelper );
-
-// const map = new THREE.TextureLoader().load( 'sprite.png' );
-// const material = new THREE.SpriteMaterial( { map: map } );
-
-// const sprite = new THREE.Sprite( material );
-// scene.add( sprite );   
  
 function GridSelections()
 {
@@ -2416,10 +2405,13 @@ function XYSection()
         if (document.querySelector('#XY').options[i].selected == true)
         {
             XYindex = i;
-            XYView(XYindex);
             break;
         }
+        else{
+            XYindex = 0;
+        }
     }
+    XYView(XYindex);
 }
 
 function XYView(XYindex)
@@ -2455,7 +2447,7 @@ function XYView(XYindex)
     }
     camera.position.x = distanceX/2;
     camera.position.y = distanceY/2;
-    camera.position.z = Math.max(distanceX, distanceY)*1.2 + ViewPosition;
+    camera.position.z = Math.max(distanceX, distanceY)*1.5 + ViewPosition;
     controls.enableRotate = false;
     controls.target = new THREE.Vector3(camera.position.x, camera.position.y, 0);
     
@@ -2470,6 +2462,8 @@ function XYView(XYindex)
     scene.add( txSpriteX );  
     txSpriteY = makeTextSprite( "Y", -2, 0.6, ViewPosition, { fontsize: 200, fontface: "Georgia", textColor: { r:6, g:117, b:201, a:1.0 }, vAlign:"center", hAlign:"center" } );
     scene.add( txSpriteY );  
+
+    document.getElementById("StatusBar").innerHTML = "Z = " + ViewPosition + "m" ; 
 }
 
 document.getElementById("XZSection").onclick=function(){XZSection()};
@@ -2482,10 +2476,13 @@ function XZSection()
         if (document.querySelector('#XZ').options[i].selected == true)
         {
             XZindex = i;
-            XZView(XZindex);
             break;
         }
+        else{
+            XZindex = 0;
+        }
     }
+    XZView(XZindex);
 }
 
 function XZView(XZindex){
@@ -2536,6 +2533,8 @@ function XZView(XZindex){
     scene.add( txSpriteX ); 
     txSpriteZ = makeTextSprite( "Z", -2, ViewPosition,0.6, { fontsize: 200, fontface: "Georgia", textColor: { r:5, g:166, b:96, a:1.0 }, vAlign:"center", hAlign:"center" } );
     scene.add( txSpriteZ );  
+
+    document.getElementById("StatusBar").innerHTML = "Y = " + ViewPosition + "m" ; 
 }
 
 document.getElementById("YZSection").onclick=function(){YZSection()};
@@ -2548,10 +2547,14 @@ function YZSection()
         if (document.querySelector('#YZ').options[i].selected == true)
         {
             YZindex = i;
-            YZView(YZindex);
             break;
         }
-    }    
+        else{
+            YZindex = 0;
+        }
+    }
+    YZView(YZindex);
+      
 }
 
 function YZView(YZindex){
@@ -2603,6 +2606,8 @@ function YZView(YZindex){
     scene.add( txSpriteY ); 
     txSpriteZ = makeTextSprite( "Z", ViewPosition, -2, 0.6, { fontsize: 200, fontface: "Georgia", textColor: { r:5, g:166, b:96, a:1.0 }, vAlign:"center", hAlign:"center" } );
     scene.add( txSpriteZ );
+
+    document.getElementById("StatusBar").innerHTML = "X = " + ViewPosition + "m" ; 
 }
 
 document.getElementById("ThreeD").onclick=function(){ThreeD()};
@@ -2630,6 +2635,8 @@ function ThreeD()
     camera.position.y = 25;
     camera.position.z = 45;
     controls.enableRotate = true;
+
+    document.getElementById("StatusBar").innerHTML = "3D-View"; 
 }
 
 document.getElementById("Next").onclick=function(){Next()};
@@ -2822,11 +2829,31 @@ function ArrowOnLine(length, x,y,z, startPoint, endPoint,  direction, rz, scale 
 
     if(local == false)
     {
-        vertices.push(0, 0.04*l, 0.15*l);
-        vertices.push(0, 0, 0);
-        vertices.push(0, -0.04*l, 0.15*l );
-        vertices.push(0, 0, 0);
-        vertices.push(0, 0, l);
+        l = l*-1;
+        if(direction == 2)  // Global z- direction
+        {
+            vertices.push(0, 0.04*l, 0.15*l);
+            vertices.push(0, 0, 0);
+            vertices.push(0, -0.04*l, 0.15*l );
+            vertices.push(0, 0, 0);
+            vertices.push(0, 0, l);
+        }
+        else if(direction == 3)  // Global y- direction
+        {
+            vertices.push(0.04*l, 0.15*l, 0);
+            vertices.push(0, 0, 0);
+            vertices.push(-0.04*l, 0.15*l, 0 );
+            vertices.push(0, 0, 0);
+            vertices.push(0, l, 0);
+        }
+        else if(direction ==1)   // Global x- direction
+        {
+            vertices.push(0.15*l, 0.04*l, 0);
+            vertices.push(0, 0, 0);
+            vertices.push(0.15*l, -0.04*l, 0 );
+            vertices.push(0, 0, 0);
+            vertices.push(l, 0, 0);
+        }
         geometry.setAttribute( 'position', new THREE.Float32BufferAttribute( vertices, 3 ) );
     }
     else
@@ -2897,7 +2924,7 @@ function ArrowOnLine(length, x,y,z, startPoint, endPoint,  direction, rz, scale 
 }
 
 
-function DistributedLoadIndication(length1 ,startPoint, endPoint, direction, rz, scale = 1, length2 = length1, local = false)
+function DistributedLoadIndication(length1 ,startPoint, endPoint, direction, rz = 0, scale = 1, length2 = length1, local = false)
 {
     const StartPoint = new THREE.Vector3( startPoint[0], startPoint[1], startPoint[2]);
     const EndPoint = new THREE.Vector3(endPoint[0], endPoint[1], endPoint[2]);
@@ -3130,3 +3157,19 @@ function GetActiveSection(){
     //return Section.SectionList.get(sectionId);
     return Section.SectionList.get('1');
 }
+
+
+
+// var material = new THREE.LineBasicMaterial({ color: 'rgb(0,50,100)', alphaTest: 0.95, transparent : true, opacity: 0});
+// // crosshair size
+// var x = 0.3, y = 0.3;
+// var geometry = new THREE.BufferGeometry();
+// var vertices =[];  
+// vertices.push(x, y, 0);
+// vertices.push(-x, -y, 0);
+// vertices.push(0, 0, 0);
+// vertices.push(x, -y, 0); 
+// vertices.push(-x, y, 0);
+// geometry.setAttribute( 'position', new THREE.Float32BufferAttribute( vertices, 3 ) );
+
+// this.crosshair = new THREE.Line( geometry, material );
