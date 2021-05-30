@@ -1529,9 +1529,9 @@ function Redo()
 document.getElementById("Delete").onclick=function(){DeleteButton()};
 function DeleteButton()
 {
-    commands.excuteCommand(new (DrawLine.SelectedLines));
+    commands.excuteCommand(new Delete(DrawLine.SelectedLines));
 }
-Delete
+
 document.getElementById("Extrude").onclick=function(){Extrude()};
 function Extrude()
 {   
