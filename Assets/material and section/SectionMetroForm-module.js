@@ -1,8 +1,8 @@
+import {Section, Material, ESectionShape, DrawLine, scene}  from '../../main.js'
 
 let secMainWindow = `
 
 <div
-
 id="sec-main-window"
 class="main-window"
 data-role="window"
@@ -77,7 +77,7 @@ data-resizable="false"
 data-place="center"
 data-width="500">
 
-    <div class="flex-col" style="height: 520px;">
+    <div class="flex-col" style="height: 500px;">
     
         <div id="sec-name" class="flex-rowm panel">
             <div>
@@ -424,7 +424,7 @@ function ReloadSecMainWindow() {
     FillSecDropList();
 }
 
-function InitSecPropWindow(secType,secId=null) {
+function InitSecPropWindow(secType, secId=null) {
     if(!document.querySelector('.secondary-window')){
         $('body').append(dimFormTemplate);
         $('#sec-dim-shape').append(GetSecDimForm(secType));
@@ -508,6 +508,13 @@ function ModifySection(secId){
         section.Material = Material.MaterialsList.get(secMatId);
 
         ReloadSecMainWindow();
+
+        section.AssignedToFrames.forEach(frame => {
+            DrawLine.DrawLinesArray.filter(drawLine=>{
+                drawLine.Frame == frame;
+                drawLine.ReExtrude();                 
+            })
+        });
 
         document.querySelector('#sec-prop-window').parentElement.parentElement.remove();
     } catch (error) {

@@ -461,12 +461,12 @@ var commands = new Commands()
 // Frame Element class
 class FrameElement
 {
+    #section;
     static #num = 1;
     constructor(points, crossSection)
     {
         this.Label = FrameElement.#num;
         this.Section = crossSection ;
-        this.Section.AssignedToFrames.push(this);
         var startPosition = [points[0], points[1], points[2]];
         var endPosition = [points[3], points[4], points[5]];
         this.StartPoint;
@@ -499,11 +499,20 @@ class FrameElement
         } 
     }
 
+    set Section (value){
+        this.#section = value;
+        if(! (value.AssignedToFrames.includes(this)) ) this.#section.AssignedToFrames.push(this);
+    }
+    get Section (){
+        return this.#section;
+    }
+
     undo()
     {
+        let frameIndex = this.Section.AssignedToFrames.indexOf(this);
+        this.Section.AssignedToFrames.splice(frameIndex,frameIndex);
         this.StartPoint.undo(this.Label);
         this.EndPoint.undo(this.Label);
-        //FrameElement.#num--;
         for(let i = 0; i <this.AssociatedPoints.length; i++){
             this.AssociatedPoints[i].undo(this.Label);
         }
@@ -511,10 +520,10 @@ class FrameElement
 
     redo()
     {
+        this.Section.AssignedToFrames.push(this);
         this.StartPoint.redo(this.Label);
         this.EndPoint.redo(this.Label);
         for(let i = 0; i <this.AssociatedPoints.length; i++){
-            //group.add(this.AssociatedPoints[i]);
             this.AssociatedPoints[i].redo(this.Label);
         }
     }
@@ -526,7 +535,7 @@ class FrameElement
         this.EndPoint.remove();
         let frameIndex = this.Sections.AssignedToFrames.indexOf(this);
         this.Sections.AssignedToFrames.splice(frameIndex,frameIndex);
-        this.Section = null;
+
         for(let i = 0; i <this.AssociatedPoints.length; i++){
             this.AssociatedPoints[i].remove();
         }
@@ -544,11 +553,6 @@ class FrameElement
             const point = [x,y,z]
             const obj = new Point(point);
             obj.excute();
-            // let obj = BoxSnap(0.3,0.3,0.3);
-            // obj.position.x = x;
-            // obj.position.y = y;
-            // obj.position.z = z;
-            // group.add(obj);
             this.AssociatedPoints.push(obj);
         }
     }
@@ -572,8 +576,8 @@ class DrawLine
         this.#SetLabel();
         this.#SetName();
         this.#SetExtrude();
-        this.ExtrudedColor = this.Extrude.material.color;
-        this.LineColor = this.line.material.color;
+        this.ExtrudedColor = this.#extrude.material.color;
+        this.LineColor = this.#line.material.color;
         this.Selected = false;
 
         if(state == true) 
@@ -585,7 +589,6 @@ class DrawLine
             this.Extrude.visible = true;
             this.line.visible = false;
         }
-        //UsedSections();
 
     }
 
@@ -900,6 +903,7 @@ class DrawLine
     }
 
     get Extrude(){
+        this.ReExtrude();
         return this.#extrude;
     }
 
@@ -944,6 +948,42 @@ class DrawLine
         let selectedFrames = [];
         DrawLine.SelectedLines.forEach(selLine=>selectedFrames.push(selLine.Frame));
         return selectedFrames;
+    }
+
+    ReExtrude(){
+        scene.remove(this.#extrude);
+        this.#SetExtrude();
+        scene.add(this.#extrude);
+        if(state == true) 
+        {
+            this.#extrude.visible = false;
+            this.line.visible = true;
+        }else{
+            
+            this.#extrude.visible = true;
+            this.line.visible = false;
+        }
+        if(this.Selected == true)
+        { 
+            this.#extrude.material.color = {r:1,g:0.3,b:0};
+            this.#extrude.material.metalness = 0;
+        }
+        else{
+            this.#extrude.material.metalness = 0.5;
+            this.#extrude.material.color = this.ExtrudedColor;
+        }
+    }
+
+    ReSetSecName(){
+        scene.remove(this.name)
+        let SpritePosition = [(this.Frame.EndPoint.position[0]-this.Frame.StartPoint.position[0])/3, (this.Frame.EndPoint.position[1]-this.Frame.StartPoint.position[1])/3, (this.Frame.EndPoint.position[2]-this.Frame.StartPoint.position[2])/3];
+        this.#name = makeTextSprite
+        ( 
+        this.Frame.Section.Name, SpritePosition[0]+this.Frame.StartPoint.position[0]+0.2, SpritePosition[1]+this.Frame.StartPoint.position[1], SpritePosition[2]+this.Frame.StartPoint.position[2]-0.2,
+        {fontsize: 120, fontface: "Georgia", textColor:{r:160, g:160, b:160, a:1.0},
+        vAlign:"center", hAlign:"center", fillColor:{r:255, g:255, b:255, a:1.0},
+        borderColor: {r:0, g:0, b:0, a:1.0}, borderThickness: 1, radius:30}
+        );
     }
 
     excute()
@@ -1245,6 +1285,35 @@ class Delete
     }
 }
 
+class AssignFrameSection{
+    constructor(section){
+        this.selectedFrames = DrawLine.GetSelectedFrames();
+        this.selectedLines = [...DrawLine.SelectedLines];
+        this.prevSections = [];
+        this.newSection = section;
+        this.selectedFrames.forEach(frame=>this.prevSections.push(frame.Section));
+    }
+
+    excute(){
+        this.selectedFrames.forEach(frame => frame.Section = this.newSection);
+        this.selectedLines.forEach(drawLine=>drawLine.ReExtrude());
+    }
+    undo(){
+        for (let i = 0; i < this.selectedFrames.length; i++) {
+            this.selectedFrames[i].Section = this.prevSections[i] ;          
+        }
+        this.selectedLines.forEach(drawLine=>drawLine.ReExtrude());
+    }
+    redo(){
+        this.excute();
+    } 
+    remove(){
+        this.selectedFrames = null
+        this.selectedLines = null
+        this.prevSections = null
+        this.newSection = null
+    }  
+}
 
 init();
 
@@ -1305,15 +1374,6 @@ document.body.appendChild(renderer.domElement);
 renderer.setClearColor('rgb(250,250,250)');
 
 controls = new MapControls(camera, renderer.domElement);
-
-// Add stats to visualize performance
-// stats = new Stats();
-// stats.setMode(0);
-// stats.domElement.style.position = 'absolute';
-// stats.domElement.style.left = '20px';
-// stats.domElement.style.top = '20px';
-// document.body.appendChild(stats.domElement);
-
 
 document.getElementById('webgl').appendChild(renderer.domElement);
 update(renderer, scene, camera, controls);
@@ -1545,6 +1605,26 @@ document.getElementById("Delete").onclick=function(){DeleteButton()};
 function DeleteButton()
 {
     commands.excuteCommand(new Delete(DrawLine.SelectedLines));
+}
+
+document.getElementById('assign-framesec-btn').addEventListener("click",function(){
+    if(!document.querySelector('.main-window')) {
+        $('body').append(assignFrameSecWin);
+        InitAssignSecWin();
+    }
+});
+function InitAssignSecWin() {
+    FillDefSecs();
+    document.querySelector('#assign-framesec-main-window .info').addEventListener("click",function(){
+        if(document.querySelector('.current-select')){
+            console.log(new AssignFrameSection( GetAssignedSection() ));
+            commands.excuteCommand( new AssignFrameSection( GetAssignedSection() ) );
+        } 
+        document.querySelector('.main-window').parentElement.parentElement.remove();
+    });
+    document.querySelector('#assign-framesec-main-window .default').addEventListener("click",function(){
+        document.querySelector('.main-window').parentElement.parentElement.remove();
+    })
 }
 
 document.getElementById("Extrude").onclick=function(){Extrude()};
@@ -1806,7 +1886,6 @@ function update(renderer, scene, camera, controls)
         update(renderer, scene, camera, controls);
     });
 }
-
 
 
 
@@ -3173,3 +3252,4 @@ function GetActiveSection(){
 // geometry.setAttribute( 'position', new THREE.Float32BufferAttribute( vertices, 3 ) );
 
 // this.crosshair = new THREE.Line( geometry, material );
+export {Section, Material, ESectionShape, EmaterialType, FrameElement, DrawLine, scene}
