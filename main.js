@@ -472,6 +472,7 @@ class FrameElement
         this.StartPoint;
         this.EndPoint;
         this.AssociatedPoints = [];
+        this.LoadsAssigned = new Map();
         FrameElement.#num++;
 
         for(let i = 0; i < Point.PointsArray.length; i++)
@@ -556,6 +557,7 @@ class FrameElement
             this.AssociatedPoints.push(obj);
         }
     }
+
 }
 
 class DrawLine
@@ -903,7 +905,6 @@ class DrawLine
     }
 
     get Extrude(){
-        this.ReExtrude();
         return this.#extrude;
     }
 
@@ -963,15 +964,7 @@ class DrawLine
             this.#extrude.visible = true;
             this.line.visible = false;
         }
-        if(this.Selected == true)
-        { 
-            this.#extrude.material.color = {r:1,g:0.3,b:0};
-            this.#extrude.material.metalness = 0;
-        }
-        else{
-            this.#extrude.material.metalness = 0.5;
-            this.#extrude.material.color = this.ExtrudedColor;
-        }
+        this.updateColors();
     }
 
     ReSetSecName(){
@@ -1244,6 +1237,98 @@ class Point
     }
 }
 
+class AssignFrameLoad{
+
+    constructor(frames, pattern, appliedLoadInfo){
+
+        this.Frames = frames;                   //array of FrameElement objects
+        this.PrevLoads = [];                    //array containing previous LoadsAssigned for each frame
+        this.Frames.forEach(frame => PrevLoads.push(frame.LoadsAssigned));
+        this.Pattern = pattern;                 //pattern name
+        this.PrevPatternOnElements = LoadPattern.LoadPatternsList.get(this.Pattern).OnElements
+        this.AppliedLoad = appliedLoadInfo;     //instance of AppliedLoadInfo Class
+    }
+
+    excute(){
+        this.#PushInFrameLoadsAssigned();
+        this.#PushInPatternOnElements();
+        //draw...
+
+    }
+    undo(){
+        for (let i = 0; i < this.Frames.length; i++) {
+            this.Frames[i].LoadsAssigned = this.PrevLoads[i];
+        }
+        LoadPattern.LoadPatternsList.get(this.Pattern).OnElements = this.PrevPatternOnElements;
+    }
+    redo(){
+        excute();
+    }
+
+    #PushInFrameLoadsAssigned(){
+
+        for (const frame of this.Frames) {
+            
+            if(frame.LoadsAssigned.has(this.Pattern)){
+                let appliedLoads = frame.LoadsAssigned.get(this.Pattern);
+                let similarLoads = appliedLoads.filter(load => (load.Shape == this.AppliedLoad.Shape && load.Type == this.AppliedLoad.Type) );
+                if(!similarLoads.length) appliedLoads.push(this.AppliedLoad);
+                else{
+                    if(similarLoads[0].Shape == ELoadShape.Distributed){
+                        let index = appliedLoads.indexOf(similarLoads[0]);
+                        appliedLoads[index] = this.AppliedLoad;
+                    }
+                    else{
+                        let atSameDis = similarLoads.filter(simLoad => simLoad.Distance == this.AppliedLoad.Distance);
+                        if(! atSameDis.length) appliedLoads.push(this.AppliedLoad);
+                        else {
+                            let index = appliedLoads.indexOf(atSameDis[0]);
+                            appliedLoads[index] = this.AppliedLoad;
+                        }
+                    }
+                }
+            }else{
+                frame.LoadsAssigned.set(this.Pattern,[this.AppliedLoad]);
+            }
+        }
+    }
+
+    #PushInPatternOnElements(){
+        let pattern = LoadPattern.LoadPatternsList.get(this.Pattern);
+        for (const frame of this.Frames) {
+            if(!pattern.OnElements.includes(frame.Label)) pattern.OnElements.push(frame.Label);
+        }
+    }
+
+   DrawLoad(shape, frame){
+        const scale = 1.25 / GetMaxLoad(this.Pattern);
+        const startPoint = frame.StartPoint.position;
+        const endPoint = frame.EndPoint.position;
+        const magnitudes = this.AppliedLoad.Magnitude;
+        const dir = this.AppliedLoad.Dir;
+        const coordSys = this.AppliedLoad.CoordSys;       
+        const relDist = this.AppliedLoad.Distance;
+        let load;
+        switch(shape){
+            case ELoadShape.Distributed:
+                
+                const loadPos1 = GetAbsoluteCoord(relDist[0] ,startPoint, endPoint);
+                const loadPos2 = GetAbsoluteCoord(relDist[1] ,startPoint, endPoint);
+                load=DistributedLoadIndication(magnitudes[0] ,loadPos1, loadPos2, dir, 0, scale, magnitudes[1], coordSys);
+
+                break;
+            case ELoadShape.Point:
+                load=PointLoadIndication (length, relDist, startPoint, endPoint,  dir, 0, scale , coordSys);
+                break;
+        }
+
+        return load;
+   }
+
+    
+
+}
+
 class Delete
 {
     constructor(selected)
@@ -1314,6 +1399,7 @@ class AssignFrameSection{
         this.newSection = null
     }  
 }
+
 
 init();
 
@@ -1543,7 +1629,7 @@ function ClickToDrawLine(event)
                 }
                 else if(points.length == 6)
                 {
-                    commands.excuteCommand(new DrawLine(new FrameElement(points,GetSelectedSection(),state)));
+                    commands.excuteCommand(new DrawLine(new FrameElement(points,GetSelectedSection())));
                     points = [];
                 }
             }
@@ -1607,26 +1693,6 @@ function DeleteButton()
     commands.excuteCommand(new Delete(DrawLine.SelectedLines));
 }
 
-document.getElementById('assign-framesec-btn').addEventListener("click",function(){
-    if(!document.querySelector('.main-window')) {
-        $('body').append(assignFrameSecWin);
-        InitAssignSecWin();
-    }
-});
-function InitAssignSecWin() {
-    FillDefSecs();
-    document.querySelector('#assign-framesec-main-window .info').addEventListener("click",function(){
-        if(document.querySelector('.current-select')){
-            console.log(new AssignFrameSection( GetAssignedSection() ));
-            commands.excuteCommand( new AssignFrameSection( GetAssignedSection() ) );
-        } 
-        document.querySelector('.main-window').parentElement.parentElement.remove();
-    });
-    document.querySelector('#assign-framesec-main-window .default').addEventListener("click",function(){
-        document.querySelector('.main-window').parentElement.parentElement.remove();
-    })
-}
-
 document.getElementById("Extrude").onclick=function(){Extrude()};
 function Extrude()
 {   
@@ -1673,7 +1739,6 @@ function DrawingMode()
 {
     DrawingModeActive = true;
     SelectionModeActive = false;
-    DisplayDrawFrameHelper();
     Unselect();
 }
 
@@ -1863,6 +1928,14 @@ function update(renderer, scene, camera, controls)
 
     resetPoints();
 
+    if( secAssigned && DrawLine.SelectedLines.length){
+        commands.excuteCommand( new AssignFrameSection( assignedSection ) );
+        secAssigned = false
+    }
+    if(secUpdated && !state){
+        DrawLine.DrawLinesArray.forEach( drawLine=> drawLine.ReExtrude());
+        secUpdated = false
+    }
     if(DrawingModeActive == true)
     {
         window.addEventListener( 'click', ClickToDrawLine, false );
@@ -2860,215 +2933,25 @@ function crossProduct(A,B) {
        A[0] * B[1] - A[1] * B[0]
     ];
     return vector;
-  }
+}
 
-  function arrayEquals(a, b) {
-    return Array.isArray(a) &&
-      Array.isArray(b) &&
-      a.length === b.length &&
-      a.every((val, index) => val === b[index]);
-  }
-
-
-
-
-
-
-
-
-
-
-  // Functions to draw loads and reactions
-  //#region // Loads visualization
-function ArrowOnLine(length, x,y,z, startPoint, endPoint,  direction, rz, scale = 1, local = false)
-{
-    startPoint = new THREE.Vector3(startPoint[0], startPoint[1], startPoint[2]);
-    endPoint = new THREE.Vector3(endPoint[0], endPoint[1], endPoint[2]);
-
-    const axis = new THREE.Vector3().subVectors(startPoint, endPoint).normalize(); // Z-local direction
- 
-    let x_axis = crossProduct([axis.x, axis.y, axis.z], [0,0,1]);
-    if(arrayEquals(x_axis,[0,0,0]))
-    {
-        x_axis = [0,1,0]
-    }
-    const y_axis = crossProduct([axis.x, axis.y, axis.z], x_axis);
-    const X_axis = new THREE.Vector3(x_axis[0], x_axis[1], x_axis[2]);
-    const Y_axis = new THREE.Vector3(y_axis[0], y_axis[1], y_axis[2]);
-
-    const material = new THREE.LineBasicMaterial({color:'rgb(0,0,0)'});
- 
-    const l = length *scale;
-    var geometry = new THREE.BufferGeometry();
-    var geometry_h1 = new THREE.BufferGeometry();
-    var geometry_h2 = new THREE.BufferGeometry();
-    var vertices =[];  
-    var vertices_h1 =[];  
-    var vertices_h2 =[];  
-
-    if(local == false)
-    {
-        l = l*-1;
-        if(direction == 2)  // Global z- direction
-        {
-            vertices.push(0, 0.04*l, 0.15*l);
-            vertices.push(0, 0, 0);
-            vertices.push(0, -0.04*l, 0.15*l );
-            vertices.push(0, 0, 0);
-            vertices.push(0, 0, l);
-        }
-        else if(direction == 3)  // Global y- direction
-        {
-            vertices.push(0.04*l, 0.15*l, 0);
-            vertices.push(0, 0, 0);
-            vertices.push(-0.04*l, 0.15*l, 0 );
-            vertices.push(0, 0, 0);
-            vertices.push(0, l, 0);
-        }
-        else if(direction ==1)   // Global x- direction
-        {
-            vertices.push(0.15*l, 0.04*l, 0);
-            vertices.push(0, 0, 0);
-            vertices.push(0.15*l, -0.04*l, 0 );
-            vertices.push(0, 0, 0);
-            vertices.push(l, 0, 0);
-        }
-        geometry.setAttribute( 'position', new THREE.Float32BufferAttribute( vertices, 3 ) );
-    }
-    else
-    {
-        if(direction == 2)
-        {
-            vertices.push(0, 0, 0);
-            vertices.push(l*Y_axis.x, l*Y_axis.y, l*Y_axis.z);
-            geometry.setAttribute( 'position', new THREE.Float32BufferAttribute( vertices, 3 ) );
-            vertices_h1.push(0,0,0);
-            vertices_h1.push(0.2*l* Y_axis.x, 0.2*l*Y_axis.y, 0.2*l*Y_axis.z);
-            geometry_h1.setAttribute( 'position', new THREE.Float32BufferAttribute( vertices_h1, 3 ) );
-            vertices_h2.push(0,0,0);
-            vertices_h2.push(0.2*l*Y_axis.x, 0.2*l*Y_axis.y, 0.2*l*Y_axis.z);
-            geometry_h2.setAttribute( 'position', new THREE.Float32BufferAttribute( vertices_h2, 3 ) );
-        }
-        else if(direction == 3){
-            vertices.push(0, 0, 0);
-            vertices.push(l*X_axis.x, l*X_axis.y, l*X_axis.z);
-            geometry.setAttribute( 'position', new THREE.Float32BufferAttribute( vertices, 3 ) );
-            vertices_h1.push(0,0,0);
-            vertices_h1.push(0.2*l*X_axis.x, 0.2*l*X_axis.y, 0.2*l*X_axis.z);
-            geometry_h1.setAttribute( 'position', new THREE.Float32BufferAttribute( vertices_h1, 3 ) );
-            vertices_h2.push(0,0,0);
-            vertices_h2.push(0.2*l*X_axis.x, 0.2*l*X_axis.y, 0.2*l*X_axis.z);
-            geometry_h2.setAttribute( 'position', new THREE.Float32BufferAttribute( vertices_h2, 3 ) );
-        }
-        else if(direction ==1){
-            vertices.push(0, 0, 0);
-            vertices.push(l*axis.x, l*axis.y, l*axis.z);
-            geometry.setAttribute( 'position', new THREE.Float32BufferAttribute( vertices, 3 ) );
-            vertices_h1.push(0,0,0);
-            vertices_h1.push(0.2*l*axis.x, 0.2*l*axis.y, 0.2*l*axis.z);
-            geometry_h1.setAttribute( 'position', new THREE.Float32BufferAttribute( vertices_h1, 3 ) );
-            vertices_h2.push(0,0,0);
-            vertices_h2.push(0.2*l*axis.x, 0.2*l*axis.y, 0.2*l*axis.z);
-            geometry_h2.setAttribute( 'position', new THREE.Float32BufferAttribute( vertices_h2, 3 ) );
-        }
-        
-    }
-    var arrow = new THREE.Line( geometry, material );
-    var arrow_h1 = new THREE.Line( geometry_h1, material );
-    var arrow_h2 = new THREE.Line( geometry_h2, material );
-
-    switch(direction)
-    {
-        case 1:
-        case 3:
-            arrow_h1.rotateOnAxis(Y_axis, 0.15);
-            arrow_h2.rotateOnAxis(Y_axis, -0.15);
-            arrow.add(arrow_h1);
-            arrow.add(arrow_h2);
-            break;
-        case 2:
-            arrow_h1.rotateOnAxis(X_axis, 0.15);
-            arrow_h2.rotateOnAxis(X_axis, -0.15);
-            arrow.add(arrow_h1);
-            arrow.add(arrow_h2);
-            break;
-    }
-
-    arrow.position.x = x;
-    arrow.position.y = y;
-    arrow.position.z = z;
-    arrow.rotateOnAxis(axis, rz)
-    scene.add(arrow);
-    return vertices;
+function arrayEquals(a, b) {
+  return Array.isArray(a) &&
+    Array.isArray(b) &&
+    a.length === b.length &&
+    a.every((val, index) => val === b[index]);
 }
 
 
-function DistributedLoadIndication(length1 ,startPoint, endPoint, direction, rz = 0, scale = 1, length2 = length1, local = false)
-{
-    const StartPoint = new THREE.Vector3( startPoint[0], startPoint[1], startPoint[2]);
-    const EndPoint = new THREE.Vector3(endPoint[0], endPoint[1], endPoint[2]);
 
-    const load = new THREE.Group();
-    const distance = new THREE.Vector3().subVectors(StartPoint, EndPoint).length();
-    const axis = new THREE.Vector3().subVectors(StartPoint, EndPoint).normalize();
-    const number = Math.round(distance/0.4)
-    const dX = (EndPoint.x - StartPoint.x );
-    const dY = (EndPoint.y - StartPoint.y );
-    const dZ = (EndPoint.z - StartPoint.z );
 
-    const material = new THREE.LineBasicMaterial({color:'rgb(0,0,0)'});
-    
-    const geometry = new THREE.BufferGeometry();
-    var vertices =[];  
-    vertices.push(StartPoint.x, StartPoint.y, StartPoint.z);
-    const dload= length2-length1;
 
-    for (let i = 0; i <= number ; i++)
-    {
-        const x = StartPoint.x + (dX*i/number); 
-        const y = StartPoint.y + (dY*i/number);
-        const z = StartPoint.z + (dZ*i/number);
-        const L = length1 + (dload*i/number);
-        const arrow = ArrowOnLine(L, x, y, z, startPoint, endPoint,direction, rz, 1, local);
-        if(i == 0)
-        {
-            vertices.push(arrow[3]+ StartPoint.x, arrow[4]+ StartPoint.y, arrow[5]+ StartPoint.z);
-        }
-        if(i == number)
-        {
-            vertices.push(arrow[3]+ EndPoint.x, arrow[4] +EndPoint.y, arrow[5]+EndPoint.z);
-        }
-        if(i == Math.round(number/2)){
-            var textPosition = [arrow[3]+ x, arrow[4]+ y, arrow[5]+ z- 0.4*length1];
-            if(direction == 3)
-            {
-                textPosition = [arrow[3]+ x- 0.3*length1, arrow[4]+ y- 0.3*length1, arrow[5]+ z];
-            }
-            else{textPosition = [arrow[3]+ x, arrow[4]+ y, arrow[5]+ z- 0.4*length1];}
-            let loadText = '';
-            if(dload == 0)
-            {
-                loadText = length1;
-            }
-            else{
-                loadText = length1 + "-" + length2;
-            }
-            const txt = makeTextSprite( loadText, textPosition[0], textPosition[1], textPosition[2],{fontsize: 140, fontface: "Georgia", textColor:{r:0,g:0,b:0,a:1},
-                vAlign:"center", hAlign:"center"});
-                load.add(txt);
-        }
-        //load.add(arrow);
-    }
 
-    vertices.push(EndPoint.x, EndPoint.y, EndPoint.z);
-    vertices.push(StartPoint.x, StartPoint.y, StartPoint.z);
-    geometry.setAttribute( 'position', new THREE.Float32BufferAttribute( vertices, 3 ) );
-    const container = new THREE.Line( geometry, material );
-    container.rotateOnAxis(axis, rz)
-    load.add(container)
-    scene.add(load)
-}
-//#endregion
+
+
+
+
+// Functions to draw loads and reactions
 
 //#region // Results visualization
 function ResultLines(length, x,y,z, startPoint, endPoint,  direction, rz, scale = 1, local = false)
@@ -3199,57 +3082,3 @@ console.log(max)
 }
 //#endregion
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-///*functions to handle draw frame div*////
-function DisplayDrawFrameHelper() {
-    let frameHelper = document.querySelector('#frameProp');
-    if(frameHelper.style.display=="none"){
-        LoadSections();
-        frameHelper.style.display="block"
-    }
-}
-function LoadSections(){
-    var select = document.querySelector('#frameProp select');
-    for (const [key,value] of Section.SectionList) {
-        var option = document.createElement("option");
-        console.log(value.Name)
-        option.setAttribute("value",key);
-        option.innerHTML=value.Name;
-        select.appendChild(option)
-    }
-}
-function GetActiveSection(){
-    var selectedSection = document.querySelector('#frameProp select');
-    //var sectionId = selectedSection.selectedOptions[0].value;
-    //return Section.SectionList.get(sectionId);
-    return Section.SectionList.get('1');
-}
-
-
-
-// var material = new THREE.LineBasicMaterial({ color: 'rgb(0,50,100)', alphaTest: 0.95, transparent : true, opacity: 0});
-// // crosshair size
-// var x = 0.3, y = 0.3;
-// var geometry = new THREE.BufferGeometry();
-// var vertices =[];  
-// vertices.push(x, y, 0);
-// vertices.push(-x, -y, 0);
-// vertices.push(0, 0, 0);
-// vertices.push(x, -y, 0); 
-// vertices.push(-x, y, 0);
-// geometry.setAttribute( 'position', new THREE.Float32BufferAttribute( vertices, 3 ) );
-
-// this.crosshair = new THREE.Line( geometry, material );
-export {Section, Material, ESectionShape, EmaterialType, FrameElement, DrawLine, scene}

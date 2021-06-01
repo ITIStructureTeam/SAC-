@@ -1,4 +1,5 @@
-
+var secAssigned = false;
+var assignedSection ;
 let assignFrameSecWin = `
     <div
 
@@ -30,7 +31,28 @@ let assignFrameSecWin = `
 
     </div>
 `
+document.getElementById('assign-framesec-btn').addEventListener("click",function(){
+    if(!document.querySelector('.main-window')) {
+        $('body').append(assignFrameSecWin);
+        InitAssignSecWin();
+    }
+});
 
+//to assign frame section
+function InitAssignSecWin() {
+    FillDefSecs();
+    document.querySelector('#assign-framesec-main-window .info').addEventListener("click",function(){
+        if(document.querySelector('.current-select')){
+            secAssigned = true;
+            assignedSection = GetAssignedSection()
+            //commands.excuteCommand( new AssignFrameSection( GetAssignedSection() ) );
+        } 
+        document.querySelector('.main-window').parentElement.parentElement.remove();
+    });
+    document.querySelector('#assign-framesec-main-window .default').addEventListener("click",function(){
+        document.querySelector('.main-window').parentElement.parentElement.remove();
+    })
+}
 
 function FillDefSecs(){
     let list = $('#assign-framesec-main-window ul');
@@ -44,6 +66,7 @@ function FillDefSecs(){
 }
 
 function GetAssignedSection() {
+
     let secId = document.querySelector('.current-select').value;
     return Section.SectionList.get(String(secId));
 }

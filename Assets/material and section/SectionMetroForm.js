@@ -1,3 +1,4 @@
+ var secUpdated = false
 
 let secMainWindow = `
 
@@ -508,7 +509,7 @@ function ModifySection(secId){
         section.Material = Material.MaterialsList.get(secMatId);
 
         ReloadSecMainWindow();
-
+        secUpdated = true;
         document.querySelector('#sec-prop-window').parentElement.parentElement.remove();
     } catch (error) {
         $('#sec-prop-window').append(`<p style="color:#CE352C;">${error.message}</p>`);
