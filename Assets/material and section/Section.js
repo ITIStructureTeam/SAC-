@@ -1,4 +1,3 @@
-
 //#region MaterialClass
 
 const EmaterialType = {
@@ -171,6 +170,18 @@ class Material {
     Clone() {
         this.#_cpyNo++;
         return new Material(this.Name +" - " +this.#_cpyNo, this.Weight, this.ElasticModulus, this.Poisson, this.ThermalExpansion, this.MaterialType, this.Strength);
+    }
+
+    toJSON()
+    {
+        return{
+        Name : this.Name,
+        Weight : this.Weight,
+        ElasticModulus:this.ElasticModulus ,
+        Poisson:this.Poisson,
+        ThermalExpansion:this.ThermalExpansion,
+        MaterialType:this.MaterialType,
+        Strength:this.Strength};
     }
 
 }
@@ -361,6 +372,16 @@ class Section {
     
         }
     
+    }
+
+    toJSON()
+    {
+        return{
+        Name : this.Name,
+        Material : this.Material,
+        SecType:this.SecType ,
+        Dimensions:this.Dimensions,
+        PropModifiers:this.PropModifiers};
     }
     
 
