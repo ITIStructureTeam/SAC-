@@ -505,7 +505,7 @@ class FrameElement
         this.EndPoint.undo(this.Label);
         //FrameElement.#num--;
         for(let i = 0; i <this.AssociatedPoints.length; i++){
-            this.AssociatedPoints[i].undo(this.Label);
+            this.AssociatedPoints[i].undo();
         }
     }
 
@@ -515,7 +515,7 @@ class FrameElement
         this.EndPoint.redo(this.Label);
         for(let i = 0; i <this.AssociatedPoints.length; i++){
             //group.add(this.AssociatedPoints[i]);
-            this.AssociatedPoints[i].redo(this.Label);
+            this.AssociatedPoints[i].redo();
         }
     }
 
@@ -544,11 +544,6 @@ class FrameElement
             const point = [x,y,z]
             const obj = new Point(point);
             obj.excute();
-            // let obj = BoxSnap(0.3,0.3,0.3);
-            // obj.position.x = x;
-            // obj.position.y = y;
-            // obj.position.z = z;
-            // group.add(obj);
             this.AssociatedPoints.push(obj);
         }
     }
@@ -812,10 +807,11 @@ class DrawLine
         this.#extrude.position.set(points[0].x,points[0].y,points[0].z);
         this.#extrude.lookAt(points[1])
 
-        /*if(points[1] - points[4] != 0 && points[2]-points[5] == 0 && points[0]-points[3] == 0){
-            this.#extrude.material.color.setHex(0xa200ab);
-            this.#extrude.rotation.z = (Math.PI/2);
-        }*/
+        // if(points[1] - points[4] != 0 && points[2]-points[5] == 0 && points[0]-points[3] == 0){
+        //     this.#extrude.material.color.setHex(0xa200ab);
+        //     this.#extrude.rotation.z = (Math.PI/2);
+        // }
+
     }
 
     #GetThreeShape(){
@@ -1071,13 +1067,14 @@ class Point
         this.Label = Point.#Pointnum;
         Point.#Pointnum += 1;
         this.Selected = false;
-        //this.position = new THREE.Vector3(point.x, point.y, poiny.z);
+      
         this.position = [point[0], point[1], point[2]];
+        
+        this.Restraint = [false, false, false, false, false, false];
 
-        var dotGeometry = new THREE.BufferGeometry();
-        dotGeometry.setAttribute( 'position', new THREE.Float32BufferAttribute( this.position, 3 ) );
-        var dotMaterial = new THREE.PointsMaterial( { size: 1, sizeAttenuation: false } );
-        this.dot = new THREE.Points( dotGeometry, dotMaterial );
+        this.dot = DrawPoint(this.position);
+
+        this.SupportIndication = DrawPoint(this.position,1);
 
         // crosshair
         var material = new THREE.LineBasicMaterial({ color: 'rgb(0,50,100)', alphaTest: 0.95, transparent : true, opacity: 0});
@@ -1109,21 +1106,22 @@ class Point
         if(frame !=null){  this.Shared.push(frame); }
         scene.add( this.dot );
         scene.add( this.crosshair );
+        scene.add( this.SupportIndication );
         group.add(this.obj);
     }
-    undo(frame)
+    undo(frame=null)
     {
         if(frame != null){
             this.Shared.splice(Point.PointsArray.indexOf(frame),1);
-            
-            if(this.Shared.length == 0)
-            {
-                scene.remove(this.dot); 
-                scene.remove( this.crosshair );
-                const index = Point.PointsArray.indexOf(this); 
-                Point.PointsArray.splice(index, 1);
-                group.remove(this.obj);
-            }
+        }
+        if(this.Shared.length == 0)
+        {
+            scene.remove(this.dot); 
+            scene.remove( this.crosshair );
+            scene.remove( this.SupportIndication );
+            const index = Point.PointsArray.indexOf(this); 
+            Point.PointsArray.splice(index, 1);
+            group.remove(this.obj);
         }
     }
     redo(frame=null)
@@ -1132,6 +1130,7 @@ class Point
         {
             scene.add( this.dot );
             scene.add( this.crosshair );
+            scene.add( this.SupportIndication );
             Point.PointsArray.push(this);
             group.add(this.obj);
         }
@@ -1151,11 +1150,13 @@ class Point
             this.crosshair.geometry.dispose();
             this.obj.material.dispose();
             this.obj.geometry.dispose();
+            this.SupportIndication.material.dispose();
+            this.SupportIndication.geometry.dispose();
         }
     }
     Highlight()
     {
-        if(this.Selected == true)
+        if(this.Selected == true && this.Shared.length > 0)
         { 
             this.crosshair.material.opacity = 1;
         }
@@ -1167,14 +1168,17 @@ class Point
     {
         scene.remove(this.dot);
         scene.remove(this.crosshair);
+        scene.remove( this.SupportIndication );
         group.remove(this.obj);
     }
     Show()
     {
-        scene.add(this.dot)
-        scene.add(this.crosshair)
+        scene.add(this.dot);
+        scene.add(this.crosshair);
+        scene.add( this.SupportIndication );
         group.add(this.obj);
     }
+
     InView()
     {
         if(view == "XY")
@@ -1202,7 +1206,35 @@ class Point
             this.Show();
         }
     }
+
+    ViewIndication()
+    {
+        scene.remove(this.SupportIndication)
+
+        if(arrayEquals(this.Restraint, [true, true, true, false, false, false]))
+        {
+            this.SupportIndication = DrawHinge(this.position);
+        }
+        else if(arrayEquals(this.Restraint, [true, true, true, true, true, true]))
+        {
+            this.SupportIndication = DrawFix(this.position);
+        }
+        else if(arrayEquals(this.Restraint, [true, false, false, false, false, false]))
+        {
+            this.SupportIndication = DrawRoller(this.position);
+        }
+        else{
+            this.SupportIndication = DrawPoint(this.position, 1);
+        }
+        this.InView();
+    }
+
+    toJSON()
+    {
+        return{label:this.Label, position:this.position, Restraints:this.Restraint}
+    }
 }
+
 
 class Delete
 {
@@ -1245,6 +1277,167 @@ class Delete
     }
 }
 
+class Copy
+{
+    constructor(Delta)
+    {
+        this.Delta = Delta;
+        this.CopiedList = [];
+        this.Copies = [];
+        for(let i = 0; i <DrawLine.SelectedLines.length; i++){
+            this.CopiedList.push(DrawLine.SelectedLines[i]);
+        }
+    }
+    excute()
+    {
+        Unselect();
+        for(let i = 0; i<this.CopiedList.length ; i++)
+        {
+            let points = [];
+            points.push(this.CopiedList[i].Frame.StartPoint.position[0] + this.Delta[0])
+            points.push(this.CopiedList[i].Frame.StartPoint.position[1] + this.Delta[1])
+            points.push(this.CopiedList[i].Frame.StartPoint.position[2] + this.Delta[2])
+            points.push(this.CopiedList[i].Frame.EndPoint.position[0] + this.Delta[0])
+            points.push(this.CopiedList[i].Frame.EndPoint.position[1] + this.Delta[1])
+            points.push(this.CopiedList[i].Frame.EndPoint.position[2] + this.Delta[2])
+    
+            let Copy = new DrawLine(new FrameElement(points, this.CopiedList[i].Frame.Section));
+            let number = this.CopiedList[i].Frame.AssociatedPoints.length +1;
+            Copy.Frame.AddPointsAtEqualDistances(number);
+            this.Copies.push(Copy); 
+            Copy.excute();
+        }
+        this.CopiedList = [];
+    }
+    undo()
+    {
+        for(let i = 0; i<this.Copies.length ; i++)
+        {
+            this.Copies[i].undo();
+        }
+    }
+    redo()
+    {
+        for(let i = 0; i<this.Copies.length ; i++)
+        {
+            this.Copies[i].redo();
+        }
+    }
+
+    remove()
+    {
+        for(let i = 0; i<this.Copies.length ; i++)
+        {
+            this.Copies[i].remove();
+        }
+    }
+    
+}
+
+class Move
+{
+    constructor(Delta)
+    {
+        this.Delta = Delta;
+        this.TempList = [];
+        this.Moved = [];
+        for(let i = 0; i <DrawLine.SelectedLines.length; i++){
+            this.TempList.push(DrawLine.SelectedLines[i]);
+        }
+    }
+    excute()
+    {
+        Unselect();
+        for(let i = 0; i<this.TempList.length ; i++)
+        {
+            let points = [];
+            points.push(this.TempList[i].Frame.StartPoint.position[0] + this.Delta[0])
+            points.push(this.TempList[i].Frame.StartPoint.position[1] + this.Delta[1])
+            points.push(this.TempList[i].Frame.StartPoint.position[2] + this.Delta[2])
+            points.push(this.TempList[i].Frame.EndPoint.position[0] + this.Delta[0])
+            points.push(this.TempList[i].Frame.EndPoint.position[1] + this.Delta[1])
+            points.push(this.TempList[i].Frame.EndPoint.position[2] + this.Delta[2])
+    
+            let move = new DrawLine(new FrameElement(points, this.TempList[i].Frame.Section));
+            let number = this.TempList[i].Frame.AssociatedPoints.length +1;
+            move.Frame.AddPointsAtEqualDistances(number);
+            this.Moved.push(move); 
+            move.excute();
+            this.TempList[i].undo();
+        }
+    }
+    undo()
+    {
+        for(let i = 0; i<this.Moved.length ; i++)
+        {
+            this.Moved[i].undo();
+            this.TempList[i].redo();
+        }
+    }
+    redo()
+    {
+        for(let i = 0; i<this.Moved.length ; i++)
+        {
+            this.Moved[i].redo();
+            this.TempList[i].undo();
+        }
+    }
+
+    remove()
+    {
+        for(let i = 0; i<this.Moved.length ; i++)
+        {
+            this.Moved[i].remove();
+        }
+    }
+    
+}
+
+class AssignRestraints
+{
+    constructor(restraint)
+    {
+        this.SelectedPoints = [];
+        for(let i = 0; i < Point.SelectedPoints.length; i++)
+        {
+            this.SelectedPoints.push(Point.SelectedPoints[i]);
+        }
+        this.TempRestraints = [];   
+        this.Restraint = [...restraint];
+    }
+
+    excute()
+    {
+        Unselect();
+        for(let i = 0; i < this.SelectedPoints.length; i++)
+        {
+            this.TempRestraints[i] = this.SelectedPoints[i].Restraint;
+            this.SelectedPoints[i].Restraint = [...this.Restraint];
+            this.SelectedPoints[i].ViewIndication();
+        }
+    }
+
+    undo()
+    {
+        for(let i = 0; i < this.SelectedPoints.length; i++)
+        {
+            this.SelectedPoints[i].Restraint = this.TempRestraints[i];
+            this.SelectedPoints[i].ViewIndication()
+        }
+    }
+
+    redo()
+    {
+        this.excute();
+    }
+
+    remove()
+    {
+        this.SelectedPoints = null;
+        this.TempRestraints = null;
+        this.Restraint = null;
+    }
+}
 
 init();
 
@@ -1451,6 +1644,12 @@ document.addEventListener('keydown',  function ( event ) {
         alert(DrawLine.DrawLinesArray.length)
     }
 })
+document.addEventListener('keydown',  function ( event ) {
+    if(event.key == 'w')
+    {
+        alert(Point.SelectedPoints.length)
+    }
+})
 
 function ClickToDrawLine(event)  
 {
@@ -1483,7 +1682,8 @@ function ClickToDrawLine(event)
                 }
                 else if(points.length == 6)
                 {
-                    commands.excuteCommand(new DrawLine(new FrameElement(points,GetSelectedSection(),state)));
+                    commands.excuteCommand(new DrawLine(new FrameElement(points,GetActiveSection())));
+
                     points = [];
                 }
             }
@@ -1546,6 +1746,22 @@ function DeleteButton()
 {
     commands.excuteCommand(new Delete(DrawLine.SelectedLines));
 }
+
+
+document.getElementById("Copy").onclick=function(){CopyButton()};
+function CopyButton()
+{
+    const delta = [5,5,5]
+    commands.excuteCommand(new Copy(delta));
+}
+
+document.getElementById("Move").onclick=function(){MoveButton()};
+function MoveButton()
+{
+    const delta = [5,5,5]
+    commands.excuteCommand(new Move(delta));
+}
+
 
 document.getElementById("Extrude").onclick=function(){Extrude()};
 function Extrude()
@@ -2199,6 +2415,7 @@ modals.forEach(modal =>{
     closeModal(modal);
 })}
 
+
 if(gridLines == null){
 listx = [6,6,6]
 listy = [4,4,4]
@@ -2330,9 +2547,6 @@ function GridLine(spacingX, spacingY, spacingZ, lengthX, lengthY, lengthZ)
     }
     return group;
 }
-
-
-
 
  
 function GridSelections()
@@ -2799,200 +3013,9 @@ function crossProduct(A,B) {
 
 
 
-  // Functions to draw loads and reactions
-  //#region // Loads visualization
-function ArrowOnLine(length, x,y,z, startPoint, endPoint,  direction, rz, scale = 1, local = false)
-{
-    startPoint = new THREE.Vector3(startPoint[0], startPoint[1], startPoint[2]);
-    endPoint = new THREE.Vector3(endPoint[0], endPoint[1], endPoint[2]);
-
-    const axis = new THREE.Vector3().subVectors(startPoint, endPoint).normalize(); // Z-local direction
- 
-    let x_axis = crossProduct([axis.x, axis.y, axis.z], [0,0,1]);
-    if(arrayEquals(x_axis,[0,0,0]))
-    {
-        x_axis = [0,1,0]
-    }
-    const y_axis = crossProduct([axis.x, axis.y, axis.z], x_axis);
-    const X_axis = new THREE.Vector3(x_axis[0], x_axis[1], x_axis[2]);
-    const Y_axis = new THREE.Vector3(y_axis[0], y_axis[1], y_axis[2]);
-
-    const material = new THREE.LineBasicMaterial({color:'rgb(0,0,0)'});
- 
-    const l = length *scale;
-    var geometry = new THREE.BufferGeometry();
-    var geometry_h1 = new THREE.BufferGeometry();
-    var geometry_h2 = new THREE.BufferGeometry();
-    var vertices =[];  
-    var vertices_h1 =[];  
-    var vertices_h2 =[];  
-
-    if(local == false)
-    {
-        l = l*-1;
-        if(direction == 2)  // Global z- direction
-        {
-            vertices.push(0, 0.04*l, 0.15*l);
-            vertices.push(0, 0, 0);
-            vertices.push(0, -0.04*l, 0.15*l );
-            vertices.push(0, 0, 0);
-            vertices.push(0, 0, l);
-        }
-        else if(direction == 3)  // Global y- direction
-        {
-            vertices.push(0.04*l, 0.15*l, 0);
-            vertices.push(0, 0, 0);
-            vertices.push(-0.04*l, 0.15*l, 0 );
-            vertices.push(0, 0, 0);
-            vertices.push(0, l, 0);
-        }
-        else if(direction ==1)   // Global x- direction
-        {
-            vertices.push(0.15*l, 0.04*l, 0);
-            vertices.push(0, 0, 0);
-            vertices.push(0.15*l, -0.04*l, 0 );
-            vertices.push(0, 0, 0);
-            vertices.push(l, 0, 0);
-        }
-        geometry.setAttribute( 'position', new THREE.Float32BufferAttribute( vertices, 3 ) );
-    }
-    else
-    {
-        if(direction == 2)
-        {
-            vertices.push(0, 0, 0);
-            vertices.push(l*Y_axis.x, l*Y_axis.y, l*Y_axis.z);
-            geometry.setAttribute( 'position', new THREE.Float32BufferAttribute( vertices, 3 ) );
-            vertices_h1.push(0,0,0);
-            vertices_h1.push(0.2*l* Y_axis.x, 0.2*l*Y_axis.y, 0.2*l*Y_axis.z);
-            geometry_h1.setAttribute( 'position', new THREE.Float32BufferAttribute( vertices_h1, 3 ) );
-            vertices_h2.push(0,0,0);
-            vertices_h2.push(0.2*l*Y_axis.x, 0.2*l*Y_axis.y, 0.2*l*Y_axis.z);
-            geometry_h2.setAttribute( 'position', new THREE.Float32BufferAttribute( vertices_h2, 3 ) );
-        }
-        else if(direction == 3){
-            vertices.push(0, 0, 0);
-            vertices.push(l*X_axis.x, l*X_axis.y, l*X_axis.z);
-            geometry.setAttribute( 'position', new THREE.Float32BufferAttribute( vertices, 3 ) );
-            vertices_h1.push(0,0,0);
-            vertices_h1.push(0.2*l*X_axis.x, 0.2*l*X_axis.y, 0.2*l*X_axis.z);
-            geometry_h1.setAttribute( 'position', new THREE.Float32BufferAttribute( vertices_h1, 3 ) );
-            vertices_h2.push(0,0,0);
-            vertices_h2.push(0.2*l*X_axis.x, 0.2*l*X_axis.y, 0.2*l*X_axis.z);
-            geometry_h2.setAttribute( 'position', new THREE.Float32BufferAttribute( vertices_h2, 3 ) );
-        }
-        else if(direction ==1){
-            vertices.push(0, 0, 0);
-            vertices.push(l*axis.x, l*axis.y, l*axis.z);
-            geometry.setAttribute( 'position', new THREE.Float32BufferAttribute( vertices, 3 ) );
-            vertices_h1.push(0,0,0);
-            vertices_h1.push(0.2*l*axis.x, 0.2*l*axis.y, 0.2*l*axis.z);
-            geometry_h1.setAttribute( 'position', new THREE.Float32BufferAttribute( vertices_h1, 3 ) );
-            vertices_h2.push(0,0,0);
-            vertices_h2.push(0.2*l*axis.x, 0.2*l*axis.y, 0.2*l*axis.z);
-            geometry_h2.setAttribute( 'position', new THREE.Float32BufferAttribute( vertices_h2, 3 ) );
-        }
-        
-    }
-    var arrow = new THREE.Line( geometry, material );
-    var arrow_h1 = new THREE.Line( geometry_h1, material );
-    var arrow_h2 = new THREE.Line( geometry_h2, material );
-
-    switch(direction)
-    {
-        case 1:
-        case 3:
-            arrow_h1.rotateOnAxis(Y_axis, 0.15);
-            arrow_h2.rotateOnAxis(Y_axis, -0.15);
-            arrow.add(arrow_h1);
-            arrow.add(arrow_h2);
-            break;
-        case 2:
-            arrow_h1.rotateOnAxis(X_axis, 0.15);
-            arrow_h2.rotateOnAxis(X_axis, -0.15);
-            arrow.add(arrow_h1);
-            arrow.add(arrow_h2);
-            break;
-    }
-
-    arrow.position.x = x;
-    arrow.position.y = y;
-    arrow.position.z = z;
-    arrow.rotateOnAxis(axis, rz)
-    scene.add(arrow);
-    return vertices;
-}
-
-
-function DistributedLoadIndication(length1 ,startPoint, endPoint, direction, rz = 0, scale = 1, length2 = length1, local = false)
-{
-    const StartPoint = new THREE.Vector3( startPoint[0], startPoint[1], startPoint[2]);
-    const EndPoint = new THREE.Vector3(endPoint[0], endPoint[1], endPoint[2]);
-
-    const load = new THREE.Group();
-    const distance = new THREE.Vector3().subVectors(StartPoint, EndPoint).length();
-    const axis = new THREE.Vector3().subVectors(StartPoint, EndPoint).normalize();
-    const number = Math.round(distance/0.4)
-    const dX = (EndPoint.x - StartPoint.x );
-    const dY = (EndPoint.y - StartPoint.y );
-    const dZ = (EndPoint.z - StartPoint.z );
-
-    const material = new THREE.LineBasicMaterial({color:'rgb(0,0,0)'});
-    
-    const geometry = new THREE.BufferGeometry();
-    var vertices =[];  
-    vertices.push(StartPoint.x, StartPoint.y, StartPoint.z);
-    const dload= length2-length1;
-
-    for (let i = 0; i <= number ; i++)
-    {
-        const x = StartPoint.x + (dX*i/number); 
-        const y = StartPoint.y + (dY*i/number);
-        const z = StartPoint.z + (dZ*i/number);
-        const L = length1 + (dload*i/number);
-        const arrow = ArrowOnLine(L, x, y, z, startPoint, endPoint,direction, rz, 1, local);
-        if(i == 0)
-        {
-            vertices.push(arrow[3]+ StartPoint.x, arrow[4]+ StartPoint.y, arrow[5]+ StartPoint.z);
-        }
-        if(i == number)
-        {
-            vertices.push(arrow[3]+ EndPoint.x, arrow[4] +EndPoint.y, arrow[5]+EndPoint.z);
-        }
-        if(i == Math.round(number/2)){
-            var textPosition = [arrow[3]+ x, arrow[4]+ y, arrow[5]+ z- 0.4*length1];
-            if(direction == 3)
-            {
-                textPosition = [arrow[3]+ x- 0.3*length1, arrow[4]+ y- 0.3*length1, arrow[5]+ z];
-            }
-            else{textPosition = [arrow[3]+ x, arrow[4]+ y, arrow[5]+ z- 0.4*length1];}
-            let loadText = '';
-            if(dload == 0)
-            {
-                loadText = length1;
-            }
-            else{
-                loadText = length1 + "-" + length2;
-            }
-            const txt = makeTextSprite( loadText, textPosition[0], textPosition[1], textPosition[2],{fontsize: 140, fontface: "Georgia", textColor:{r:0,g:0,b:0,a:1},
-                vAlign:"center", hAlign:"center"});
-                load.add(txt);
-        }
-        //load.add(arrow);
-    }
-
-    vertices.push(EndPoint.x, EndPoint.y, EndPoint.z);
-    vertices.push(StartPoint.x, StartPoint.y, StartPoint.z);
-    geometry.setAttribute( 'position', new THREE.Float32BufferAttribute( vertices, 3 ) );
-    const container = new THREE.Line( geometry, material );
-    container.rotateOnAxis(axis, rz)
-    load.add(container)
-    scene.add(load)
-}
-//#endregion
 
 //#region // Results visualization
-function ResultLines(length, x,y,z, startPoint, endPoint,  direction, rz, scale = 1, local = false)
+function ResultLines(length, x,y,z, startPoint, endPoint,  direction, rz, scale = 1) // , local = false)
 {
     startPoint = new THREE.Vector3(startPoint[0], startPoint[1], startPoint[2]);
     endPoint = new THREE.Vector3(endPoint[0], endPoint[1], endPoint[2]);
@@ -3021,26 +3044,27 @@ function ResultLines(length, x,y,z, startPoint, endPoint,  direction, rz, scale 
     var geometry = new THREE.BufferGeometry();
     var vertices =[];  
 
-    if(local == false)
+    // if(local == false)
+    // {
+    //     if(direction == 1 || direction )
+    //     vertices.push(0, 0, 0);
+    //     vertices.push(0, 0, l);
+    //     geometry.setAttribute( 'position', new THREE.Float32BufferAttribute( vertices, 3 ) );
+    // }
+    // else
+    // {
+    if(direction == 2 || direction == 1)
     {
         vertices.push(0, 0, 0);
-        vertices.push(0, 0, l);
+        vertices.push(l*Y_axis.x, l*Y_axis.y, l*Y_axis.z);
         geometry.setAttribute( 'position', new THREE.Float32BufferAttribute( vertices, 3 ) );
     }
-    else
-    {
-        if(direction == 2 || direction == 1)
-        {
-            vertices.push(0, 0, 0);
-            vertices.push(l*Y_axis.x, l*Y_axis.y, l*Y_axis.z);
-            geometry.setAttribute( 'position', new THREE.Float32BufferAttribute( vertices, 3 ) );
-        }
-        else if(direction == 3){
-            vertices.push(0, 0, 0);
-            vertices.push(l*X_axis.x, l*X_axis.y, l*X_axis.z);
-            geometry.setAttribute( 'position', new THREE.Float32BufferAttribute( vertices, 3 ) );
-        }
+    else if(direction == 3){
+        vertices.push(0, 0, 0);
+        vertices.push(l*X_axis.x, l*X_axis.y, l*X_axis.z);
+        geometry.setAttribute( 'position', new THREE.Float32BufferAttribute( vertices, 3 ) );
     }
+    //}
     var line = new THREE.Line( geometry, material );
 
     line.position.x = x;
@@ -3151,7 +3175,9 @@ function LoadSections(){
         select.appendChild(option)
     }
 }
-function GetActiveSection(){
+
+function GetActiveSection()
+{
     var selectedSection = document.querySelector('#frameProp select');
     //var sectionId = selectedSection.selectedOptions[0].value;
     //return Section.SectionList.get(sectionId);
@@ -3160,16 +3186,191 @@ function GetActiveSection(){
 
 
 
-// var material = new THREE.LineBasicMaterial({ color: 'rgb(0,50,100)', alphaTest: 0.95, transparent : true, opacity: 0});
-// // crosshair size
-// var x = 0.3, y = 0.3;
-// var geometry = new THREE.BufferGeometry();
-// var vertices =[];  
-// vertices.push(x, y, 0);
-// vertices.push(-x, -y, 0);
-// vertices.push(0, 0, 0);
-// vertices.push(x, -y, 0); 
-// vertices.push(-x, y, 0);
-// geometry.setAttribute( 'position', new THREE.Float32BufferAttribute( vertices, 3 ) );
 
-// this.crosshair = new THREE.Line( geometry, material );
+
+
+
+
+
+
+
+
+
+document.getElementById("Run").onclick=function(){Run()};
+function Run()
+{
+    const Frames = [...DrawLine.GetDrawnFrames()];
+    
+    var OutPut = JSON.stringify(Frames);
+    console.log(OutPut)
+    // $.ajax({
+    //     type: "POST",
+    //     url: "http://192.168.1.10:8080/Main.html",                   ///// URL must be specified
+    //     contentType: "application/json; charset=utf-8",
+    //     dataType: "json",
+    //     data: "{Frames: " + OutPut + "}",
+    //     cache: false,
+    //     success: function (result) {
+    
+    //     },
+    //     error: function (ex) {
+    //         WriteToConsole(ex.responseText);
+    //     }
+    // });
+
+
+// var fs = require('fs');
+// fs.writeFile("OutPut.json", OutPut, function(err) {
+//     if (err) {
+//         console.log(err);
+//     }
+// });
+}
+
+
+
+
+function DrawHinge(position)
+{
+    const material = new THREE.LineBasicMaterial({ alphaTest:1, opacity:1 });
+    material.color = {r:0, g:0.4, b: 0.25, a:1};
+    let geometry = new THREE.BufferGeometry();
+    let vertices =[];  
+    vertices.push(0 ,0 ,0);
+    vertices.push(0.35, 0, -0.35);
+    vertices.push(-0.35, 0, -0.35);
+    vertices.push(0 ,0 ,0);
+    vertices.push(0, 0.35, -0.35);
+    vertices.push(0, -0.35, -0.35);
+    vertices.push(0 ,0 ,0);
+    geometry.setAttribute( 'position', new THREE.Float32BufferAttribute( vertices, 3 ) );
+    let hinge = new THREE.Line( geometry, material );
+    hinge.position.x = position[0];
+    hinge.position.y = position[1];
+    hinge.position.z = position[2];
+    return hinge;
+}
+
+function DrawFix(position)
+{
+    const material = new THREE.LineBasicMaterial();
+    material.color = {r:0, g:0.4, b: 0.25, a:1};
+    let geometry = new THREE.BufferGeometry();
+    let vertices =[];  
+    vertices.push(0 ,0 ,0);
+    vertices.push(0.45, 0, 0);
+    vertices.push(0.45, 0, -0.35);
+    vertices.push(-0.45, 0, -0.35);
+    vertices.push(-0.45, 0, 0);
+    vertices.push(0 ,0 ,0);
+    vertices.push(0, 0.45, 0);
+    vertices.push(0, 0.45, -0.35);
+    vertices.push(0, -0.45, -0.35);
+    vertices.push(0, -0.45, 0);
+    vertices.push(0 ,0 ,0);
+    geometry.setAttribute( 'position', new THREE.Float32BufferAttribute( vertices, 3 ) );
+    const fix = new THREE.Line( geometry, material );
+    fix.position.x = position[0];
+    fix.position.y = position[1];
+    fix.position.z = position[2];
+    return fix;
+}
+
+
+function DrawRoller(position)
+{
+    const material = new THREE.LineBasicMaterial();
+    material.color = {r:0, g:0.4, b: 0.25, a:1};
+    let geometry = new THREE.BufferGeometry();
+    let vertices =[];  
+    vertices.push(0 ,0 ,0);
+    vertices.push(0.35, 0, -0.35);
+    vertices.push(-0.35, 0, -0.35);
+    vertices.push(0 ,0 ,0);
+    vertices.push(0, 0.35, -0.35);
+    vertices.push(0, -0.35, -0.35);
+    vertices.push(0 ,0 ,0);
+    geometry.setAttribute( 'position', new THREE.Float32BufferAttribute( vertices, 3 ) );
+    let roller = new THREE.Line( geometry, material );
+
+    const curve = new THREE.EllipseCurve(
+        0,  0,            // ax, aY
+        0.12, 0.12,           // xRadius, yRadius
+        0,  2 * Math.PI,  // aStartAngle, aEndAngle
+        false,            // aClockwise
+        0                 // aRotation
+    );
+
+    const points = curve.getPoints( 15 );
+    const circleGeometry = new THREE.BufferGeometry().setFromPoints( points );
+
+    let rollersCordinates = [[0,0,-0.35*1.35,22/14,0],[0,0,-0.35*1.35,0,22/14]];
+    for(let i = 0; i < 2; i++)
+    {
+        const circle = new THREE.Line( circleGeometry, material );
+        circle.position.x = rollersCordinates[i][0];
+        circle.position.y = rollersCordinates[i][1];
+        circle.position.z = rollersCordinates[i][2];
+        circle.rotation.x = rollersCordinates[i][3];
+        circle.rotation.y = rollersCordinates[i][4];
+        roller.add(circle);
+    }
+    let vertex = []
+    vertex.push(0.2, 0, -0.35*1.7);
+    vertex.push(-0.2, 0, -0.35*1.7);
+    vertex.push(0 ,0 ,-0.35*1.7);
+    vertex.push(0, 0.2, -0.35*1.7);
+    vertex.push(0, -0.2, -0.35*1.7);
+
+    let BottomGeometry = new THREE.BufferGeometry();
+    BottomGeometry.setAttribute( 'position', new THREE.Float32BufferAttribute( vertex, 3 ) );
+    let Lines = new THREE.Line( BottomGeometry, material )
+    roller.add(Lines);
+
+    roller.position.x = position[0];
+    roller.position.y = position[1];
+    roller.position.z = position[2];
+    return roller;
+}
+
+function DrawPoint(position, alphaTest=0)
+{
+    let dotGeometry = new THREE.BufferGeometry();
+    dotGeometry.setAttribute( 'position', new THREE.Float32BufferAttribute( position, 3 ) );
+    let dotMaterial = new THREE.PointsMaterial( { size: 1, sizeAttenuation: false, alphaTest:alphaTest, transparent: true, opacity: 0.8 } );
+    let dot = new THREE.Points( dotGeometry, dotMaterial );
+    return dot;
+}
+
+
+
+document.getElementById("Hinge").onclick=function(){Hinge()};
+function Hinge()
+{
+    if(Point.SelectedPoints.length > 0)
+    {
+        const restraints = [true, true, true, false, false, false];
+        commands.excuteCommand(new AssignRestraints(restraints));
+    }
+}
+
+document.getElementById("Fix").onclick=function(){Fix()};
+function Fix() 
+{
+    if(Point.SelectedPoints.length > 0)
+    {
+        const restraints = [true, true, true, true, true, true];
+        commands.excuteCommand(new AssignRestraints(restraints));
+    }
+}
+
+document.getElementById("Roller").onclick=function(){Roller()};
+function Roller()
+{
+    if(Point.SelectedPoints.length > 0)
+    {
+        const restraints = [true, false, false, false, false, false];
+        commands.excuteCommand(new AssignRestraints(restraints));
+    }
+}
+
