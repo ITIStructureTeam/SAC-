@@ -55,11 +55,10 @@ data-width="450">
 
 
     <ul data-role="listview" data-view="icons-medium">
-        <li value=0 data-icon="<span class='mif-folder fg-blue'>" data-caption="Rectangular"></li>
-        <li value=1 data-icon="<span class='mif-folder fg-orange'>" data-caption="Circular"></li>
-        <li value=2 data-icon="<span class='mif-folder fg-orange'>" data-caption="I-shape"></li>
-        <li value=3 data-icon="<span class='mif-folder fg-orange'>" data-caption="T-shape"></li>
-        <li value=4 data-icon="<span class='mif-folder fg-orange'>" data-caption="Other"></li>
+        <li value=0 data-icon="<div class='sec-small rect-small'></div>" data-caption="Rectangular"></li>
+        <li value=1 data-icon="<div class='sec-small circ-small'></div>" data-caption="Circular"></li>
+        <li value=2 data-icon="<div class='sec-small i-small'></div>" data-caption="I-shape"></li>
+        <li value=3 data-icon="<div class='sec-small t-small'></div>" data-caption="T-shape"></li>
     </ul>
 </div>
 
@@ -228,7 +227,7 @@ function GetSecDimForm(sectionType) {
     
     </div>
 
-    <div class="shape" id="sec-shape"></div>`  
+    <div class="sec-large i-large" id="sec-shape"></div>`  
 
     let recSecForm = `
     <div class="flex-col justify-start" id="sec-dim" style="height: 200px;">
@@ -243,7 +242,7 @@ function GetSecDimForm(sectionType) {
     
     </div>
 
-    <div class="shape" id="sec-shape"></div>
+    <div class="sec-large rect-large" id="sec-shape"></div>
     `
 
     let circSecForm = `
@@ -255,7 +254,7 @@ function GetSecDimForm(sectionType) {
     
     </div>
 
-    <div class="shape" id="sec-shape"></div>
+    <div class="sec-large circ-large" id="sec-shape"></div>
     `
 
     let tSecForm = `
@@ -279,7 +278,7 @@ function GetSecDimForm(sectionType) {
     
     </div>
 
-    <div class="shape" id="sec-shape"></div>
+    <div class="sec-large t-large" id="sec-shape"></div>
     `
 
     switch (sectionType) {
@@ -383,8 +382,6 @@ function initSecMainWindow() {
         function () {
             if(!document.querySelector('.secondary-window')){
                 $('body').append(secTypeWindow);
-                //document.querySelector('.main-window-container').classList.remove('overlay');
-                //document.querySelector('.secondary-window-container').classList.add('overlay');
                 document.querySelector('#sec-types').addEventListener("click",function(){
                     secType=GetSecType();
                     $('#sec-types')[0].parentElement.parentElement.remove();
@@ -548,7 +545,7 @@ function DeleteSection(secId) {
         Section.SectionList.get(String(secId)).Delete();
         ReloadSecMainWindow();
     } catch (error) {
-        document.querySelector('#sec-main-window').append(`<p style="color:#CE352C;">${error.message}</p>`);
+        $('#sec-main-window').append(`<p style="color:#CE352C;">${error.message}</p>`);
     }
 }
 

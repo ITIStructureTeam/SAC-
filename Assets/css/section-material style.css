@@ -5,6 +5,7 @@ td{
 .panel{
   margin: 0px 10px 0px 10px;
   padding: 10px 10px 10px 10px;
+  
 }
 .ctrls{
     display: flex;
@@ -33,7 +34,7 @@ button{
     align-items: center;
 }
 .shape{
-    width: 70px;
+    width: 120px;
     height: 150px;
     background-color: blue;
 }
@@ -58,4 +59,40 @@ button{
 }
 .align-center{
     align-items: center;
+}
+.sec-small{
+    width: 70px;
+    height: 70px;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+.rect-small{
+	background-image:url('../images/section-shapes/rect-small.png');   
+}
+.circ-small{
+    background-image: url('../images/section-shapes/circle-small.png');
+}
+.i-small{
+    background-image: url('../images/section-shapes/i-small.png');
+}
+.t-small{
+    background-image: url('../images/section-shapes/t-small.png');
+}
+.sec-large{
+    width: 120px;
+    height: 150px;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+.rect-large{
+	background-image:url('../images/section-shapes/rect-large.png');   
+}
+.circ-large{
+    background-image: url('../images/section-shapes/circ-large.png');
+}
+.i-large{
+    background-image: url('../images/section-shapes/i-large.png');
+}
+.t-large{
+    background-image: url('../images/section-shapes/t-large.png');
 }

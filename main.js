@@ -1,4 +1,5 @@
 import {MapControls} from './Assets/Three.js files/OrbitControls.js'
+import { DoubleSide } from './Assets/Three.js files/three.module.js';
 
 // Global variables for init function
 var group,
@@ -235,6 +236,7 @@ class Section {
     #secType;
     #dimensions;
     #propModifiers;
+    #assignedToFrames
     static #sectionId=1;
     static #secList = new Map();
 
@@ -252,6 +254,7 @@ class Section {
         this.Dimensions=dimensions;
         this.PropModifiers=modifiers;
         this.#material.AssignedToSections.push(this);
+        this.#assignedToFrames= []
         Section.#secList.set(String(this.#id), this);
         Section.#sectionId++;
     }
@@ -338,6 +341,10 @@ class Section {
         return String(this.#id);
     }
 
+    get AssignedToFrames(){
+        return this.#assignedToFrames;
+    }
+
     static get SectionList(){
         return Section.#secList;
     }
@@ -348,7 +355,13 @@ class Section {
     }
 
     Delete(){
-        Section.#secList.delete(this.ID);
+        if(this.AssignedToFrames.length) throw new Error('this section is assigned to frame/s');
+        else{
+            let secIndex = this.Material.AssignedToSections.indexOf(this);
+            this.Material.AssignedToSections.splice(secIndex,secIndex);
+            Section.#secList.delete(this.ID);
+        }
+        
     }
 
     #ValidateDimenions(sectionType, dimArray) {
@@ -453,6 +466,7 @@ class FrameElement
     {
         this.Label = FrameElement.#num;
         this.Section = crossSection ;
+        this.Section.AssignedToFrames.push(this);
         var startPosition = [points[0], points[1], points[2]];
         var endPosition = [points[3], points[4], points[5]];
         this.StartPoint;
@@ -510,6 +524,8 @@ class FrameElement
         this.Label = null;
         this.StartPoint.remove();
         this.EndPoint.remove();
+        let frameIndex = this.Sections.AssignedToFrames.indexOf(this);
+        this.Sections.AssignedToFrames.splice(frameIndex,frameIndex);
         this.Section = null;
         for(let i = 0; i <this.AssociatedPoints.length; i++){
             this.AssociatedPoints[i].remove();
@@ -795,6 +811,7 @@ class DrawLine
         //     this.#extrude.material.color.setHex(0xa200ab);
         //     this.#extrude.rotation.z = (Math.PI/2);
         // }
+
     }
 
     #GetThreeShape(){
@@ -908,7 +925,7 @@ class DrawLine
     }
 
     static ExtrudeView(){
-        console.log(DrawLine.DrawLinesArray);
+
         DrawLine.DrawLinesArray.forEach(drawLine => drawLine.Extrude.visible=true);
         DrawLine.DrawLinesArray.forEach(drawLine => drawLine.line.visible=false);
     }
@@ -1634,7 +1651,7 @@ document.addEventListener('keydown',  function ( event ) {
     }
 })
 
-function ClickToDrawLine(event) 
+function ClickToDrawLine(event)  
 {
 	// update the picking ray with the camera and mouse position
 	raycaster.setFromCamera( mouse, camera );
@@ -1666,6 +1683,7 @@ function ClickToDrawLine(event)
                 else if(points.length == 6)
                 {
                     commands.excuteCommand(new DrawLine(new FrameElement(points,GetActiveSection())));
+
                     points = [];
                 }
             }
@@ -2530,8 +2548,6 @@ function GridLine(spacingX, spacingY, spacingZ, lengthX, lengthY, lengthZ)
     return group;
 }
 
-
-
  
 function GridSelections()
 {
@@ -2603,10 +2619,13 @@ function XYSection()
         if (document.querySelector('#XY').options[i].selected == true)
         {
             XYindex = i;
-            XYView(XYindex);
             break;
         }
+        else{
+            XYindex = 0;
+        }
     }
+    XYView(XYindex);
 }
 
 function XYView(XYindex)
@@ -2642,7 +2661,7 @@ function XYView(XYindex)
     }
     camera.position.x = distanceX/2;
     camera.position.y = distanceY/2;
-    camera.position.z = Math.max(distanceX, distanceY)*1.2 + ViewPosition;
+    camera.position.z = Math.max(distanceX, distanceY)*1.5 + ViewPosition;
     controls.enableRotate = false;
     controls.target = new THREE.Vector3(camera.position.x, camera.position.y, 0);
     
@@ -2657,6 +2676,8 @@ function XYView(XYindex)
     scene.add( txSpriteX );  
     txSpriteY = makeTextSprite( "Y", -2, 0.6, ViewPosition, { fontsize: 200, fontface: "Georgia", textColor: { r:6, g:117, b:201, a:1.0 }, vAlign:"center", hAlign:"center" } );
     scene.add( txSpriteY );  
+
+    document.getElementById("StatusBar").innerHTML = "Z = " + ViewPosition + "m" ; 
 }
 
 document.getElementById("XZSection").onclick=function(){XZSection()};
@@ -2669,10 +2690,13 @@ function XZSection()
         if (document.querySelector('#XZ').options[i].selected == true)
         {
             XZindex = i;
-            XZView(XZindex);
             break;
         }
+        else{
+            XZindex = 0;
+        }
     }
+    XZView(XZindex);
 }
 
 function XZView(XZindex){
@@ -2723,6 +2747,8 @@ function XZView(XZindex){
     scene.add( txSpriteX ); 
     txSpriteZ = makeTextSprite( "Z", -2, ViewPosition,0.6, { fontsize: 200, fontface: "Georgia", textColor: { r:5, g:166, b:96, a:1.0 }, vAlign:"center", hAlign:"center" } );
     scene.add( txSpriteZ );  
+
+    document.getElementById("StatusBar").innerHTML = "Y = " + ViewPosition + "m" ; 
 }
 
 document.getElementById("YZSection").onclick=function(){YZSection()};
@@ -2735,10 +2761,14 @@ function YZSection()
         if (document.querySelector('#YZ').options[i].selected == true)
         {
             YZindex = i;
-            YZView(YZindex);
             break;
         }
-    }    
+        else{
+            YZindex = 0;
+        }
+    }
+    YZView(YZindex);
+      
 }
 
 function YZView(YZindex){
@@ -2790,6 +2820,8 @@ function YZView(YZindex){
     scene.add( txSpriteY ); 
     txSpriteZ = makeTextSprite( "Z", ViewPosition, -2, 0.6, { fontsize: 200, fontface: "Georgia", textColor: { r:5, g:166, b:96, a:1.0 }, vAlign:"center", hAlign:"center" } );
     scene.add( txSpriteZ );
+
+    document.getElementById("StatusBar").innerHTML = "X = " + ViewPosition + "m" ; 
 }
 
 document.getElementById("ThreeD").onclick=function(){ThreeD()};
@@ -2817,6 +2849,8 @@ function ThreeD()
     camera.position.y = 25;
     camera.position.z = 45;
     controls.enableRotate = true;
+
+    document.getElementById("StatusBar").innerHTML = "3D-View"; 
 }
 
 document.getElementById("Next").onclick=function(){Next()};
@@ -2969,7 +3003,6 @@ function crossProduct(A,B) {
       a.length === b.length &&
       a.every((val, index) => val === b[index]);
   }
-
 
 
 
@@ -3340,3 +3373,4 @@ function Roller()
         commands.excuteCommand(new AssignRestraints(restraints));
     }
 }
+
