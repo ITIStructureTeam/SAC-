@@ -1,4 +1,4 @@
- var secUpdated = false
+ var secUpdated = false;
 
 let secMainWindow = `
 
@@ -203,27 +203,27 @@ function GetSecDimForm(sectionType) {
     <div class="flex-col justify-start" id="sec-dim" style="height: 200px;">
         <div class="flex-rowm margin-b-20"> 
             <div class="label"><label>Outside height</label></div>
-            <div class="input-width"><input type="number" class="input-small" data-role="input"></div>
+            <div class="input-width"><input type="number" class="input-small" data-role="input" data-clear-button="false" data-append=${projUnits.SecDimUnit}></div>
         </div>
         <div class="flex-rowm margin-b-20"> 
             <div class="label"><label>Top flange width</label></div>
-            <div class="input-width"><input type="number" class="input-small" data-role="input"></div>
+            <div class="input-width"><input type="number" class="input-small" data-role="input" data-clear-button="false" data-append=${projUnits.SecDimUnit}></div>
         </div>
         <div class="flex-rowm margin-b-20"> 
             <div class="label"><label>Top flange thickness</label></div>
-            <div class="input-width"><input type="number" class="input-small" data-role="input"></div>
+            <div class="input-width"><input type="number" class="input-small" data-role="input" data-clear-button="false" data-append=${projUnits.SecDimUnit}></div>
         </div>
         <div class="flex-rowm margin-b-20"> 
             <div class="label"><label>Web thickness</label></div>
-            <div class="input-width"><input type="number" class="input-small" data-role="input"></div>
+            <div class="input-width"><input type="number" class="input-small" data-role="input" data-clear-button="false" data-append=${projUnits.SecDimUnit}></div>
         </div>
         <div class="flex-rowm margin-b-20"> 
             <div class="label"><label>Bottom flange width</label></div>
-            <div class="input-width"><input type="number" class="input-small" data-role="input"></div>
+            <div class="input-width"><input type="number" class="input-small" data-role="input" data-clear-button="false" data-append=${projUnits.SecDimUnit}></div>
         </div>
         <div class="flex-rowm margin-b-20"> 
             <div class="label"><label>Bottom flange thickness</label></div>
-            <div class="input-width"><input type="number" class="input-small" data-role="input"></div>
+            <div class="input-width"><input type="number" class="input-small" data-role="input" data-clear-button="false" data-append=${projUnits.SecDimUnit}></div>
         </div>
     
     </div>
@@ -234,11 +234,11 @@ function GetSecDimForm(sectionType) {
     <div class="flex-col justify-start" id="sec-dim" style="height: 200px;">
         <div class="flex-rowm margin-b-20"> 
             <div class="label"><label>Width</label></div>
-            <div class="input-width"><input type="number" class="input-small" data-role="input"></div>
+            <div class="input-width"><input type="number" class="input-small" data-role="input" data-clear-button="false" data-append=${projUnits.SecDimUnit}></div>
         </div>
         <div class="flex-rowm margin-b-20"> 
             <div class="label"><label>Depth</label></div>
-            <div class="input-width"><input type="number" class="input-small" data-role="input"></div>
+            <div class="input-width"><input type="number" class="input-small" data-role="input" data-clear-button="false" data-append=${projUnits.SecDimUnit}></div>
         </div>
     
     </div>
@@ -250,7 +250,7 @@ function GetSecDimForm(sectionType) {
     <div class="flex-col justify-start" id="sec-dim" style="height: 200px;">
         <div class="flex-rowm margin-b-20"> 
             <div class="label"><label>Radius</label></div>
-            <div class="input-width"><input type="number" class="input-small" data-role="input"></div>
+            <div class="input-width"><input type="number" class="input-small" data-role="input" data-clear-button="false" data-append=${projUnits.SecDimUnit}></div>
         </div>
     
     </div>
@@ -262,19 +262,19 @@ function GetSecDimForm(sectionType) {
     <div class="flex-col justify-start" id="sec-dim" style="height: 200px;">
         <div class="flex-rowm margin-b-20"> 
             <div class="label"><label>Outside height</label></div>
-            <div class="input-width"><input type="number" class="input-small" data-role="input"></div>
+            <div class="input-width"><input type="number" class="input-small" data-role="input" data-clear-button="false" data-append=${projUnits.SecDimUnit}></div>
         </div>
         <div class="flex-rowm margin-b-20"> 
             <div class="label"><label>Flange width</label></div>
-            <div class="input-width"><input type="number" class="input-small" data-role="input"></div>
+            <div class="input-width"><input type="number" class="input-small" data-role="input" data-clear-button="false" data-append=${projUnits.SecDimUnit}></div>
         </div>
         <div class="flex-rowm margin-b-20"> 
             <div class="label"><label>Flange thickness</label></div>
-            <div class="input-width"><input type="number" class="input-small" data-role="input"></div>
+            <div class="input-width"><input type="number" class="input-small" data-role="input" data-clear-button="false" data-append=${projUnits.SecDimUnit}></div>
         </div>
         <div class="flex-rowm margin-b-20"> 
             <div class="label"><label>Web thickness</label></div>
-            <div class="input-width"><input type="number" class="input-small" data-role="input"></div>
+            <div class="input-width"><input type="number" class="input-small" data-role="input" data-clear-button="false" data-append=${projUnits.SecDimUnit}></div>
         </div>
     
     </div>
@@ -338,7 +338,7 @@ function LoadSectionData(secId){
     let secDimInputs = document.querySelector('#sec-dim').querySelectorAll('input');
     
     for (let i = 0; i < secDimInputs.length; i++) {
-        secDimInputs[i].value=section.Dimensions[i];              
+        secDimInputs[i].value= projUnits.SecDimConvert(section.Dimensions[i],true);              
     }
 
     //fill section material
@@ -376,7 +376,6 @@ function initSecMainWindow() {
     let secType;
 
     $('body').append(secMainWindow);
-   // document.querySelector('.main-window-container').classList.add('overlay')
     FillSecDropList();
 
     document.querySelector('#add-sec-btn').addEventListener("click",
@@ -503,7 +502,7 @@ function ModifySection(secId){
         
         section.Name = document.querySelector('#sec-name').querySelector('input').value;               
     
-        document.querySelector('#sec-dim').querySelectorAll('input').forEach(input=> secDims.push(input.valueAsNumber));      
+        document.querySelector('#sec-dim').querySelectorAll('input').forEach(input=> secDims.push( projUnits.SecDimConvert(input.valueAsNumber) ));      
         section.Dimensions = secDims;
 
         section.Material = Material.MaterialsList.get(secMatId);
@@ -522,7 +521,7 @@ function ModifySection(secId){
 function AddSection(secType) {
     let name = document.querySelector('#sec-name').querySelector('input').value;
     let dims = [];
-    document.querySelector('#sec-dim').querySelectorAll('input').forEach(input=>dims.push(input.value));
+    document.querySelector('#sec-dim').querySelectorAll('input').forEach(input => dims.push( projUnits.SecDimConvert(input.value) ));
     let matId= document.querySelector('#sec-mat').querySelector('select').value;
     let material = Material.MaterialsList.get(String(matId));
     try {
@@ -554,30 +553,3 @@ function CopySection(secId) {
    Section.SectionList.get(String(secId)).Clone();
    ReloadSecMainWindow();
 }
-
-var l;
-/*window.addEventListener("click",function(){
-    if(document.querySelector('.window-container')){
-        var windowConArray = document.querySelectorAll('.window-container');
-
-        if(!(windowConArray[windowConArray.length-1].classList.contains('overlay'))){
-            windowConArray[windowConArray.length-1].classList.add('overlay');
-            if(windowConArray.length-2>=0)windowConArray[windowConArray.length-2].classList.remove('overlay');
-            l=windowConArray.length;
-        }
-        if(l > windowConArray.length){
-            console.log(l,windowConArray.length)
-            this.document.querySelectorAll('.overlay').forEach(e=>e.classList.remove('.overlay'))
-            windowConArray[windowConArray.length-1].classList.add('overlay');
-            l = windowConArray.length;
-        }
-        /*for (let i = 0; i < windowConArray.length-2; i++) {
-            windowConArray[i].classlist.remove('overlay');            
-        }//
-        
-       
-    }
-
-}
-
-)*/

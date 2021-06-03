@@ -16,6 +16,15 @@ button{
     margin: 0px 10px 10px 10px;
 }
 
+.margin-all-20{
+    margin: 20px 20px 20px 20px;
+}
+.padding-all-0{
+    padding: 0px 0px 0px 0px;
+}
+.txt-bold{
+    font-weight: bold;
+}
 .mat-form-btn{
     display: flex;
     flex-direction: row;
@@ -45,11 +54,23 @@ button{
 .input-width{
     width: 150px;
 }
+.width-80{
+    width: 80px;
+}
+.width-100{
+    width: 100px;
+}
 .justify-center{
     justify-content:center
 }
 .justify-start{
     justify-content: start;
+}
+.justify-around{
+    justify-content: space-around;
+}
+.justify-between{
+    justify-content: space-between;
 }
 .margin-b-20{
     margin-bottom: 7px;

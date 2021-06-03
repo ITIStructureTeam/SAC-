@@ -1,5 +1,3 @@
-import { DrawLine, FrameElement } from "./main";
-
 const ELoadPatternType={
     Dead:0,
     Live:1,
@@ -36,6 +34,10 @@ class LoadPattern{
     #onElements;
     static #loadPatternsList = new Map();
     static #loadPattId = 1;
+    static #initPattern = (function(){
+        new LoadPattern('DEAD',ELoadPatternType.Dead,1);
+        new LoadPattern('LIVE',ELoadPatternType.Live,0);
+    })();
     constructor(name, type, selfWtMult){
 
         this.#id = LoadPattern.#loadPattId;
@@ -116,6 +118,9 @@ class LoadCombo {
     #cpyNo;
     static #loadCombosList = new Map();
     static #loadComboId = 1;
+    static #initLoadCombo = (function(){
+        new LoadCombo('combo1',[ { patternName:'DEAD'  , scaleFactor:1}, { patternName:'LIVE'  , scaleFactor:1} ]);
+    })();
 
     constructor(name, loadPattsInfo){
         this.#id = LoadCombo.#loadComboId;
@@ -154,7 +159,7 @@ class LoadCombo {
         this.#CheckPatterns(value);
         this.#CheckScaleFactors(value);
         this.#loadPattsInfo = value;
-        this.#PushInPattsInCombos();
+        this.#PushInPattsInCombos(value);
     }
 
     get Name(){
@@ -206,7 +211,7 @@ class LoadCombo {
             let pattName = loadPattInfo.patternName;
             let pattern = LoadPattern.LoadPatternsList.get(pattName);
             let comboIndex = pattern.InCombos.indexOf(this.Name);
-            pattern.InCombos.splice(comboIndex, comboIndex);
+            pattern.InCombos.splice(comboIndex, 1);
         }
     }
 
@@ -216,135 +221,12 @@ class LoadCombo {
     }
 }
 
-class AppliedLoadInfo{
-
-    //#frame;
-    //#patternName
-    #coordSys;
-    #dir;
-    #type
-    #shape;
-    #distance;
-    #magnitude;
-
-    //constructor(pattern, frame, coordSys , dir, type, shape, distance, magnitude)
-    constructor(coordSys , dir, type, shape, distance, magnitude){
-        //this.Frame = frame;             // FrameElement Object
-        //this.PatternName = pattern      // pattern Name
-        this.CoordSys = coordSys;       // for local (true)  for global (false)
-        this.Dir = dir;                 // 1 or 2 or 3
-        this.Type = type;               // for force (0)   for moment (1)
-        this.Shape = shape;             // for point(0)   for distr  (1)
-        this.Distance = distance;       // one number for point  |  array of two numbers for distributed    (RELATIVE DISTANCE)
-        this.Magnitude = magnitude;     // one number for point  |  array of two numbers for distributed
-    }
-    
-    /* set Frame (frame){
-
-        this.#frame = frame
-        if(frame.LoadsAssigned.has(this.PatternName)){
-            let appliedLoads = frame.LoadsAssigned.get(this.PatternName);
-            let similarLoads = appliedLoads.filter(load => (load.Shape == this.AppliedLoad.Shape && load.Type == this.AppliedLoad.Type) );
-            if(!similarLoads.length) appliedLoads.push(this.AppliedLoad);
-            else{
-                if(similarLoads[0].Shape == ELoadShape.Distributed){
-                    let index = appliedLoads.indexOf(similarLoads[0]);
-                    appliedLoads[index] = this.AppliedLoad;
-                }
-                else{
-                    let atSameDis = similarLoads.filter(simLoad => simLoad.Distance == this.AppliedLoad.Distance);
-                    if(! atSameDis.length) appliedLoads.push(this.AppliedLoad);
-                    else {
-                        let index = appliedLoads.indexOf(atSameDis[0]);
-                        appliedLoads[index] = this.AppliedLoad;
-                    }
-                }
-            }
-        }else{
-            frame.LoadsAssigned.set(this.PatternName,[this.AppliedLoad]);
-        }
-
-    }
-
-    set PatternName(name){
-        if(! LoadPattern.LoadPatternsList.has(name)) throw new TypeError('invalid load pattern');
-        this.#patternName = name;
-        let pattern = LoadPattern.LoadPatternsList.get(name);
-        if(! pattern.OnElements.includes(this.Frame.Label)) pattern.OnElements.push(this.Frame.Label);
-    } */
-
-    set CoordSys(value){
-        if (!(Object.keys(ECoordSys)[value])) throw new TypeError('Coordinate Systems accepts only true for loacal or false for global');
-        this.#coordSys = value;
-    }
-    set Dir(value){
-        if(value !== 1 || value !==2 || value !== 3) throw new TypeError('direction accepts only 1 or 2 or 3');
-        this.#dir = value
-    }
-    set Type(value){
-        if (!(Object.keys(ELoadType)[value])) throw new TypeError('laod type accepts only 0 for force or 1 for moment');
-        this.#type = value;
-    }
-    set Shape(value){
-        if (!(Object.keys(ELoadShape)[value])) throw new TypeError('load shape accepts only 0 for point or 1 for distributed');
-        this.#shape = value;
-    }
-    set Distance(value){
-        if(this.Shape == ELoadShape.Point){
-            if(isNaN(value)) throw new TypeError('distance must be a number');
-        }
-        if(this.Shape == ELoadShape.Distributed){
-            if( (! (value instanceof Array)) || value.length < 2 || value.slice(0,2).some(val=> isNaN(val)) )
-            throw new TypeError ('Distance for distributed load must be in a form of array containing two numbers');
-        }
-        this.#distance = value;
-    }
-
-    set Magnitude(value){
-        if(this.Shape == ELoadShape.Point){
-            if(isNaN(value)) throw new TypeError('Magnitude must be a number');
-        }
-        if(this.Shape == ELoadShape.Distributed){
-            if( (! (value instanceof Array)) || value.length < 2 || value.slice(0,2).some(val=> isNaN(val)) )
-            throw new TypeError ('Magnitude for distributed load must be in a form of array containing two numbers one for each distance');
-        }
-        this.#magnitude = value;
-    }
-
-   /*  get Frame(){
-        return this.#frame;
-    }
-    get PatternName(){
-        return this.#patternName
-    } */
-    
-    get CoordSys(){
-        return this.#coordSys;
-    }
-    get Dir(){
-        return this.#dir;
-    }
-    get Type(){
-        return this.#type;
-    }
-    get Shape(){
-        return this.#shape;
-    }
-    get Distance(){
-        return this.#distance;
-    }
-    get Magnitude(){
-        return this.#magnitude;
-    }
-
-}
-
 
 //#region // Loads visualization
-function ArrowOnLine(length, x,y,z, startPoint, endPoint,  direction, rz, scale = 1, local = false)
+function ArrowOnLine(length, x,y,z, startpoint, endpoint,  direction, rz, scale = 1, local = false)
 {
-    startPoint = new THREE.Vector3(startPoint[0], startPoint[1], startPoint[2]);
-    endPoint = new THREE.Vector3(endPoint[0], endPoint[1], endPoint[2]);
+    let startPoint = new THREE.Vector3(...startpoint);
+    let endPoint = new THREE.Vector3(...endpoint);
 
     const axis = new THREE.Vector3().subVectors(startPoint, endPoint).normalize(); // 1-local direction
  
@@ -359,7 +241,7 @@ function ArrowOnLine(length, x,y,z, startPoint, endPoint,  direction, rz, scale 
 
     const material = new THREE.LineBasicMaterial({color:'rgb(0,0,0)'});
  
-    const l = length *scale;
+    let l = length *scale;
     var geometry = new THREE.BufferGeometry();
     var geometry_h1 = new THREE.BufferGeometry();
     var geometry_h2 = new THREE.BufferGeometry();
@@ -479,27 +361,21 @@ function PointLoadIndication(length, relDist, startPoint, endPoint,  direction, 
 
     //to calculate relative coordinates from relative distance
     const absolDisCoord = GetAbsoluteCoord(relDist ,startPoint, endPoint);
-    const retResult = ArrowOnLine(length,absolDisCoord[0],absolDisCoord[1],absolDisCoord[2],startPoint.toArray(),endPoint.toArray(),direction,rz,scale,local);
+    const retResult = ArrowOnLine(length,absolDisCoord[0],absolDisCoord[1],absolDisCoord[2],startPoint,endPoint,direction,rz,scale,local);
 
     const load = new THREE.Group();
     load.add(retResult[0]);
 
     // load text
-    var textPosition = [retResult[1][3]+ x, retResult[1][4]+ y, retResult[1][5]+ z- 0.4*length1];
+    var textPosition = [retResult[1][3]+ absolDisCoord.x, retResult[1][4]+ absolDisCoord.y, retResult[1][5]+ absolDisCoord.z- 0.4*length];
     if(direction == 3){
-        textPosition = [retResult[1][3]+ x- 0.3*length1, retResult[1][4]+ y- 0.3*length1, retResult[1][5]+ z];
+        textPosition = [retResult[1][3]+ absolDisCoord.x- 0.3*length, retResult[1][4]+ absolDisCoord.y- 0.3*length, retResult[1][5]+ absolDisCoord.z];
     }
     else{
-        textPosition = [retResult[1][3]+ x, retResult[1][4]+ y, retResult[1][5]+ z- 0.4*length1];
+        textPosition = [retResult[1][3]+ absolDisCoord.x, retResult[1][4]+ absolDisCoord.y, retResult[1][5]+ absolDisCoord.z- 0.4*length];
     }
-    let loadText = '';
-    if(dload == 0)
-    {
-        loadText = length1;
-    }
-    else{
-        loadText = length1 + "-" + length2;
-    }
+    let loadText = length;
+
     const txt = makeTextSprite( loadText, textPosition[0], textPosition[1], textPosition[2],{fontsize: 140, fontface: "Georgia", textColor:{r:0,g:0,b:0,a:1},
         vAlign:"center", hAlign:"center"});
     load.add(txt);
@@ -576,29 +452,32 @@ function DistributedLoadIndication(length1 ,startPoint, endPoint, direction, rz 
     return load;
 }
 
-function GetAbsoluteCoord(relDist ,startPoint, endPoint){
-    startPoint = new THREE.Vector3(startPoint[0], startPoint[1], startPoint[2]);
-    endPoint = new THREE.Vector3(endPoint[0], endPoint[1], endPoint[2]);
+function GetAbsoluteCoord(relDist ,startpoint, endpoint){
+    let startPoint = new THREE.Vector3(...startpoint);
+    let endPoint = new THREE.Vector3(...endpoint);
     const frameLength = new THREE.Vector3().subVectors(startPoint, endPoint).length();
-    const axis = new THREE.Vector3().subVectors(startPoint, endPoint).normalize(); // 1-local direction
+    console.log(`frameLength = ${frameLength}`);
+    const axis = new THREE.Vector3().subVectors(endPoint,startPoint).normalize(); // 1-local direction
+    console.log(`axis = ${axis.x}`);
     const relDisCoord = axis.multiplyScalar(frameLength*relDist);
-    return new Three.Vector3().addVectors(relDisCoord,startPoint).toArray();
+    console.log(`relDisCoord = ${relDisCoord.x}`);
+    return new THREE.Vector3().addVectors(relDisCoord,startPoint).toArray();
 }
 
-function GetMaxLoad (pattern){
-    let frames = DrawLine.GetDrawnFrames();
-    let maxLoads = [];
-    for (const frame of frames) {
-        let loads = frame.LoadsAssigned.get(pattern);
-        for(const load of loads){
-            if(load.Magnitude instanceof Array){
-                let absvals = [];
-                load.Magnitude.forEach(value => absvals.push(Math.abs(value)) );
-                maxLoads.push(Math.max(...absvals));
-            } 
-            else maxLoads.push(Math.abs(load.Magnitude));
-        }
-    }
-    return Math.max(...maxLoads);
+function crossProduct(A,B) {
+    const vector = [
+       A[1] * B[2] - A[2] * B[1],
+       A[2] * B[0] - A[0] * B[2], 
+       A[0] * B[1] - A[1] * B[0]
+    ];
+    return vector;
 }
+
+function arrayEquals(a, b) {
+  return Array.isArray(a) &&
+    Array.isArray(b) &&
+    a.length === b.length &&
+    a.every((val, index) => val === b[index]);
+}
+
 //#endregion
