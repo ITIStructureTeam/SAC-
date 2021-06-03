@@ -81,152 +81,6 @@ class Commands
 // create an instance of command object 
 var commands = new Commands()
 
-// Do not undo except from frame element
-class Point
-{
-    static PointsArray = [];
-    static SelectedPoints = [];
-    static #Pointnum = 1;
-
-    constructor(point)
-    {
-        this.Shared = [];
-        this.Label = Point.#Pointnum;
-        Point.#Pointnum += 1;
-        this.Selected = false;
-        //this.position = new THREE.Vector3(point.x, point.y, poiny.z);
-        this.position = [point[0], point[1], point[2]];
-
-        var dotGeometry = new THREE.BufferGeometry();
-        dotGeometry.setAttribute( 'position', new THREE.Float32BufferAttribute( this.position, 3 ) );
-        var dotMaterial = new THREE.PointsMaterial( { size: 1, sizeAttenuation: false } );
-        this.dot = new THREE.Points( dotGeometry, dotMaterial );
-
-        // crosshair
-        var material = new THREE.LineBasicMaterial({ color: 'rgb(0,50,100)', alphaTest: 0.95, transparent : true, opacity: 0});
-        // crosshair size
-        var x = 0.3, y = 0.3;
-        var geometry = new THREE.BufferGeometry();
-        var vertices =[];  
-        vertices.push(x, y, 0);
-        vertices.push(-x, -y, 0);
-        vertices.push(0, 0, 0);
-        vertices.push(x, -y, 0); 
-        vertices.push(-x, y, 0);
-        geometry.setAttribute( 'position', new THREE.Float32BufferAttribute( vertices, 3 ) );
-
-        this.crosshair = new THREE.Line( geometry, material );
-        this.crosshair.position.x = this.position[0];
-        this.crosshair.position.y = this.position[1];
-        this.crosshair.position.z = this.position[2];
-
-        Point.PointsArray.push(this);
-
-        this.obj = BoxSnap(0.3, 0.3, 0.3);
-        this.obj.position.x = this.position[0];
-        this.obj.position.y = this.position[1];
-        this.obj.position.z = this.position[2];
-    }
-    excute(frame=null)
-    {
-        if(frame !=null){  this.Shared.push(frame); }
-        scene.add( this.dot );
-        scene.add( this.crosshair );
-        group.add(this.obj);
-    }
-    undo(frame)
-    {
-        if(frame != null){
-            this.Shared.splice(Point.PointsArray.indexOf(frame),1);
-            
-            if(this.Shared.length == 0)
-            {
-                scene.remove(this.dot); 
-                scene.remove( this.crosshair );
-                const index = Point.PointsArray.indexOf(this); 
-                Point.PointsArray.splice(index, 1);
-                group.remove(this.obj);
-            }
-        }
-    }
-    redo(frame=null)
-    {
-        if(this.Shared.length == 0)
-        {
-            scene.add( this.dot );
-            scene.add( this.crosshair );
-            Point.PointsArray.push(this);
-            group.add(this.obj);
-        }
-        if(frame != null){this.Shared.push(frame);}
-        this.InView();
-    }
-
-    remove()
-    {
-        if(this.Shared.length == 0)
-        {
-            this.position = null;
-            this.Label = null;
-            this.dot.material.dispose();
-            this.dot.geometry.dispose();
-            this.crosshair.material.dispose();
-            this.crosshair.geometry.dispose();
-            this.obj.material.dispose();
-            this.obj.geometry.dispose();
-        }
-    }
-    Highlight()
-    {
-        if(this.Selected == true)
-        { 
-            this.crosshair.material.opacity = 1;
-        }
-        else{
-            this.crosshair.material.opacity = 0;
-        }   
-    }
-    Hide()
-    {
-        scene.remove(this.dot);
-        scene.remove(this.crosshair);
-        group.remove(this.obj);
-    }
-    Show()
-    {
-        scene.add(this.dot)
-        scene.add(this.crosshair)
-        group.add(this.obj);
-    }
-    InView()
-    {
-        if(view == "XY")
-        {
-            if(this.position[2] != ViewPosition)
-            {
-                this.Hide();
-            }
-        }
-        else if(view == "XZ")
-        {
-            if(this.position[1] != ViewPosition)
-            {
-                this.Hide();
-            }
-        }
-        else if(view == "YZ")
-        {
-            if(this.position[0] != ViewPosition)
-            {
-                this.Hide();
-            }
-        }
-        else{
-            this.Show();
-        }
-    }
-}
-
 // Frame Element class
 class FrameElement
 {
@@ -295,6 +149,7 @@ class FrameElement
         this.EndPoint.redo(this.Label);
         this.Section.AssignedToFrames.push(this);
         for(let i = 0; i <this.AssociatedPoints.length; i++){
+            //group.add(this.AssociatedPoints[i]);
             this.AssociatedPoints[i].redo();
         }
     }
@@ -336,7 +191,6 @@ class FrameElement
             EndPoint:this.EndPoint
             }
     }
-
 }
 
 class DrawLine
@@ -811,8 +665,8 @@ class DrawLine
         this.Frame.remove();
     }
 
-    updateColors()   
-  {
+    updateColors()
+    {
         if(this.Selected == true)
         { 
             this.line.material.color =    {r:1,g:0.4,b:0};
@@ -871,7 +725,6 @@ class DrawLine
         }
     }
 }
-
 
 // Do not undo except from frame element
 class Point
@@ -973,20 +826,15 @@ class Point
             this.SupportIndication.geometry.dispose();
         }
     }
-
     Highlight()
     {
         if(this.Selected == true && this.Shared.length > 0)
         { 
-            this.line.material.color =    {r:1,g:0.4,b:0};
-            this.Extrude.material.color = {r:1,g:0.3,b:0};
-            this.Extrude.material.metalness = 0;
+            this.crosshair.material.opacity = 1;
         }
         else{
-            this.line.material.color = this.LineColor;
-            this.Extrude.material.metalness = 0.5;
-            this.Extrude.material.color = this.ExtrudedColor;
-        }
+            this.crosshair.material.opacity = 0;
+        }   
         
     }
 
@@ -2010,57 +1858,6 @@ function update(renderer, scene, camera, controls)
     if( secAssigned && DrawLine.SelectedLines.length){
         commands.excuteCommand( new AssignFrameSection( assignedSection ) );
         secAssigned = false
-
-
-
-
-document.getElementById('SubmitGrids').onclick = function(){SubmitGrids()};
-function SubmitGrids(){
-    ThreeD();
-    if(group != null)
-    {
-        scene.remove(group);
-        gridLines.forEach(element => {
-            element.material.dispose()
-            element.geometry.dispose()
-            scene.remove(element);
-        });
-        gridLines = [];
-        for (var i = group.children.length - 1; i >= 0; i--) {
-            group.children[i].material.dispose();
-            group.children[i].geometry.dispose();
-            group.remove(group.children[i]);
-        }
-        removeSelectionGrids();
-    }
-    const tableX = document.getElementById("grids_tableX");
-    listx = []
-    let x = 0;
-    for(let i = 1; i < tableX.rows.length; i++){
-        let temp = parseFloat(tableX.rows[i].cells[2].children[0].value);
-        if(temp > 0 && !isNaN(temp)){
-            listx[x] = temp;
-            x += 1;
-        }
-        else if(tableX.rows.length >2){
-            tableX.deleteRow(i);
-            i--;
-        }
-    }
-    const tableY = document.getElementById("grids_tableY");
-    listy = []
-    let y = 0;
-    for(let i = 1; i < tableY.rows.length; i++){
-        let temp = parseFloat(tableY.rows[i].cells[2].children[0].value);
-        if(temp > 0 && !isNaN(temp)){
-            listy[y] = temp;
-            y += 1;
-        }
-        else if(tableY.rows.length >2){
-            tableY.deleteRow(i);
-            i--;
-        }
-
     }
     if(secUpdated && !state){
         DrawLine.DrawLinesArray.forEach( drawLine=> drawLine.ReExtrude());
@@ -2085,9 +1882,11 @@ function SubmitGrids(){
         window.removeEventListener('click',ClickToSelectElement,false);
     }
 
+
     requestAnimationFrame(function(){
         update(renderer, scene, camera, controls);
     });
+
 
 }
 
@@ -2177,7 +1976,6 @@ document.querySelector('#grids-btn').addEventListener("click",function(){
 });
 
 
-
 if(gridLines == null){
     listx = [6,6,6]
     listy = [4,4,4]
@@ -2191,6 +1989,7 @@ if(gridLines == null){
         scene.add(element);
     });
 }
+
 
 
  
@@ -2623,11 +2422,6 @@ function AddPointsToFrame()
 
 
 
-
-
-// Functions to draw loads and reactions
-
-
 //#region // Results visualization
 function ResultLines(length, x,y,z, startPoint, endPoint,  direction, rz, scale = 1) // , local = false)
 {
@@ -2774,6 +2568,11 @@ function GetMaxLoad (pattern){
     }
     return Math.max(...maxLoads);
 }
+
+
+
+
+
 
 
 document.getElementById("Run").onclick=function(){Run()};
@@ -2953,5 +2752,4 @@ function Roller()
         commands.excuteCommand(new AssignRestraints(restraints));
     }
 }
-
 
