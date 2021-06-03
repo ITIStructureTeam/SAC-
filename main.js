@@ -125,7 +125,7 @@ class FrameElement
 
     set Section (value){
         this.#section = value;
-        if(! (value.AssignedToFrames.includes(this)) ) this.#section.AssignedToFrames.push(this);
+        if(! (value.AssignedToFrames.includes(this.Label)) ) this.#section.AssignedToFrames.push(this.Label);
     }
     get Section (){
         return this.#section;
@@ -133,7 +133,7 @@ class FrameElement
 
     undo()
     {
-        let frameIndex = this.Section.AssignedToFrames.indexOf(this);
+        let frameIndex = this.Section.AssignedToFrames.indexOf(this.Label);
         this.Section.AssignedToFrames.splice(frameIndex,1);
         this.StartPoint.undo(this.Label);
         this.EndPoint.undo(this.Label);
@@ -144,7 +144,7 @@ class FrameElement
 
     redo()
     {
-        this.Section.AssignedToFrames.push(this);
+        this.Section.AssignedToFrames.push(this.Label);
         this.StartPoint.redo(this.Label);
         this.EndPoint.redo(this.Label);
         this.Section.AssignedToFrames.push(this);
