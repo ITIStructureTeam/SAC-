@@ -1,5 +1,8 @@
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> 89ad9846d0ed5a5fac4ad832bc90d82ffc29c802
 //#region Section Class
 const ESectionShape = {
     Rectangular: 0,
@@ -185,6 +188,16 @@ class Section {
     
         }
     
+    }
+
+    toJSON()
+    {
+        return{
+        Name : this.Name,
+        Material : this.Material,
+        SecType:this.SecType ,
+        Dimensions:this.Dimensions,
+        PropModifiers:this.PropModifiers};
     }
     
 
