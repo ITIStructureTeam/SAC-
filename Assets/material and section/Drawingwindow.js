@@ -59,6 +59,5 @@ function FillSectionList(){
 //this function is also called in main.js when line is drawing
 function GetSelectedSection(){
     let selectedId = document.querySelector('#frameprop-sec-list').value;
-    console.log(Section.SectionList.get(selectedId))
     return Section.SectionList.get(selectedId);  
 }

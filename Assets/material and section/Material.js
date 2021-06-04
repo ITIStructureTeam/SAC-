@@ -1,4 +1,3 @@
-
 //#region MaterialClass
 
 const EmaterialType = {

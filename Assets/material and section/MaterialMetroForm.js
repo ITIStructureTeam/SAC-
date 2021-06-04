@@ -57,10 +57,10 @@ var materialWindowHtml = `
                <tbody style="height:370px;">
                 <tr>
                 
-                    <th>
+                    <td>
                         <label>Material Type</label>
-                    </th>
-                    <th>
+                    </td>
+                    <td>
                         <select 
                         id="mat-type"
                         class="input-small"
@@ -69,77 +69,77 @@ var materialWindowHtml = `
                         data-drop-height=80
                         >
                         </select>
-                    </th>        
+                    </td>        
                 </tr>
 
                    <tr>
-                       <th>
+                       <td>
                            <label for="">Name</label>
-                       </th>
-                       <th>
-                           <input id="mat-name" class="input-small" type="text" data-role="input">
-                       </th>
+                       </td>
+                       <td>
+                           <input id="mat-name" class="input-small" type="text" data-role="input" data-clear-button="false">
+                       </td>
                    </tr>
                
                    <tr >
-                       <th>
+                       <td>
                            <label for="">Elastic Modulus</label>
-                       </th>
-                       <th>
-                           <input id="mat-elastic" class="input-small" type="number" data-role="input">
-                       </th>
+                       </td>
+                       <td>
+                           <input id="mat-elastic" class="input-small" type="number" data-role="input" data-clear-button="false" data-append=${projUnits.StrenUnit}>
+                       </td>
                    </tr>
                
                    <tr>
-                       <th>
+                       <td>
                            <label for="">Density</label>
-                       </th>
-                       <th>
-                           <input id="mat-density" class="input-small" type="number" data-role="input">
-                       </th>               
+                       </td>
+                       <td>
+                           <input id="mat-density" class="input-small" type="number" data-role="input" data-clear-button="false" data-append=${projUnits.DensUnit}>
+                       </td>               
                    </tr>
                
                    <tr>
-                       <th>
+                       <td>
                            <label class="" for="">Poisson Ratio</label>
-                       </th>
-                      <th>
-                       <input id="mat-poisson" class="input-small" type="number" data-role="input">
-                      </th>
+                       </td>
+                      <td>
+                            <input id="mat-poisson" class="input-small" type="number" data-role="input" data-clear-button="false" data-append='%'>
+                      </td>
 
                    </tr>
 
                    <tr>
-                       <th>
+                       <td>
                            <label class="" for="">Thermal Expansion</label>
-                       </th>
-                      <th>
-                       <input id="mat-thermal" class="input-small" type="number" data-role="input">
-                      </th>
+                       </td>
+                      <td>
+                       <input id="mat-thermal" class="input-small" type="number" data-role="input" data-clear-button="false" data-append=${projUnits.TempUnit}>
+                      </td>
 
                    </tr>
                
                    <tr>
-                       <th>
+                       <td>
                            <label for="">Yield Strength</label>
-                       </th>
-                       <th>
-                           <input id="mat-yield" class="input-small" type="number" data-role="input">
-                       </th>           
+                       </td>
+                       <td>
+                           <input id="mat-yield" class="input-small" type="number" data-role="input" data-clear-button="false" data-append=${projUnits.StrenUnit}>
+                       </td>           
                    </tr>
                
                    <tr>
-                       <th>
+                       <td>
                            <label for="">Ultimate Strength</label>
-                       </th>
-                       <th>
-                           <input id="mat-ultimate" class="input-small" type="number" data-role="input">
-                       </th>           
+                       </td>
+                       <td>
+                           <input id="mat-ultimate" class="input-small" type="number" data-role="input" data-clear-button="false" data-append=${projUnits.StrenUnit}>
+                       </td>           
                    </tr>
                    <!--tr>
-                        <th>
+                        <td>
                             <button id="new-mat-save">Save Changes</button>
-                        </th>
+                        </td>
                     </tr-->
                </tbody>
                </table>
@@ -160,6 +160,120 @@ document.getElementById("materialsBtn").addEventListener("click",
             } 
         }          
 );
+
+function GetMaterialWin() {
+    return `
+
+    <div
+    class="secondary-window"
+    id="mat-define-window"
+    data-role="window"
+    data-title="Material properties"
+    data-btn-min="false"
+    data-btn-max="false"
+    data-resizable="false"
+    data-place="center"
+    data-width="375">
+    
+       <table class="table compact" id="mat-form">
+       <tbody style="height:370px;">
+        <tr>
+        
+            <td>
+                <label>Material Type</label>
+            </td>
+            <td>
+                <select 
+                id="mat-type"
+                class="input-small"
+                data-role="select"
+                data-filter="false"
+                data-drop-height=80
+                >
+                </select>
+            </td>        
+        </tr>
+
+           <tr>
+               <td>
+                   <label for="">Name</label>
+               </td>
+               <td>
+                   <input id="mat-name" class="input-small" type="text" data-role="input" data-clear-button="false">
+               </td>
+           </tr>
+       
+           <tr >
+               <td>
+                   <label for="">Elastic Modulus</label>
+               </td>
+               <td>
+                   <input id="mat-elastic" class="input-small" type="number" data-role="input" data-clear-button="false" data-append=${projUnits.StrenUnit}>
+               </td>
+           </tr>
+       
+           <tr>
+               <td>
+                   <label for="">Density</label>
+               </td>
+               <td>
+                   <input id="mat-density" class="input-small" type="number" data-role="input" data-clear-button="false" data-append=${projUnits.DensUnit}>
+               </td>               
+           </tr>
+       
+           <tr>
+               <td>
+                   <label class="" for="">Poisson Ratio</label>
+               </td>
+              <td>
+                    <input id="mat-poisson" class="input-small" type="number" data-role="input" data-clear-button="false" data-append='%'>
+              </td>
+
+           </tr>
+
+           <tr>
+               <td>
+                   <label class="" for="">Thermal Expansion</label>
+               </td>
+              <td>
+               <input id="mat-thermal" class="input-small" type="number" data-role="input" data-clear-button="false" data-append=${projUnits.TempUnit}>
+              </td>
+
+           </tr>
+       
+           <tr>
+               <td>
+                   <label for="">Yield Strength</label>
+               </td>
+               <td>
+                   <input id="mat-yield" class="input-small" type="number" data-role="input" data-clear-button="false" data-append=${projUnits.StrenUnit}>
+               </td>           
+           </tr>
+       
+           <tr>
+               <td>
+                   <label for="">Ultimate Strength</label>
+               </td>
+               <td>
+                   <input id="mat-ultimate" class="input-small" type="number" data-role="input" data-clear-button="false" data-append=${projUnits.StrenUnit}>
+               </td>           
+           </tr>
+           <!--tr>
+                <td>
+                    <button id="new-mat-save">Save Changes</button>
+                </td>
+            </tr-->
+       </tbody>
+       </table>
+
+       <div style="text-align: center;">
+            <button id="new-mat-save"  class="button info">Save Changes</button>
+            <button id="new-mat-close"  class="button info">Close</button>
+        </div>
+    </div>
+
+`
+}
 
 function InitMatMainWindow(){
 
@@ -203,7 +317,7 @@ function InitMatMainWindow(){
 }
 
 function InitAddMaterialWindow(){
-    $('body').append(materialWindowHtml);
+    $('body').append(GetMaterialWin());
     FillMaterialType(); 
 }
 
@@ -224,8 +338,7 @@ function FillMaterialType(){
 }
 
 function ReloadMaterialWindow(){
-    //$('#mat-main-window')[0].parentElement.parentElement.remove();
-    //InitMatMainWindow();
+
     document.querySelector('#mat-list').remove();
     $('#mat-list-container').append(`
         <ul data-role="listview" id="mat-list">
@@ -241,23 +354,23 @@ function LoadMaterialData(){
     let selectedMaterial = Material.MaterialsList.get(String(selectedKey));
     $('#mat-type').val(selectedMaterial.MaterialType);
     $('#mat-name').val(selectedMaterial.Name);
-    $('#mat-elastic').val(selectedMaterial.ElasticModulus);
-    $('#mat-density').val(selectedMaterial.Weight);
+    $('#mat-elastic').val(projUnits.StrenConvert(selectedMaterial.ElasticModulus,true));
+    $('#mat-density').val(projUnits.DensConvert(selectedMaterial.Weight,true));
     $('#mat-poisson').val(selectedMaterial.Poisson);
     $('#mat-thermal').val(selectedMaterial.ThermalExpansion);
-    $('#mat-yield').val(selectedMaterial.Strength[0]);
-    $('#mat-ultimate').val(selectedMaterial.Strength[1]);
+    $('#mat-yield').val(projUnits.StrenConvert(selectedMaterial.Strength[0],true));
+    $('#mat-ultimate').val(projUnits.StrenConvert(selectedMaterial.Strength[1],true));
 }
 
 function AddNewMaterial(){
     let type = document.querySelector('#mat-type').value;
     let name = document.querySelector('#mat-name').value;
-    let elastic = document.querySelector('#mat-elastic').valueAsNumber;
-    let density = document.querySelector('#mat-density').valueAsNumber;
+    let elastic = projUnits.StrenConvert(document.querySelector('#mat-elastic').valueAsNumber) ;
+    let density = projUnits.DensConvert(document.querySelector('#mat-density').valueAsNumber) ;
     let poisson = document.querySelector('#mat-poisson').valueAsNumber;
     let thermal = document.querySelector('#mat-thermal').valueAsNumber;
-    let yield = document.querySelector('#mat-yield').valueAsNumber;
-    let ultimate = document.querySelector('#mat-ultimate').valueAsNumber;
+    let yield = projUnits.StrenConvert(document.querySelector('#mat-yield').valueAsNumber) ;
+    let ultimate = projUnits.StrenConvert(document.querySelector('#mat-ultimate').valueAsNumber) ;
     try{
         if($('#mat-define-window')[0].querySelector('p')) $('#mat-define-window')[0].querySelector('p').remove();
         var mat = new Material(name,density,elastic,poisson,thermal,type,[yield,ultimate]);
@@ -275,12 +388,13 @@ function ModifyMaterial(){
     if($('#mat-define-window')[0].querySelector('p')) $('#mat-define-window')[0].querySelector('p').remove();
     try{    
         selectedMaterial.Name = document.querySelector('#mat-name').value;
-        selectedMaterial.Weight = document.querySelector('#mat-density').valueAsNumber;
-        selectedMaterial.ElasticModulus = document.querySelector('#mat-elastic').valueAsNumber;
+        selectedMaterial.Weight = projUnits.DensConvert(document.querySelector('#mat-density').valueAsNumber) ;
+        selectedMaterial.ElasticModulus = projUnits.StrenConvert(document.querySelector('#mat-elastic').valueAsNumber) ;
         selectedMaterial.Poisson=document.querySelector('#mat-poisson').valueAsNumber;
         selectedMaterial.ThermalExpansion=document.querySelector('#mat-thermal').valueAsNumber;
         selectedMaterial.MaterialType = document.querySelector('#mat-type').value;
-        let strength = [document.querySelector('#mat-yield').valueAsNumber, document.querySelector('#mat-ultimate').valueAsNumber];
+        let strength = [projUnits.StrenConvert(document.querySelector('#mat-yield').valueAsNumber),
+                        projUnits.StrenConvert(document.querySelector('#mat-ultimate').valueAsNumber) ];
         selectedMaterial.Strength = strength;
         ReloadMaterialWindow();
         $('#mat-define-window')[0].parentElement.parentElement.remove();
@@ -321,20 +435,3 @@ function ActivateEditButtons() {
         }
     }
 }
-
-/*window.addEventListener("click",function(){
-
-    if(document.querySelector('.window-container')){   
-        document.querySelector('.window-container').classList.add('overlay');
-        if(document.querySelector('.secondary-window-container')){
-            document.querySelectorAll('.overlay').forEach(e => e.classList.remove('overlay'));
-            document.querySelector('.secondary-window-container').classList.add('overlay');
-    
-            if(document.querySelector('.ter-window-container')){
-                document.querySelectorAll('.overlay').forEach(e => e.classList.remove('overlay'));
-                document.querySelector('.ter-window-container').classList.add('overlay');
-            }
-        }       
-    }
-   
-});*/

@@ -2,20 +2,13 @@ import {MapControls} from './Assets/Three.js files/OrbitControls.js'
 import { DoubleSide } from './Assets/Three.js files/three.module.js';
 
 // Global variables for init function
-var group,
- gridLines,
- scene,
- camera,
- controls,
+var
  raycaster,
  mouse,
  stats,
  renderer,
  ViewPosition;  
 
- var listx;                // x- axis list grids
- var listy;                // y- axis list grids
- var listz;                // z- axis list grids
  
  var HiddenGrids = [];
  var HiddenSnapping = []; 
@@ -24,7 +17,6 @@ var group,
  
  var DrawingModeActive = false;
  var SelectionModeActive;
- var DESCENDER_ADJUST = 1;        // Constant relating to text boarder box height for lables
  var state = true;                // if false then the geometery will be extruded .. a global variable as it is used in mamy functions / classes
 
  var view;
@@ -36,375 +28,6 @@ var group,
 //                                                                 //
 //** Note: this work is for exploration and must be restructured !!//
 //_________________________________________________________________//
-
-
-//#region MaterialClass
-
-const EmaterialType = {
-    Concrete: 0,
-    Steel: 1
-};
-Object.freeze(EmaterialType);
-
-
-
-class Material {
-
-    //#region private variables
-    #_name;
-    #_weight;
-    #_elasticModulus;
-    #_poisson;
-    #_thermalExpansion;
-    #_materialType;
-    #_strength;
-    #_assignedToSections;
-    #_id;
-    #_cpyNo
-    static #_materialId=1;
-    static #_materialsList=new Map();
-    //#endregion
-
-    static #InitiateMaterialList = (function(){
-        new Material("Concrete",25,4400,0.2,5e-9,EmaterialType.Concrete,[30]);
-        new Material("Steel",78.5,2100,0.3,5e-9,EmaterialType.Steel,[240,360]);
-    })();
-
-    constructor(
-        name="mat", weight=25, elasticModulus=4400 , poisson=0.2 , thermalExpansion=5e-9 , materialType=0 , strength=[25] ){
-        this.#_id = Material.#_materialId;
-        this.Name = name;
-        this.Weight = weight;
-        this.ElasticModulus = elasticModulus;
-        this.Poisson = poisson;
-        this.ThermalExpansion = thermalExpansion;
-        this.MaterialType = materialType;
-        this.Strength = strength;
-        this.#_assignedToSections = new Array();
-        this.#_cpyNo = 0 ;
-        Material.#_materialsList.set(String(this.#_id), this);
-        Material.#_materialId++;
-    }
-
-    //#region Setters and Getters
-    set Name(value) {
-        if (typeof value != "string" && !(value instanceof String))
-            throw new TypeError("Section Name must be string");
-
-            let matching;
-            for (const material of Material.#_materialsList.values()) {
-                if(material.Name == value){
-                    matching = material;
-                    break;
-                }
-            }
-
-            if(!matching) 
-                this.#_name=value;
-            else{
-                if(matching.#_id != this.#_id)
-                    throw new Error("There is another material having the same name");
-                this.#_name=value;
-            }
-    }
-
-    get Name() {
-        return this.#_name;
-    }
-
-    set Weight(value) {
-        if (isNaN(value))
-            throw new TypeError("material Weight must be Number");
-        if (value <= 0)
-            throw new Error("Material Weight must be Positive number");
-
-        this.#_weight = value;
-    }
-    get Weight() {
-        return this.#_weight;
-    }
-
-    set ElasticModulus(value) {
-        if (isNaN(value))
-            throw new TypeError("Elastic Modulus must be Number");
-        if (value <= 0)
-            throw new Error("Material Elastic Modulus must be Positive number");
-        this.#_elasticModulus = value;
-    }
-    get ElasticModulus() {
-        return this.#_elasticModulus;
-    }
-
-    set Poisson(value) {
-        if (isNaN(value))
-            throw new TypeError("Poisson`s ratio must be Number");
-        if (value <= 0 || value>1)
-            throw new Error("Material Poissin ratio must be betwee 0 and 1");
-
-        this.#_poisson = value;
-    }
-    get Poisson() {
-        return this.#_poisson;
-    }
-
-    set ThermalExpansion(value) {
-        if (isNaN(value))
-            throw new TypeError("Thermal Expansion must be Number");
-        this.#_thermalExpansion = value;
-    }
-    get ThermalExpansion() {
-        return this.#_thermalExpansion;
-    }
-
-    set MaterialType(value) {
-        if (!(Object.keys(EmaterialType)[value]))
-            throw new TypeError("Material Type must be one of those in Material Type Enum");
-
-        this.#_materialType = value;
-    }
-    get MaterialType() {
-        return this.#_materialType;
-    }
-
-    set Strength(value) {
-        if (!(value instanceof Array))
-            throw new TypeError("material strength must be input as array");
-
-        if(this.MaterialType == EmaterialType.Concrete)
-        {
-            if(isNaN(value[0]) || value[0] <=0)
-                throw new Error("material strengths must be positive numbers");
-        }
-        if (this.MaterialType == EmaterialType.Steel){
-            if(value.slice(0,2).some(val => isNaN(val) || val <= 0))
-                throw new Error("material strengths must be positive numbers");
-        } 
-
-        this.#_strength = value;
-    }
-
-    get Strength() {
-        return this.#_strength;
-    }
-
-    static get MaterialsList() {
-        return Material.#_materialsList;
-    }
-
-    get AssignedToSections() {
-        return this.#_assignedToSections;
-    }
-
-    get ID(){
-        return this.#_id;
-    }
-    //#endregion
-
-
-    Delete() {
-        if (this.#_assignedToSections.length != 0)
-            throw new Error("this material is assigned to section(s)");
-        Material.#_materialsList.delete(String(this.#_id));
-    }
-
-    Clone() {
-        this.#_cpyNo++;
-        return new Material(this.Name +" - " +this.#_cpyNo, this.Weight, this.ElasticModulus, this.Poisson, this.ThermalExpansion, this.MaterialType, this.Strength);
-    }
-
-}
-//#endregion
-
-//#region Section Class
-const ESectionShape = {
-    Rectangular: 0,
-    Circular: 1,
-    ISec: 2,
-    TSec: 3,
-    Tapered:4
-}
-
-Object.freeze(ESectionShape);
-
-
-class Section {
-
-    #name;
-    #cpyNo;
-    #id;
-    #material;
-    #secType;
-    #dimensions;
-    #propModifiers;
-    #assignedToFrames
-    static #sectionId=1;
-    static #secList = new Map();
-
-    static #DefaultSections = (function(){
-        new Section('Fsec1',Material.MaterialsList.get('1'),ESectionShape.Rectangular,[0.5,0.5],[0.7,0.5,0.01,1,1,1,1,1] );
-        new Section('Fsec2',Material.MaterialsList.get('2'),ESectionShape.ISec,[0.360,0.170,0.0127,0.008,0.170,0.0127]);
-    })();
-
-    constructor(name, material, secType, dimensions, modifiers=[1,1,1,1,1,1,1,1]) {
-        this.#id=Section.#sectionId;
-        this.Name=name;
-        this.#cpyNo=0;
-        this.Material=material;
-        this.SecType=secType;
-        this.Dimensions=dimensions;
-        this.PropModifiers=modifiers;
-        this.#material.AssignedToSections.push(this);
-        this.#assignedToFrames= []
-        Section.#secList.set(String(this.#id), this);
-        Section.#sectionId++;
-    }
-
-    set Name(value) {
-        if (typeof value != "string" && !(value instanceof String))
-            throw new TypeError("Section Name must be string");
-
-        let matching;
-        for (const section of Section.SectionList.values()) {
-            if(section.Name == value){
-                matching = section;
-                break;
-                }
-            }
-
-        if(!matching) 
-            this.#name=value;
-        else{
-            if(matching.ID != this.ID)
-                throw new Error("There is another section having the same name");
-            this.#name=value;
-        }
-
-    }
-
-    set Material(value) {
-        if (!(value instanceof Material))
-            throw new TypeError("Material isnot of correct type");
-        this.#material = value;
-    }
-
-    set SecType(value) {
-        if (!(Object.keys(ESectionShape)[value]))
-            throw new TypeError("Section Type must be one of those in Section Shape Enum");
-        this.#secType = value;
-    }
-
-    set Dimensions(value) {
-
-        if (!(value instanceof Array))
-            throw new TypeError("Section Dimensions must be in form of array");
-
-        this.#ValidateDimenions(this.SecType,value);
-
-        this.#dimensions=value;
-    }
-
-    set PropModifiers(value){
-
-        if (!(value instanceof Array))
-            throw new TypeError("Section Modifiers must be in form of array");
-        if(value.length<8)
-            throw new Error("Section Modifiers must be in form of array containing eight numbers");
-
-        if (value.slice(0,8).some(modifier => isNaN(modifier) || modifier < 0 || modifier>1))
-            throw new TypeError("Section Modifiers must be between zero and one");
-
-        this.#propModifiers=value;
-
-    }
-
-    get Name(){
-        return this.#name;
-    }
-
-    get Material(){
-        return this.#material;
-    }
-
-    get SecType() {
-        return this.#secType;
-    }
-
-    get Dimensions(){
-        return this.#dimensions;
-    }
-
-    get PropModifiers(){
-        return this.#propModifiers;
-    }
-
-    get ID(){
-        return String(this.#id);
-    }
-
-    get AssignedToFrames(){
-        return this.#assignedToFrames;
-    }
-
-    static get SectionList(){
-        return Section.#secList;
-    }
-
-    Clone(){
-        this.#cpyNo++;
-        return new Section(this.Name+" - "+this.#cpyNo,this.Material,this.SecType,this.Dimensions,this.PropModifiers);
-    }
-
-    Delete(){
-        if(this.AssignedToFrames.length) throw new Error('this section is assigned to frame/s');
-        else{
-            let secIndex = this.Material.AssignedToSections.indexOf(this);
-            this.Material.AssignedToSections.splice(secIndex,secIndex);
-            Section.#secList.delete(this.ID);
-        }
-        
-    }
-
-    #ValidateDimenions(sectionType, dimArray) {
-
-        if (sectionType == ESectionShape.Rectangular )
-        {
-            if(dimArray.length < 2 || dimArray.slice(0,2).some(val=> isNaN(val) || val<=0))
-                throw new Error("Rectangular Sections must be instantiated with 2 dimensions");
-    
-        }
-    
-        if (sectionType == ESectionShape.Circular)
-        {
-            if(dimArray.length < 1 || dimArray.slice(0,1).some(val=> isNaN(val) || val<=0))
-                throw new Error("Circular Sections must be instantiated with 1 dimension");
-        }
-            
-    
-        if (sectionType == ESectionShape.ISec) {
-    
-            
-            if(dimArray.length < 6 || dimArray.slice(0,6).some(val=> isNaN(val) || val<=0))
-                throw new Error("I Sections must be instantiated with 6 dimensions");
-    
-            if (dimArray[0] <= dimArray[2] + dimArray[5] || dimArray[1] <= dimArray[3] || dimArray[4] < dimArray[3])
-                throw new Error("Input dimensions are not valid to instantiate I-Section");
-    
-        }
-    
-        if (sectionType == ESectionShape.TSec) {
-    
-            if(dimArray.length < 4 || dimArray.slice(0,4).some(val=> isNaN(val) || val<=0))
-                throw new Error("T Sections must be instantiated with 4 dimensions");
-            if (dimArray[0] <= dimArray[2] || dimArray[1] <= dimArray[3])
-                throw new Error("Input dimensions are not valid to instantiate T-Section");
-    
-        }
-    
-    }
-    
-
-}
-//#endregion
 
 
 // Command main class
@@ -461,17 +84,19 @@ var commands = new Commands()
 // Frame Element class
 class FrameElement
 {
+    #section;
     static #num = 1;
     constructor(points, crossSection)
     {
         this.Label = FrameElement.#num;
         this.Section = crossSection ;
-        this.Section.AssignedToFrames.push(this);
         var startPosition = [points[0], points[1], points[2]];
         var endPosition = [points[3], points[4], points[5]];
         this.StartPoint;
         this.EndPoint;
+        this.Rotation = 0;
         this.AssociatedPoints = [];
+        this.LoadsAssigned = new Map();
         FrameElement.#num++;
 
         for(let i = 0; i < Point.PointsArray.length; i++)
@@ -499,11 +124,20 @@ class FrameElement
         } 
     }
 
+    set Section (value){
+        this.#section = value;
+        if(! (value.AssignedToFrames.includes(this.Label)) ) this.#section.AssignedToFrames.push(this.Label);
+    }
+    get Section (){
+        return this.#section;
+    }
+
     undo()
     {
+        let frameIndex = this.Section.AssignedToFrames.indexOf(this.Label);
+        this.Section.AssignedToFrames.splice(frameIndex,1);
         this.StartPoint.undo(this.Label);
         this.EndPoint.undo(this.Label);
-        //FrameElement.#num--;
         for(let i = 0; i <this.AssociatedPoints.length; i++){
             this.AssociatedPoints[i].undo();
         }
@@ -511,10 +145,11 @@ class FrameElement
 
     redo()
     {
+        this.Section.AssignedToFrames.push(this.Label);
         this.StartPoint.redo(this.Label);
         this.EndPoint.redo(this.Label);
+        this.Section.AssignedToFrames.push(this);
         for(let i = 0; i <this.AssociatedPoints.length; i++){
-            //group.add(this.AssociatedPoints[i]);
             this.AssociatedPoints[i].redo();
         }
     }
@@ -524,9 +159,8 @@ class FrameElement
         this.Label = null;
         this.StartPoint.remove();
         this.EndPoint.remove();
-        let frameIndex = this.Sections.AssignedToFrames.indexOf(this);
-        this.Sections.AssignedToFrames.splice(frameIndex,frameIndex);
-        this.Section = null;
+        // let frameIndex = this.Sections.AssignedToFrames.indexOf(this);
+        // this.Sections.AssignedToFrames.splice(frameIndex,1);
         for(let i = 0; i <this.AssociatedPoints.length; i++){
             this.AssociatedPoints[i].remove();
         }
@@ -547,6 +181,18 @@ class FrameElement
             this.AssociatedPoints.push(obj);
         }
     }
+
+
+    toJSON()
+    {
+        return{Label:this.Label,
+            Section:this.Section,
+            StartPoint:this.StartPoint,
+            EndPoint:this.EndPoint,
+            Rotation:this.Rotation * 180/Math.PI,
+            Loads:this.LoadsAssigned
+            }
+    }
 }
 
 class DrawLine
@@ -559,6 +205,7 @@ class DrawLine
     #name;
     static #drawLinesArray = new Array();
     static SelectedLines = [];
+
     constructor(frame)
     { 
         this.#frame=frame;
@@ -567,8 +214,8 @@ class DrawLine
         this.#SetLabel();
         this.#SetName();
         this.#SetExtrude();
-        this.ExtrudedColor = this.Extrude.material.color;
-        this.LineColor = this.line.material.color;
+        this.ExtrudedColor = this.#extrude.material.color;
+        this.LineColor = this.#line.material.color;
         this.Selected = false;
 
         if(state == true) 
@@ -580,7 +227,6 @@ class DrawLine
             this.Extrude.visible = true;
             this.line.visible = false;
         }
-        //UsedSections();
 
     }
 
@@ -632,7 +278,8 @@ class DrawLine
         let geometry;
         const material =  new THREE.MeshStandardMaterial({
             metalness:0.5,
-            //side: THREE.DoubleSide,
+            transparent:true,
+            opacity:0.8,
             color:'rgb(0,0,185)',
             roughness:0.5
         });       
@@ -806,6 +453,7 @@ class DrawLine
         this.#extrude = new THREE.Mesh( geometry, material);
         this.#extrude.position.set(points[0].x,points[0].y,points[0].z);
         this.#extrude.lookAt(points[1])
+        this.#extrude.rotation.z = this.#frame.Rotation;
 
         // if(points[1] - points[4] != 0 && points[2]-points[5] == 0 && points[0]-points[3] == 0){
         //     this.#extrude.material.color.setHex(0xa200ab);
@@ -940,6 +588,34 @@ class DrawLine
         let selectedFrames = [];
         DrawLine.SelectedLines.forEach(selLine=>selectedFrames.push(selLine.Frame));
         return selectedFrames;
+    }
+
+    ReExtrude(){
+        scene.remove(this.#extrude);
+        this.#SetExtrude();
+        scene.add(this.#extrude);
+        if(state == true) 
+        {
+            this.#extrude.visible = false;
+            this.line.visible = true;
+        }else{
+            
+            this.#extrude.visible = true;
+            this.line.visible = false;
+        }
+        this.updateColors();
+    }
+
+    ReSetSecName(){
+        scene.remove(this.name)
+        let SpritePosition = [(this.Frame.EndPoint.position[0]-this.Frame.StartPoint.position[0])/3, (this.Frame.EndPoint.position[1]-this.Frame.StartPoint.position[1])/3, (this.Frame.EndPoint.position[2]-this.Frame.StartPoint.position[2])/3];
+        this.#name = makeTextSprite
+        ( 
+        this.Frame.Section.Name, SpritePosition[0]+this.Frame.StartPoint.position[0]+0.2, SpritePosition[1]+this.Frame.StartPoint.position[1], SpritePosition[2]+this.Frame.StartPoint.position[2]-0.2,
+        {fontsize: 120, fontface: "Georgia", textColor:{r:160, g:160, b:160, a:1.0},
+        vAlign:"center", hAlign:"center", fillColor:{r:255, g:255, b:255, a:1.0},
+        borderColor: {r:0, g:0, b:0, a:1.0}, borderThickness: 1, radius:30}
+        );
     }
 
     excute()
@@ -1163,7 +839,9 @@ class Point
         else{
             this.crosshair.material.opacity = 0;
         }   
+        
     }
+
     Hide()
     {
         scene.remove(this.dot);
@@ -1236,6 +914,227 @@ class Point
 }
 
 
+class AppliedLoadInfo{
+
+    //#frame;
+    //#patternName
+    #coordSys;
+    #dir;
+    #type
+    #shape;
+    #distance;
+    #magnitude;
+
+    //constructor(pattern, frame, coordSys , dir, type, shape, distance, magnitude)
+    constructor(coordSys , dir, type, shape, distance, magnitude){
+        //this.Frame = frame;             // FrameElement Object
+        //this.PatternName = pattern      // pattern Name
+        this.CoordSys = coordSys;       // for local (true)  for global (false)
+        this.Dir = dir;                 // 1(x) or 2(z) or 3(y)
+        this.Type = type;               // for force (0)   for moment (1)
+        this.Shape = shape;             // for point(0)   for distr  (1)
+        this.Distance = distance;       // one number for point  |  array of two numbers for distributed    (RELATIVE DISTANCE)
+        this.Magnitude = magnitude;     // one number for point  |  array of two numbers for distributed
+    }
+    
+    /* set Frame (frame){
+
+        this.#frame = frame
+        if(frame.LoadsAssigned.has(this.PatternName)){
+            let appliedLoads = frame.LoadsAssigned.get(this.PatternName);
+            let similarLoads = appliedLoads.filter(load => (load.Shape == this.AppliedLoad.Shape && load.Type == this.AppliedLoad.Type) );
+            if(!similarLoads.length) appliedLoads.push(this.AppliedLoad);
+            else{
+                if(similarLoads[0].Shape == ELoadShape.Distributed){
+                    let index = appliedLoads.indexOf(similarLoads[0]);
+                    appliedLoads[index] = this.AppliedLoad;
+                }
+                else{
+                    let atSameDis = similarLoads.filter(simLoad => simLoad.Distance == this.AppliedLoad.Distance);
+                    if(! atSameDis.length) appliedLoads.push(this.AppliedLoad);
+                    else {
+                        let index = appliedLoads.indexOf(atSameDis[0]);
+                        appliedLoads[index] = this.AppliedLoad;
+                    }
+                }
+            }
+        }else{
+            frame.LoadsAssigned.set(this.PatternName,[this.AppliedLoad]);
+        }
+
+    }
+
+    set PatternName(name){
+        if(! LoadPattern.LoadPatternsList.has(name)) throw new TypeError('invalid load pattern');
+        this.#patternName = name;
+        let pattern = LoadPattern.LoadPatternsList.get(name);
+        if(! pattern.OnElements.includes(this.Frame.Label)) pattern.OnElements.push(this.Frame.Label);
+    } */
+
+    set CoordSys(value){
+        if (!(Object.values(ECoordSys).includes(value))) throw new TypeError('Coordinate Systems accepts only true for loacal or false for global');
+        this.#coordSys = value;
+    }
+    set Dir(value){
+        if(value !== 1 && value !==2 && value !== 3) throw new TypeError('direction accepts only 1 or 2 or 3');
+        this.#dir = value
+    }
+    set Type(value){
+        if (!(Object.values(ELoadType).includes(value))) throw new TypeError('laod type accepts only 0 for force or 1 for moment');
+        this.#type = value;
+    }
+    set Shape(value){
+        if (!(Object.values(ELoadShape).includes(value))) throw new TypeError('load shape accepts only 0 for point or 1 for distributed');
+        this.#shape = value;
+    }
+    set Distance(value){
+        if(this.Shape == ELoadShape.Point){
+            if(isNaN(value)) throw new TypeError('distance must be a number');
+        }
+        if(this.Shape == ELoadShape.Distributed){
+            if( (! (value instanceof Array)) || value.length < 2 || value.slice(0,2).some(val=> isNaN(val)) )
+            throw new TypeError ('Distance for distributed load must be in a form of array containing two numbers');
+        }
+        this.#distance = value;
+    }
+
+    set Magnitude(value){
+        if(this.Shape == ELoadShape.Point){
+            if(isNaN(value)) throw new TypeError('Magnitude must be a number');
+        }
+        if(this.Shape == ELoadShape.Distributed){
+            if( (! (value instanceof Array)) || value.length < 2 || value.slice(0,2).some(val=> isNaN(val)) )
+            throw new TypeError ('Magnitude for distributed load must be in a form of array containing two numbers one for each distance');
+        }
+        this.#magnitude = value;
+    }
+
+   /*  get Frame(){
+        return this.#frame;
+    }
+    get PatternName(){
+        return this.#patternName
+    } */
+    
+    get CoordSys(){
+        return this.#coordSys;
+    }
+    get Dir(){
+        return this.#dir;
+    }
+    get Type(){
+        return this.#type;
+    }
+    get Shape(){
+        return this.#shape;
+    }
+    get Distance(){
+        return this.#distance;
+    }
+    get Magnitude(){
+        return this.#magnitude;
+    }
+
+}
+
+
+class AssignFrameLoad{
+
+    constructor(lines, pattern, appliedLoadInfo){
+
+        this.Lines = [...lines];                //array of DrawLine objects                 
+        this.PrevLoads = [];                    //array containing previous LoadsAssigned for each frame
+        this.Lines.forEach(line => this.PrevLoads.push(line.Frame.LoadsAssigned));
+        this.Pattern = pattern;                 //pattern name
+        this.PrevPatternOnElements = LoadPattern.LoadPatternsList.get(this.Pattern).OnElements
+        this.AppliedLoad = appliedLoadInfo;     //instance of AppliedLoadInfo Class
+    }
+
+    excute(){
+        this.#PushInFrameLoadsAssigned();
+        this.#PushInPatternOnElements();
+        //draw...        
+        for (const line of this.Lines) {
+            const load = this.DrawLoad(this.AppliedLoad.Shape,line);
+            line.load = load;
+            scene.add(load);
+        }
+        console.log(DrawLine.DrawLinesArray)
+    }
+
+    undo(){
+        for (let i = 0; i < this.Frames.length; i++) {
+            this.Frames[i].LoadsAssigned = this.PrevLoads[i];
+        }
+        LoadPattern.LoadPatternsList.get(this.Pattern).OnElements = this.PrevPatternOnElements;
+    }
+
+    redo(){
+        excute();
+    }
+
+    #PushInFrameLoadsAssigned(){
+
+        for (const line of this.Lines) {
+            if(line.Frame.LoadsAssigned.has(this.Pattern)){
+                let appliedLoads = line.Frame.LoadsAssigned.get(this.Pattern);
+                let similarLoads = appliedLoads.filter(load => (load.Shape == this.AppliedLoad.Shape && load.Type == this.AppliedLoad.Type) );
+                if(!similarLoads.length) appliedLoads.push(this.AppliedLoad);
+                else{
+                    if(similarLoads[0].Shape == ELoadShape.Distributed){
+                        let index = appliedLoads.indexOf(similarLoads[0]);
+                        appliedLoads[index] = this.AppliedLoad;
+                    }
+                    else{
+                        let atSameDis = similarLoads.filter(simLoad => simLoad.Distance == this.AppliedLoad.Distance);
+                        if(! atSameDis.length) appliedLoads.push(this.AppliedLoad);
+                        else {
+                            let index = appliedLoads.indexOf(atSameDis[0]);
+                            appliedLoads[index] = this.AppliedLoad;
+                        }
+                    }
+                }
+            }else{
+                line.Frame.LoadsAssigned.set(this.Pattern,[this.AppliedLoad]);
+            }
+        }
+    }
+
+    #PushInPatternOnElements(){
+        let pattern = LoadPattern.LoadPatternsList.get(this.Pattern);
+        for (const line of this.Lines) {
+            if(!pattern.OnElements.includes(line.Frame.Label)) pattern.OnElements.push(line.Frame.Label);
+        }
+    }
+
+    DrawLoad(shape, line){
+        const scale = 1.25 / GetMaxLoad(this.Pattern);
+        const startPoint = line.Frame.StartPoint.position;
+        const endPoint = line.Frame.EndPoint.position;
+        const magnitudes = this.AppliedLoad.Magnitude;
+        const dir = this.AppliedLoad.Dir;
+        const coordSys = this.AppliedLoad.CoordSys;       
+        const relDist = this.AppliedLoad.Distance;
+        let load;
+        switch(shape){
+            case ELoadShape.Distributed:
+                
+                const loadPos1 = GetAbsoluteCoord(relDist[0] ,startPoint, endPoint);
+                const loadPos2 = GetAbsoluteCoord(relDist[1] ,startPoint, endPoint);
+                console.log(loadPos1, loadPos2)
+                load=DistributedLoadIndication(magnitudes[0] ,loadPos1, loadPos2, dir, 0, scale, magnitudes[1], coordSys);
+
+                break;
+            case ELoadShape.Point:
+                load=PointLoadIndication (magnitudes, relDist, startPoint, endPoint,  dir, 0, scale , coordSys);
+                break;
+        }
+        return load;
+    }
+}
+
+
+
 class Delete
 {
     constructor(selected)
@@ -1276,6 +1175,38 @@ class Delete
         }
     }
 }
+
+
+class AssignFrameSection{
+    constructor(section){
+        this.selectedFrames = DrawLine.GetSelectedFrames();
+        this.selectedLines = [...DrawLine.SelectedLines];
+        this.prevSections = [];
+        this.newSection = section;
+        this.selectedFrames.forEach(frame=>this.prevSections.push(frame.Section));
+    }
+
+    excute(){
+        this.selectedFrames.forEach(frame => frame.Section = this.newSection);
+        this.selectedLines.forEach(drawLine=>drawLine.ReExtrude());
+    }
+    undo(){
+        for (let i = 0; i < this.selectedFrames.length; i++) {
+            this.selectedFrames[i].Section = this.prevSections[i] ;          
+        }
+        this.selectedLines.forEach(drawLine=>drawLine.ReExtrude());
+    }
+    redo(){
+        this.excute();
+    } 
+    remove(){
+        this.selectedFrames = null
+        this.selectedLines = null
+        this.prevSections = null
+        this.newSection = null
+    }  
+}
+
 
 class Copy
 {
@@ -1439,6 +1370,51 @@ class AssignRestraints
     }
 }
 
+class RotateFrame
+{
+    constructor(degree)
+    {
+        this.rad = degree * Math.PI / 180;
+        this.SelectedFrames = [];
+        this.TempRotations = []; 
+        for(let i = 0; i < DrawLine.SelectedLines.length; i++)
+        {
+            this.SelectedFrames.push(DrawLine.SelectedLines[i]);
+            this.TempRotations.push(DrawLine.SelectedLines[i].Frame.Rotation)
+        }
+    }
+    excute()
+    {
+        for(let i = 0; i < this.SelectedFrames.length; i++)
+        {
+            this.SelectedFrames[i].Frame.Rotation = this.rad;
+            secUpdated = true;
+        }
+    }
+    undo()
+    {
+        for(let i = 0; i < this.SelectedFrames.length; i++)
+        {
+            this.SelectedFrames[i].Frame.Rotation = this.TempRotations[i];
+            secUpdated = true;
+        }
+    }
+    redo()
+    {
+        for(let i = 0; i < this.SelectedFrames.length; i++)
+        {
+            this.SelectedFrames[i].Frame.Rotation = this.rad;
+            secUpdated = true;
+        }
+    }
+    remove()
+    {
+        this.SelectedFrames=[];
+        this.TempRotations=[]; 
+    }
+}
+
+
 init();
 
 function init()
@@ -1499,15 +1475,6 @@ renderer.setClearColor('rgb(250,250,250)');
 
 controls = new MapControls(camera, renderer.domElement);
 
-// Add stats to visualize performance
-// stats = new Stats();
-// stats.setMode(0);
-// stats.domElement.style.position = 'absolute';
-// stats.domElement.style.left = '20px';
-// stats.domElement.style.top = '20px';
-// document.body.appendChild(stats.domElement);
-
-
 document.getElementById('webgl').appendChild(renderer.domElement);
 update(renderer, scene, camera, controls);
 
@@ -1533,39 +1500,7 @@ function GetLight(intensity)
 }
 
 
-//#region Global Directions Arrows
-var arrows = new THREE.Group();
-scene.add( arrows );
-const dirX = new THREE.Vector3( 1, 0, 0 );
-const dirY = new THREE.Vector3( 0, 1, 0 );
-const dirZ = new THREE.Vector3( 0, 0, 1 );
-//normalize the direction vector (convert to vector of length 1)
-dirX.normalize();
-const origin = new THREE.Vector3( -3, -3, 0 );
-const length = 2.3;
-const hexX = 0xa6050d;
-const hexY = 0x0675c9;
-const hexZ = 0x05a660;
-const headLength = 0.5;
-const headWidth = 0.12;
-var arrowHelperX = new THREE.ArrowHelper( dirX, origin, length, hexX, headLength, headWidth );
-var arrowHelperY = new THREE.ArrowHelper( dirY, origin, length, hexY, headLength, headWidth );
-var arrowHelperZ = new THREE.ArrowHelper( dirZ, origin, length, hexZ, headLength, headWidth );
-arrows.add( arrowHelperX );
-arrows.add( arrowHelperY );
-arrows.add( arrowHelperZ );
-
-var txSpriteX = makeTextSprite( "X", -0.25, -3,  0, { fontsize: 210, fontface: "Georgia", textColor: { r:204, g:1, b:1, a:1.0 },
-  vAlign:"center", hAlign:"center" } );
- scene.add( txSpriteX );  
- var txSpriteY = makeTextSprite( "Y", -3, -0.25,  0, { fontsize: 210, fontface: "Georgia", textColor: { r:6, g:117, b:201, a:1.0 },
-  vAlign:"center", hAlign:"center" } );
- scene.add( txSpriteY );  
- var txSpriteZ = makeTextSprite( "Z", -3, -3,  2.8, { fontsize: 210, fontface: "Georgia", textColor: { r:5, g:166, b:96, a:1.0 },
-  vAlign:"center", hAlign:"center" } );
- scene.add( txSpriteZ );  
-//#endregion
-
+GetGlobalArrows();
 function resetPoints()
 {
     if(group != null){
@@ -1578,35 +1513,6 @@ function resetPoints()
             }
         }
     }   
-}
-
-// material function 
-function GetMaterial(type, color)
-{
-    var material;
-    var materialOptions;
-    materialOptions = {
-        color: color
-    };
-    switch(type)
-    {
-        case 'basic':
-            material = new THREE.MeshBasicMaterial(materialOptions);
-            break;
-        case 'lambert':
-            material = new THREE.MeshLambertMaterial(materialOptions);
-            break;
-        case 'phong':
-            material =new THREE.MeshPhongMaterial(materialOptions);
-            break;
-        case 'standard':
-            material = new THREE.MeshStandardMaterial(materialOptions);
-            break;
-        default:
-            material = new THREE.MeshBasicMaterial(materialOptions);
-            break;
-    }
-    return material;
 }
 
 function onMouseMove( event ) {
@@ -1642,6 +1548,12 @@ document.addEventListener('keydown',  function ( event ) {
     if(event.key == 'q')
     {
         alert(DrawLine.DrawLinesArray.length)
+    }
+})
+document.addEventListener('keydown',  function ( event ) {
+    if(event.key == 'p')
+    {
+        alert.log(DrawLine.GetDrawnFrames()[0].Section)
     }
 })
 document.addEventListener('keydown',  function ( event ) {
@@ -1682,8 +1594,7 @@ function ClickToDrawLine(event)
                 }
                 else if(points.length == 6)
                 {
-                    commands.excuteCommand(new DrawLine(new FrameElement(points,GetActiveSection())));
-
+                    commands.excuteCommand(new DrawLine(new FrameElement(points,GetSelectedSection())));
                     points = [];
                 }
             }
@@ -1779,6 +1690,7 @@ function Standard(){
     DrawLine.StandardView();
 }
 
+
 document.getElementById("Labels").onclick=function(){Labels()};
 document.getElementById("Sections").onclick=function(){Labels()};
 function Labels()
@@ -1809,7 +1721,6 @@ function DrawingMode()
 {
     DrawingModeActive = true;
     SelectionModeActive = false;
-    DisplayDrawFrameHelper();
     Unselect();
 }
 
@@ -1975,14 +1886,6 @@ function Unselect()
 
 
 
-
-
-
-
-
-
-
-
 function update(renderer, scene, camera, controls)
 {
     
@@ -1999,6 +1902,15 @@ function update(renderer, scene, camera, controls)
 
     resetPoints();
 
+
+    if( secAssigned && DrawLine.SelectedLines.length){
+        commands.excuteCommand( new AssignFrameSection( assignedSection ) );
+        secAssigned = false
+    }
+    if(secUpdated && !state){
+        DrawLine.DrawLinesArray.forEach( drawLine=> drawLine.ReExtrude());
+        secUpdated = false
+    }
     if(DrawingModeActive == true)
     {
         window.addEventListener( 'click', ClickToDrawLine, false );
@@ -2018,535 +1930,117 @@ function update(renderer, scene, camera, controls)
         window.removeEventListener('click',ClickToSelectElement,false);
     }
 
+
     requestAnimationFrame(function(){
         update(renderer, scene, camera, controls);
     });
+
+
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// for texts
-
-function makeTextSprite( message, x, y, z, parameters ) 
-{ 
-    if ( parameters === undefined ) parameters = {}; 
-     
-    var fontface = parameters.hasOwnProperty("fontface") ?  
-        parameters["fontface"] : "Arial"; 
-     
-    var fontsize = parameters.hasOwnProperty("fontsize") ?  
-        parameters["fontsize"] : 28; 
-     
-    var borderThickness = parameters.hasOwnProperty("borderThickness") ?  
-        parameters["borderThickness"] : undefined; //4; 
-     
-    var borderColor = parameters.hasOwnProperty("borderColor") ? 
-        parameters["borderColor"] : undefined; //{ r:0, g:0, b:0, a:0.0 }; 
-     
-    var fillColor = parameters.hasOwnProperty("fillColor") ? 
-        parameters["fillColor"] : undefined; 
- 
-    var textColor = parameters.hasOwnProperty("textColor") ? 
-        parameters["textColor"] : { r:25, g:25, b:25, a:1.0 }; 
- 
-    var radius = parameters.hasOwnProperty("radius") ? 
-                parameters["radius"] : undefined; // 6; 
- 
-    var vAlign = parameters.hasOwnProperty("vAlign") ? 
-                        parameters["vAlign"] : "center"; 
- 
-    var hAlign = parameters.hasOwnProperty("hAlign") ? 
-                        parameters["hAlign"] : "center"; 
- 
-    var canvas = document.createElement('canvas'); 
-    var context = canvas.getContext('2d'); 
-     
-    // set a large-enough fixed-size canvas  
-    canvas.width = 1800; 
-    canvas.height = 900; 
-     
-    context.font = fontsize + "px " + fontface; 
-    context.textBaseline = "alphabetic"; 
-    context.textAlign = "left"; 
-     
-    // get size data (height depends only on font size) 
-    var metrics = context.measureText( message ); 
-    var textWidth = metrics.width; 
-     
-    /* 
-    // need to ensure that our canvas is always large enough 
-    // to support the borders and justification, if any 
-    // Note that this will fail for vertical text (e.g. Japanese)
-    // The other problem with this approach is that the size of the canvas 
-    // varies with the length of the text, so 72-point text is different 
-    // sizes for different text strings.  There are ways around this 
-    // by dynamically adjust the sprite scale etc. but not in this demo...
-    var larger = textWidth > fontsize ? textWidth : fontsize;
-    canvas.width = larger * 4; 
-    canvas.height = larger * 2; 
-    // need to re-fetch and refresh the context after resizing the canvas 
-    context = canvas.getContext('2d'); 
-    context.font = fontsize + "px " + fontface; 
-    context.textBaseline = "alphabetic"; 
-    context.textAlign = "left"; 
-     metrics = context.measureText( message ); 
-    textWidth = metrics.width; 
- 
-     console.log("canvas: " + canvas.width + ", " + canvas.height + ", texW: " + textWidth);
-    */ 
-     
-    // find the center of the canvas and the half of the font width and height 
-    // we do it this way because the sprite's position is the CENTER of the sprite 
-    var cx = canvas.width / 2; 
-    var cy = canvas.height / 2; 
-    var tx = textWidth/ 2.0; 
-    var ty = fontsize / 2.0; 
- 
-    // then adjust for the justification 
-    if ( vAlign == "bottom") 
-        ty = 0; 
-    else if (vAlign == "top") 
-        ty = fontsize; 
-     
-    if (hAlign == "left") 
-        tx = textWidth; 
-    else if (hAlign == "right") 
-        tx = 0; 
-     
-    // the DESCENDER_ADJUST is extra height factor for text below baseline: g,j,p,q. since we don't know the true bbox 
-    roundRect(context, cx - tx , cy + ty + 0.28 * fontsize,  
-            textWidth, fontsize * DESCENDER_ADJUST, radius, borderThickness, borderColor, fillColor); 
-     
-    // text color.  Note that we have to do this AFTER the round-rect as it also uses the "fillstyle" of the canvas 
-    context.fillStyle = getCanvasColor(textColor); 
- 
-    context.fillText( message, cx - tx, cy + ty); 
-  
-    // draw some visual references - debug only 
-    //drawCrossHairs( context, cx, cy );     
-    // outlineCanvas(context, canvas); 
-    //addSphere(x,y,z); 
-    
-    // canvas contents will be used for a texture 
-    var texture = new THREE.Texture(canvas) 
-    texture.needsUpdate = true; 
- 
-    var spriteMaterial = new THREE.SpriteMaterial( { map: texture } ); 
-    var sprite = new THREE.Sprite( spriteMaterial ); 
-     
-    // we MUST set the scale to 2:1.  The canvas is already at a 2:1 scale, 
-    // but the sprite itself is square: 1.0 by 1.0 
-    // Note also that the size of the scale factors controls the actual size of the text-label 
-    sprite.scale.set(4,2,1); 
-     
-    // set the sprite's position.  Note that this position is in the CENTER of the sprite 
-    sprite.position.set(x, y, z); 
-     
-    return sprite;     
-} 
-
-function roundRect(ctx, x, y, w, h, r, borderThickness, borderColor, fillColor)  
-{ 
-    // no point in drawing it if it isn't going to be rendered 
-    if (fillColor == undefined && borderColor == undefined)  
-        return; 
- 
-    x -= borderThickness + r; 
-    y += borderThickness + r; 
-    w += borderThickness * 2 + r * 2; 
-    h += borderThickness * 2 + r * 2; 
-     
-    ctx.beginPath(); 
-    ctx.moveTo(x+r, y); 
-    ctx.lineTo(x+w-r, y); 
-    ctx.quadraticCurveTo(x+w, y, x+w, y-r); 
-    ctx.lineTo(x+w, y-h+r); 
-    ctx.quadraticCurveTo(x+w, y-h, x+w-r, y-h); 
-    ctx.lineTo(x+r, y-h); 
-    ctx.quadraticCurveTo(x, y-h, x, y-h+r); 
-    ctx.lineTo(x, y-r); 
-    ctx.quadraticCurveTo(x, y, x+r, y); 
-    ctx.closePath(); 
-     
-    ctx.lineWidth = borderThickness; 
- 
-    // background color 
-    // border color 
- 
-    // if the fill color is defined, then fill it 
-    if (fillColor != undefined) { 
-        ctx.fillStyle = getCanvasColor(fillColor); 
-        ctx.fill(); 
-    } 
-     
-    if (borderThickness > 0 && borderColor != undefined) { 
-        ctx.strokeStyle = getCanvasColor(borderColor); 
-        ctx.stroke(); 
-    } 
-} 
-
-function getCanvasColor ( color ) { 
-    return "rgba(" + color.r + "," + color.g + "," + color.b + "," + color.a + ")"; 
-} 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
 // for grids
 
+document.querySelector('#grids-btn').addEventListener("click",function(){
+    if(!document.querySelector('.main-window')){
+        $('body').append(GetGridsWin());
+        LoadGridsData('grids-x',listx,xGridsNames);
+        LoadGridsData('grids-y',listy,yGridsNames);
+        LoadGridsData('grids-z',listz,zGridsNames);
+        document.querySelector(`#grids-x-part .info`).addEventListener("click",function(){AddGrid('grids-x',listx, xGridsNames)});
+        document.querySelector(`#grids-y-part .info`).addEventListener("click",function(){AddGrid('grids-y',listy,yGridsNames)});
+        document.querySelector(`#grids-z-part .info`).addEventListener("click",function(){AddGrid('grids-z',listz,zGridsNames)});
 
+        document.querySelector('#grids-window').addEventListener("click",function(){
 
-const openModalButtons = document.querySelectorAll('[data-modal-target]');
-const closeModalButtons = document.querySelectorAll('[data-close-button]');
-const overLay= document.getElementById('overlay');
-
-openModalButtons.forEach(button =>{
-    button.addEventListener('click',() => {
-        const modal = document.querySelector(button.dataset.modalTarget);
-        openModal(modal);
-    })
-})
-
-overLay.addEventListener('click',() => {
-    const modals = document.querySelectorAll('.modal.active');
-    modals.forEach(modal =>{
-        closeModal(modal);
-    })
-})
-
-closeModalButtons.forEach(button =>{
-    button.addEventListener('click',() => {
-        const modal = button.closest('.modal');
-        closeModal(modal);
-    })
-})
-
-function openModal(modal){
-    if(modal == null) return
-    modal.classList.add('active')
-    overlay.classList.add('active')
-}
-
-function closeModal(modal){
-    if(modal == null) return
-    modal.classList.remove('active')
-    overlay.classList.remove('active')
-}
-var nx = 1;
-document.getElementById("AddRowX").onclick=function(){AddRowX()};
-document.getElementById("GridIDX").onkeydown=function(e){if(e.key == "Enter")AddRowX()};
-document.getElementById("GridDimX").onkeydown=function(e){if(e.key == "Enter")AddRowX()};
-function AddRowX() {
-    nx +=1;
-    var table = document.getElementById("grids_tableX");
-    var row = table.insertRow(table.rows.length);
-    var cell1 = row.insertCell(0);
-    var cell2 = row.insertCell(1);
-    var cell3 = row.insertCell(2);
-    cell1.innerHTML = nx ;
-    cell1.width = 40;
-    cell2.innerHTML = `<input type = "text" id = "GridID" tabindex="1" size="16"/>`;
-    cell3.innerHTML = `<input type = "number" id = "GridDim" tabindex="2" width="18"/> m`;
-    cell2.onkeydown = function(e){if(e.key == "Enter")AddRowX()};
-    cell3.onkeydown = function(e){if(e.key == "Enter")AddRowX()};
-}
-var ny = 1
-document.getElementById("AddRowY").onclick=function(){AddRowY()};
-document.getElementById("GridIDY").onkeydown=function(e){if(e.key == "Enter")AddRowY()};
-document.getElementById("GridDimY").onkeydown=function(e){if(e.key == "Enter")AddRowY()};
-function AddRowY() {
-    ny +=1;
-    var table = document.getElementById("grids_tableY");
-    var row = table.insertRow(table.rows.length);
-    var cell1 = row.insertCell(0);
-    var cell2 = row.insertCell(1);
-    var cell3 = row.insertCell(2);
-    cell1.innerHTML = ny ;
-    cell1.width = 40;
-    cell2.innerHTML = `<input type = "text" id = "GridID" tabindex="1" size="16"/>`;
-    cell3.innerHTML = `<input type = "number" id = "GridDim" tabindex="2" width="18"/> m`;
-    cell2.onkeydown = function(e){if(e.key == "Enter")AddRowY()};
-    cell3.onkeydown = function(e){if(e.key == "Enter")AddRowY()};
-    cell2.focus();
-}
-var nz = 1
-document.getElementById("AddRowZ").onclick=function(){AddRowZ()};
-document.getElementById("GridIDZ").onkeydown=function(e){if(e.key == "Enter")AddRowZ()};
-document.getElementById("GridDimZ").onkeydown=function(e){if(e.key == "Enter")AddRowZ()};
-function AddRowZ() {
-    nz +=1;
-    var table = document.getElementById("grids_tableZ");
-    var row = table.insertRow(table.rows.length);
-    var cell1 = row.insertCell(0);
-    var cell2 = row.insertCell(1);
-    var cell3 = row.insertCell(2);
-    cell1.innerHTML = nz ;
-    cell1.width = 40;
-    cell2.innerHTML = `<input type = "text" id = "GridID" tabindex="1" size="16"/>`;
-    cell3.innerHTML = `<input type = "number" id = "GridDim" tabindex="2" width="18"/> m`;
-    cell2.onkeydown = function(e){if(e.key == "Enter")AddRowZ()};
-    cell3.onkeydown = function(e){if(e.key == "Enter")AddRowZ()};
-    cell2.focus();
-}
-
-
-document.getElementById('SubmitGrids').onclick = function(){SubmitGrids()};
-function SubmitGrids(){
-    ThreeD();
-    if(group != null)
-    {
-        scene.remove(group);
-        gridLines.forEach(element => {
-            element.material.dispose()
-            element.geometry.dispose()
-            scene.remove(element);
+            if(GetActiveGrid('grids-x')){
+                let activeGrid = GetActiveGrid('grids-x');
+                document.querySelector(`#grids-x-part .default`).addEventListener("click", function(){
+                    if(activeGrid) activeGrid.remove();
+                });
+            }
+            if(GetActiveGrid('grids-y')){
+                let activeGrid = GetActiveGrid('grids-y');
+                document.querySelector(`#grids-y-part .default`).addEventListener("click", function(){
+                    if(activeGrid) activeGrid.remove();
+                });
+            }
+            if(GetActiveGrid('grids-z')){
+                let activeGrid = GetActiveGrid('grids-z');
+                document.querySelector(`#grids-z-part .default`).addEventListener("click", function(){
+                    if(activeGrid) activeGrid.remove();
+                });
+            }
+        })
+        
+        
+        document.querySelector('#grids-ok').addEventListener("click", function(){
+            ReadGrids('grids-x',listx, xGridsNames);
+            ReadGrids('grids-y',listy,yGridsNames);
+            ReadGrids('grids-z',listz,zGridsNames);
+            if(!listx.length || !listy.length || !listz.length){
+                Metro.dialog.create({
+                    title: "Invalid Grids Data",
+                    content: "<div>You must input at least one spacing as positive number in each direction</div>",
+                    closeButton: true
+                });
+            }else{
+                ThreeD();
+                if(group != null)
+                {
+                    scene.remove(group);
+                    gridLines.forEach(element => {
+                        element.material.dispose()
+                        element.geometry.dispose()
+                        scene.remove(element);
+                    });
+                    gridLines = [];
+                    for (var i = group.children.length - 1; i >= 0; i--) {
+                        group.children[i].material.dispose();
+                        group.children[i].geometry.dispose();
+                        group.remove(group.children[i]);
+                    }
+                    removeSelectionGrids();
+                }
+                
+                GridSelections();
+                group = GridPoints(listx,listy,listz,listx.length,listy.length,listz.length);
+                gridLines = GridLine(listx,listy,listz,listx.length,listy.length,listz.length);
+                scene.add(group);
+                gridLines.forEach(element => {
+                    scene.add(element);
+                });
+                
+                document.querySelector('#grids-window').parentElement.parentElement.remove();
+                gridsUpdated=true;
+            }
         });
-        gridLines = [];
-        for (var i = group.children.length - 1; i >= 0; i--) {
-            group.children[i].material.dispose();
-            group.children[i].geometry.dispose();
-            group.remove(group.children[i]);
-        }
-        removeSelectionGrids();
-    }
-    const tableX = document.getElementById("grids_tableX");
-    listx = []
-    let x = 0;
-    for(let i = 1; i < tableX.rows.length; i++){
-        let temp = parseFloat(tableX.rows[i].cells[2].children[0].value);
-        if(temp > 0 && !isNaN(temp)){
-            listx[x] = temp;
-            x += 1;
-        }
-        else if(tableX.rows.length >2){
-            tableX.deleteRow(i);
-            i--;
-        }
-    }
-    const tableY = document.getElementById("grids_tableY");
-    listy = []
-    let y = 0;
-    for(let i = 1; i < tableY.rows.length; i++){
-        let temp = parseFloat(tableY.rows[i].cells[2].children[0].value);
-        if(temp > 0 && !isNaN(temp)){
-            listy[y] = temp;
-            y += 1;
-        }
-        else if(tableY.rows.length >2){
-            tableY.deleteRow(i);
-            i--;
-        }
-    }
-    
-    const tableZ = document.getElementById("grids_tableZ");
-    listz = []
-    let z = 0;
-    for(let i = 1; i < tableZ.rows.length; i++){
-        let temp = parseFloat(tableZ.rows[i].cells[2].children[0].value);
-        if(temp > 0 && !isNaN(temp)){
-            listz[z] = temp;
-            z += 1;
-        }
-        else if(tableZ.rows.length >2){
-            tableZ.deleteRow(i);
-            i--;
-        }
-    }
 
-    if(listx.length > 0 && listy.length > 0 && listz.length >0)
-    {
-        // Update the selection options
-        GridSelections(); 
-
-        group = GridPoints(listx,listy,listz,listx.length,listy.length,listz.length);
-        gridLines = GridLine(listx,listy,listz,listx.length,listy.length,listz.length);
-        scene.add(group);
-        gridLines.forEach(element => {
-            scene.add(element);
+        document.querySelector('#grids-close').addEventListener("click",function(){
+            document.querySelector('#grids-window').parentElement.parentElement.remove();
         });
-    
-        // Close the window
-        const modals = document.querySelectorAll('.modal.active');
-        modals.forEach(modal =>{
-            closeModal(modal);
-        });
+        
+        
     }
-    else{
-        document.getElementById("Comment").innerHTML = "Dimentions cannot be empty";
-    }
-    
-}
-
-document.getElementById('GridsCancel').onclick = function(){GridsCancel()};
-function GridsCancel()
-{
-const modals = document.querySelectorAll('.modal.active');
-modals.forEach(modal =>{
-    closeModal(modal);
-})}
+});
 
 
 if(gridLines == null){
-listx = [6,6,6]
-listy = [4,4,4]
-listz = [3,3,3] 
-GridSelections()
-group = GridPoints(listx,listy,listz,listx.length,listy.length,listz.length);
-scene.add(group);
-
-gridLines = GridLine(listx,listy,listz,listx.length,listy.length,listz.length);
-gridLines.forEach(element => {
-scene.add(element);
-});
+    listx = [6,6,6]
+    listy = [4,4,4]
+    listz = [3,3,3] 
+    GridSelections()
+    group = GridPoints(listx,listy,listz,listx.length,listy.length,listz.length);
+    scene.add(group);
+    
+    gridLines = GridLine(listx,listy,listz,listx.length,listy.length,listz.length);
+    gridLines.forEach(element => {
+        scene.add(element);
+    });
 }
 
 
-function BoxSnap(width, height, depth, materialType = 'basic',color = 'green', X = 0, Y = 0, Z = 0)
-{
-    var geometry = new THREE.BoxGeometry(width, height, depth);
-    var material = GetMaterial(materialType,color);
-    material.transparent = true;
-    material.opacity = 0;    
-    material.alphaTest = 0.1;
-    material.wireframe = true;
-    var mesh = new THREE.Mesh(geometry, material);
-    mesh.position.x=X;
-    mesh.position.y=Y;
-    mesh.position.z=Z;
-
-    return mesh;
-}
-
-function GridPoints(spacingX, spacingY, spacingZ, lengthX,lengthY,lengthZ)
-{
-    const group = new THREE.Group();
-
-    var pos_x = 0;
-    var pos_y = 0;
-    var pos_z = 0;
-    for(let i = 0; i <= lengthX; i++)
-    {
-        for(let j = 0; j <= lengthY; j++)
-        {
-            for(let k = 0; k <= lengthZ; k++)
-            {
-                
-                let obj = BoxSnap(0.3,0.3,0.3);
-
-                obj.position.x = pos_x;
-                obj.position.y = pos_y;
-                obj.position.z = pos_z;
-                pos_z += spacingZ[k];
-                group.add(obj);
-            }
-            pos_z = 0;
-            pos_y += spacingY[j];
-        }
-        pos_y = 0;
-        pos_x += spacingX[i];
-    }
-    return group;
-}
-//line function
-function GridLine(spacingX, spacingY, spacingZ, lengthX, lengthY, lengthZ)
-{
-    const distanceX = listx.reduce((a, b) => a + b, 0);
-    const distanceY = listy.reduce((a, b) => a + b, 0);
-    const distanceZ = listz.reduce((a, b) => a + b, 0);
-    const group = [];
-    var material = new THREE.LineBasicMaterial({color:'rgb(190,190,190)', alphaTest:0.7, transparent:true, opacity:0.7});
-    var points;
-    var geometry;
-    var line;
-    var pos_x = 0;
-    var pos_y = 0;
-    var pos_z = 0;
-    for(let i = 0; i <= lengthX; i++)
-    {
-        for(let j = 0; j <= lengthY; j++)
-        {
-            points = [];
-            points.push( new THREE.Vector3( pos_x, pos_y, pos_z ) );    
-            points.push( new THREE.Vector3( pos_x, pos_y, distanceZ ) );   
-            pos_y += spacingY[j];
-            geometry = new THREE.BufferGeometry().setFromPoints( points );
-            line = new THREE.Line( geometry, material );
-            group.push(line);
-        }
-        pos_y = 0;
-        pos_x += spacingX[i];
-    }
-
-
-    pos_x = 0;
-    pos_y = 0;
-    pos_z = 0;
-    for(let i = 0; i <= lengthX; i++)
-    {
-        for(let j = 0; j <= lengthZ; j++)
-        {
-            points = [];
-            points.push( new THREE.Vector3( pos_x, pos_y, pos_z ) );
-            points.push( new THREE.Vector3( pos_x, distanceY, pos_z ) );
-            pos_z += spacingZ[j];
-            geometry = new THREE.BufferGeometry().setFromPoints( points );
-            line = new THREE.Line( geometry, material );
-            group.push(line);
-        }
-        pos_z = 0;
-        pos_x += spacingX[i];
-    }
-
-    pos_x = 0;
-    pos_y = 0;
-    pos_z = 0;
-    for(let i = 0; i <= lengthY; i++)
-    {
-        for(let j = 0; j <= lengthZ; j++)
-        {
-            points = [];
-            points.push( new THREE.Vector3( pos_x, pos_y, pos_z ) );
-            points.push( new THREE.Vector3( distanceX, pos_y, pos_z ) );
-            pos_z += spacingZ[j];
-            geometry = new THREE.BufferGeometry().setFromPoints( points );
-            line = new THREE.Line( geometry, material );
-            group.push(line);
-        }
-        pos_z = 0;
-        pos_y += spacingY[i];
-    }
-    return group;
-}
 
  
 function GridSelections()
@@ -2601,8 +2095,6 @@ function removeSelectionGrids()
 }
 
  
-
-
 
 
 
@@ -2980,40 +2472,6 @@ function AddPointsToFrame()
 
 
 
-
-
-
-
-
-
-
-
-function crossProduct(A,B) {
-    const vector = [
-       A[1] * B[2] - A[2] * B[1],
-       A[2] * B[0] - A[0] * B[2], 
-       A[0] * B[1] - A[1] * B[0]
-    ];
-    return vector;
-  }
-
-  function arrayEquals(a, b) {
-    return Array.isArray(a) &&
-      Array.isArray(b) &&
-      a.length === b.length &&
-      a.every((val, index) => val === b[index]);
-  }
-
-
-
-
-
-
-
-
-
-
-
 //#region // Results visualization
 function ResultLines(length, x,y,z, startPoint, endPoint,  direction, rz, scale = 1) // , local = false)
 {
@@ -3090,7 +2548,6 @@ function ResultsDiagram(results ,startPoint, endPoint, direction, rz, scale = 1,
 
     const max = Math.max(...results);
     const min = Math.min(...results);
-console.log(max)
     const material = new THREE.LineBasicMaterial({color:'rgb(0,0,0)'});
     const number = results.length -1;
     const geometry = new THREE.BufferGeometry();
@@ -3145,50 +2602,22 @@ console.log(max)
 //#endregion
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-///*functions to handle draw frame div*////
-function DisplayDrawFrameHelper() {
-    let frameHelper = document.querySelector('#frameProp');
-    if(frameHelper.style.display=="none"){
-        LoadSections();
-        frameHelper.style.display="block"
+function GetMaxLoad (pattern){
+    let frames = DrawLine.GetDrawnFrames();
+    let maxLoads = [];
+    for (const frame of frames) {
+        let loads = frame.LoadsAssigned.get(pattern);
+        for(const load of loads){
+            if(load.Magnitude instanceof Array){
+                let absvals = [];
+                load.Magnitude.forEach(value => absvals.push(Math.abs(value)) );
+                maxLoads.push(Math.max(...absvals));
+            } 
+            else maxLoads.push(Math.abs(load.Magnitude));
+        }
     }
+    return Math.max(...maxLoads);
 }
-function LoadSections(){
-    var select = document.querySelector('#frameProp select');
-    for (const [key,value] of Section.SectionList) {
-        var option = document.createElement("option");
-        console.log(value.Name)
-        option.setAttribute("value",key);
-        option.innerHTML=value.Name;
-        select.appendChild(option)
-    }
-}
-
-function GetActiveSection()
-{
-    var selectedSection = document.querySelector('#frameProp select');
-    //var sectionId = selectedSection.selectedOptions[0].value;
-    //return Section.SectionList.get(sectionId);
-    return Section.SectionList.get('1');
-}
-
-
-
-
-
-
 
 
 
@@ -3198,10 +2627,8 @@ function GetActiveSection()
 
 document.getElementById("Run").onclick=function(){Run()};
 function Run()
-{
-    const Frames = [...DrawLine.GetDrawnFrames()];
-    
-    var OutPut = JSON.stringify(Frames);
+{   
+    var OutPut = JSON.stringify(DrawLine.GetDrawnFrames());
     console.log(OutPut)
     // $.ajax({
     //     type: "POST",
@@ -3374,3 +2801,19 @@ function Roller()
     }
 }
 
+document.getElementById("Free").onclick=function(){Free()};
+function Free()
+{
+    if(Point.SelectedPoints.length > 0)
+    {
+        const restraints = [false, false, false, false, false, false];
+        commands.excuteCommand(new AssignRestraints(restraints));
+    }
+}
+
+document.getElementById("Rotate").onclick=function(){Rotate()};
+function Rotate()
+{
+    const rotation = 45;
+    commands.excuteCommand(new RotateFrame(rotation));
+}
