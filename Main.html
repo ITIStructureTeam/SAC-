@@ -326,9 +326,7 @@
                         <input data-role="checkbox" type="checkbox" id="Sections" data-caption="Display Section" onclick="Labels()">
                     </div>
 
-                    <button id = "Hinge">Hinge</button>
-                    <button id = "Fix">Fix</button>
-                    <button id = "Roller">Roller</button>
+                
                 </div>
                 <!-- View Tab -->
                 <div class="section" id="View-Section">
@@ -485,7 +483,7 @@
                         <span class="title">Draw</span>
                     </div>
                     <div class="group">
-                        <button data-modal-target="#modal" id="Grids" class="ribbon-button">
+                        <button id="grids-btn" class="ribbon-button">
                             <span class="icon">
                                 <img alt="Grid" src="Assets/images/GridIcon.png">
                             </span>
@@ -532,7 +530,7 @@
                             </span>
                             <span class="caption">Joint Restraint</span>
                         </button>
-                        <button class="ribbon-button">
+                        <button id="assign-framesec-btn" class="ribbon-button">
                             <span class="icon">
                                 <img alt="FrameSection" src="Assets/images/FramSectionIcon.png">
                             </span>
@@ -548,8 +546,11 @@
                     </div>
                     <!-- Assign Loads Group (Pannel)    Tab Assign -->
                     <div class="group">
-                        <button class="ribbon-button" onclick="PointLoads()"  data-role="hint"
-                        data-hint-position="bottom" data-hint-text="Add Point Loads">
+                        <button class="ribbon-button" id="point-load-btn">
+
+<!--                         <button class="ribbon-button" onclick="PointLoads()"  data-role="hint"
+                        data-hint-position="bottom" data-hint-text="Add Point Loads"> -->
+
                             <span class="icon">
                                 <img alt="Point Load" src="Assets/images/PointLoadIcon.png">
                             </span>
@@ -570,6 +571,11 @@
                         <span class="title">Assign Loads</span>
 
                     </div>
+                    <button id = "Hinge">Hinge</button>
+                    <button id = "Fix">Fix</button>
+                    <button id = "Roller">Roller</button>
+                    <button id = "Free">Free</button>
+                    <button id = "Rotate">Rotate</button>
                 </div>
                 <!-- Analyse & Results Tab -->
                 <div class="section" id="Analyse-Section">
@@ -649,7 +655,7 @@
                 <!-- Option Tab -->
                 <div class="section" id="Options-Section">
                     <div class="group">
-                        <button class="ribbon-button">
+                        <button id="units-btn" class="ribbon-button">
                             <span class="icon">
                                 <img alt="Dimensions" src="Assets/images/DimensionsIcon.png">
                             </span>
@@ -679,100 +685,7 @@
             <span id = "StatusBar">Welcome to KIEW Structural Analysis - Status Bar - </span>
         </div>
 
-        <!--  Modal for grids div ... Do not change-->
 
-        <!-- Modal -->
-        <div class="modal" id="modal">
-            <div class="modal-header">
-                <div class="title">Grids</div>
-                <button data-close-button class="close">&times;</button>
-            </div>
-
-            <div class="modal-body">
-
-                <!-- <form action = "page3.html" method = "get" > -->
-                <fieldset>
-                    <legend> X- Grid data </legend>
-                    <table id="grids_tableX" width="400">
-                        <thead>
-                            <tr>
-                                <th id="table_head" width="40">#</td>
-                                    <th id="table_head" width="150">Grid ID</td>
-                                        <th id="table_head" width="200">Spacing</td>
-                            </tr>
-                        </thead>
-                        <tbody id="tbody">
-                            <tr>
-                                <td id="GridNum" width="40"> 1 </td>
-                                <td width="150">
-                                    <input type="text" id="GridIDX" tabindex="1" size="16" onkeydown="AddRowX()" />
-                                </td>
-                                <td width="200">
-                                    <input type="number" id="GridDimX" tabindex="2" width="18" onkeydown="AddRowX()" required /> m
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <button type="button" id="AddRowX" onclick="AddRowX()">Add</button>
-                </fieldset>
-                <fieldset>
-                    <legend> Y- Grid data </legend>
-                    <table id="grids_tableY" width="400">
-                        <thead>
-                            <tr>
-                                <th id="table_head" width="40">#</td>
-                                    <th id="table_head" width="150">Grid ID</td>
-                                        <th id="table_head" width="200">Spacing</td>
-                            </tr>
-                        </thead>
-                        <tbody id="tbody">
-                            <tr>
-                                <td id="GridNum" width="40"> 1 </td>
-                                <td width="150">
-                                    <input type="text" id="GridIDY" tabindex="1" size="16" onkeydown="AddRowY()" />
-                                </td>
-                                <td width="200">
-                                    <input type="number" id="GridDimY" tabindex="2" width="18" onkeydown="AddRowY()" required /> m
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <button type="button" id="AddRowY" onclick="AddRowY()">Add</button>
-                </fieldset>
-
-                <fieldset>
-                    <legend> Z- Grid data </legend>
-                    <table id="grids_tableZ" width="400">
-                        <thead>
-                            <tr>
-                                <th id="table_head" width="40">#</td>
-                                    <th id="table_head" width="150">Grid ID</td>
-                                        <th id="table_head" width="200">Spacing</td>
-                            </tr>
-                        </thead>
-                        <tbody id="tbody">
-                            <tr>
-                                <td id="GridNum" width="40"> 1 </td>
-                                <td width="150">
-                                    <input type="text" id="GridIDZ" tabindex="1" size="16" onkeydown="AddRowZ()" />
-                                </td>
-                                <td width="200">
-                                    <input type="number" id="GridDimZ" tabindex="2" width="18" onkeydown="AddRowZ()" required /> m
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <button type="button" id="AddRowZ" onclick="AddRowZ()">Add</button>
-                </fieldset>
-
-                <fieldset align="right">
-                    <p id="Comment"></p>
-                    <button id="SubmitGrids" onclick="SubmitGrids()">Apply</button>
-                    <button id="GridsCancel" onclick="GridsCancel()">Close</button>
-                </fieldset>
-
-            </div>
-        </div>
         <!-- Close Action ((Warning Message)) -->
         <div class="dialog" data-role="dialog" id="closebtn" data-close-button="true">
             <div class="dialog-title text-bold">
@@ -790,13 +703,6 @@
             </div>
         </div>
     </div>
-    <div id="overlay"></div>
-
-    <div id="frameProp">
-        <select style="display: none;"></select>
-    </div>
-
-    </div>
 
 
     <title>KIWE STRUCTURES</title>
@@ -804,6 +710,7 @@
     <!-- <script src="./Assets//node_modules/three/build/three.js"></script> -->
     <!-- <script src="./Assets//node_modules/three/examples/js/controls/OrbitControls.js"></script> -->
 
+    <script src="./Assets/material and section/Material.js"></script>
     <script src="./Assets/material and section/Section.js"></script>
 
     <script src="./Assets/Three.js files/stats.js"></script>
@@ -819,12 +726,22 @@
     <script src="./Assets/Three.js files/SelectionBox-mod.js"></script>
     <script src="./Assets/Three.js files/SelectionHelper.js"></script>
     <script type="module" src="./Assets/Three.js files/OrbitControls.js"></script>
-    <script type="module" src="main.js"></script>
-    <script src="./Assets/js/main3.js"></script>
 
+    <script type="module" src="main.js"></script>
+
+    <script src="./global.js"></script>
+    <script src="./TextLabels.js"></script>
+    <script src="./GlobalArrows.js"></script>
+    <script src="./Assets/js/main3.js"></script>
+    <script src="./Assets/Units.js/Units.js"></script>
+    <script src="./Assets/grids.js/Grids.js"></script>
+    <script src="./loads-classes.js"></script>   
+
+    <script src="./Assets/Units.js/UnitsWindow.js"></script>
     <script src="./Assets/material and section/MaterialMetroForm.js"></script>
     <script src="./Assets/material and section/SectionMetroForm.js"></script>
     <script src="./Assets/material and section/Drawingwindow.js"></script>
+    <script src="./Assets/material and section/AssignFrameSectionForm.js"></script>
 
 </body>
 
