@@ -1,3 +1,4 @@
+
 //#region Section Class
 const ESectionShape = {
     Rectangular: 0,

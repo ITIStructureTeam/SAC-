@@ -138,6 +138,7 @@ class FrameElement
         this.Section.AssignedToFrames.splice(frameIndex,1);
         this.StartPoint.undo(this.Label);
         this.EndPoint.undo(this.Label);
+
         for(let i = 0; i <this.AssociatedPoints.length; i++){
             this.AssociatedPoints[i].undo();
         }
@@ -159,8 +160,7 @@ class FrameElement
         this.Label = null;
         this.StartPoint.remove();
         this.EndPoint.remove();
-        // let frameIndex = this.Sections.AssignedToFrames.indexOf(this);
-        // this.Sections.AssignedToFrames.splice(frameIndex,1);
+      
         for(let i = 0; i <this.AssociatedPoints.length; i++){
             this.AssociatedPoints[i].remove();
         }
@@ -191,6 +191,7 @@ class FrameElement
             EndPoint:this.EndPoint,
             Rotation:this.Rotation * 180/Math.PI,
             Loads:this.LoadsAssigned
+
             }
     }
 }
@@ -2015,6 +2016,7 @@ document.querySelector('#grids-btn').addEventListener("click",function(){
                 document.querySelector('#grids-window').parentElement.parentElement.remove();
                 gridsUpdated=true;
             }
+
         });
 
         document.querySelector('#grids-close').addEventListener("click",function(){
@@ -2615,6 +2617,7 @@ function GetMaxLoad (pattern){
             } 
             else maxLoads.push(Math.abs(load.Magnitude));
         }
+
     }
     return Math.max(...maxLoads);
 }
@@ -2624,10 +2627,11 @@ function GetMaxLoad (pattern){
 
 
 
-
 document.getElementById("Run").onclick=function(){Run()};
 function Run()
-{   
+{ 
+    //const Frames = [...DrawLine.GetDrawnFrames()];
+
     var OutPut = JSON.stringify(DrawLine.GetDrawnFrames());
     console.log(OutPut)
     // $.ajax({
