@@ -442,13 +442,15 @@
                     </div>
                     <!-- Loads Group (Pannel)    Tab Define -->
                     <div class="group">
-                        <button class="ribbon-button" onclick="LoadPattern()">
+                        <button class="ribbon-button" onclick="LoadPattern()" data-role="hint"
+                            data-hint-position="bottom" data-hint-text="Load Pattern">
                             <span class="icon">
                                 <img alt="Load Pattern" src="Assets/images/LoadPatternIcon.png">
                             </span>
                             <span class="caption">Load pattern</span>
                         </button>
-                        <button class="ribbon-button">
+                        <button class="ribbon-button" onclick="LoadCombination()" data-role="hint"
+                            data-hint-position="bottom" data-hint-text="Load Combination">
                             <span class="icon">
                                 <img alt="Compo" src="Assets/images/LoadCompinationIcon.JPG">
                             </span>
@@ -523,7 +525,8 @@
                 <div class="section" id="Assign-Section">
                     <!-- Case Properities Group (Pannel)    Tab Assign -->
                     <div class="group">
-                        <button class="ribbon-button">
+                        <button class="ribbon-button" onclick="JointRestraint()" data-role="hint"
+                        data-hint-position="bottom" data-hint-text="Add Joint Restraint">
                             <span class="icon">
                                 <img alt="Restraint" src="Assets/images/JointRestraintIcon.png">
                             </span>
@@ -545,7 +548,8 @@
                     </div>
                     <!-- Assign Loads Group (Pannel)    Tab Assign -->
                     <div class="group">
-                        <button class="ribbon-button">
+                        <button class="ribbon-button" onclick="PointLoads()"  data-role="hint"
+                        data-hint-position="bottom" data-hint-text="Add Point Loads">
                             <span class="icon">
                                 <img alt="Point Load" src="Assets/images/PointLoadIcon.png">
                             </span>
