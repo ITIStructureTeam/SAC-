@@ -172,5 +172,19 @@ class Material {
         return new Material(this.Name +" - " +this.#_cpyNo, this.Weight, this.ElasticModulus, this.Poisson, this.ThermalExpansion, this.MaterialType, this.Strength);
     }
 
+    toJSON(){
+        
+        return{
+        Name : this.Name,
+        Weight : this.Weight,
+        ElasticModulus:this.ElasticModulus ,
+        Poisson:this.Poisson,
+        ThermalExpansion:this.ThermalExpansion,
+        MaterialType:this.MaterialType,
+        Strength:this.Strength
+        };
+
+    }
+
 }
 //#endregion
