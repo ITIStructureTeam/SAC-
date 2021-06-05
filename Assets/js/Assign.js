@@ -109,17 +109,17 @@ function ApplyMoveButton()
     const x = document.getElementById("Move-X").value;
     if(!isNaN(x) && x != 0)
     {
-        delta[0] = x;
+        delta[0] = parseFloat(x);
     }
     const y = document.getElementById("Move-Y").value;
     if(!isNaN(y) && y != 0)
     {
-        delta[1] = y;
+        delta[1] = parseFloat(y);
     }
     const z = document.getElementById("Move-Z").value;
     if(!isNaN(z) && z != 0)
     {
-        delta[2] = z;
+        delta[2] = parseFloat(z);
     }
     if(delta[0] !==0 || delta[1] !==0 || delta[2] !== 0)
     {
@@ -164,17 +164,17 @@ function ApplyCopyButton()
     const x = document.getElementById("Copy-X").value;
     if(!isNaN(x) && x != 0)
     {
-        delta[0] = x;
+        delta[0] = parseFloat(x);
     }
     const y = document.getElementById("Copy-Y").value;
     if(!isNaN(y) && y != 0)
     {
-        delta[1] = y;
+        delta[1] = parseFloat(y);
     }
     const z = document.getElementById("Copy-Z").value;
     if(!isNaN(z) && z != 0)
     {
-        delta[2] = z;
+        delta[2] = parseFloat(z);
     }
     if(delta[0] !==0 || delta[1] !==0 || delta[2] !== 0)
     {
