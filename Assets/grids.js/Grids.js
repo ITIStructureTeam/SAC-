@@ -1,5 +1,5 @@
 var gridsUpdated = false;
-var group,gridLines;
+var group,gridLines = [];
 
 var listx=[6,6,6],                // x- axis list grids
 listy=[4,4,4],                    // y- axis list grids
@@ -374,7 +374,7 @@ function GridLine(spacingX, spacingY, spacingZ, lengthX, lengthY, lengthZ)
     const distanceX = listx.reduce((a, b) => a + b, 0);
     const distanceY = listy.reduce((a, b) => a + b, 0);
     const distanceZ = listz.reduce((a, b) => a + b, 0);
-    const group = [];
+    let group = [];
     var material = new THREE.LineBasicMaterial({color:'rgb(190,190,190)', alphaTest:0.7, transparent:true, opacity:0.7});
     var points;
     var geometry;

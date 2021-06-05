@@ -49,7 +49,7 @@
 
 </head>
 
-<body onload="init()">
+ <body>   <!--onload="init()"> -->
     <div id="webgl">
         <!-- SideBar -->
         <!-- <aside class="sidebar pos-absolute z-1" data-role="sidebar" data-toggle="#sidebar-toggle-4" id="sb4" data-static-shift=".shifted-content-2" data-static="md">
@@ -217,7 +217,7 @@
                             <span class="caption">Cut</span>
                         </button>
 
-                        <button id = "Copy" class="ribbon-button">
+                        <button id = "Copy" class="ribbon-button" onclick="CopyWindow()">
                             <span class="icon">
                                 <img alt="Copy" src="Assets/images/CopyIcon.jpg">
                             </span>
@@ -266,7 +266,7 @@
                             <span class="caption">Standard</span>
                         </button>
 
-                        <button id = "Move" class="ribbon-button">
+                        <button id = "Move" class="ribbon-button" onclick="MoveWindow()">
                             <span class="icon">
                                 <img alt="Move" src="Assets/images/MoveIcon.png">
                             </span>
@@ -389,21 +389,21 @@
                             <span class="icon">
                                 <img alt="XY" src="Assets/images/XYIcon.png" />
                             </span>
-                            <select id="XY" data-role="select" class="input-small"></select>
+                            <select id="XY"></select>
                         </button>
 
                         <button id="XZSection" class="ribbon-button">
                             <span class="icon">
                                 <img alt="XZ" src="Assets/images/XZICON.png">
                             </span>
-                            <select id="XZ" data-role="select" class="input-small"></select>
+                            <select id="XZ"></select>
                         </button>
 
                         <button id="YZSection" class="ribbon-button">
                             <span class="icon">
                                 <img alt="YZ" src="Assets/images/YZIcon.png">
                             </span>
-                            <select id="YZ" data-role="select" class="input-small"></select>
+                            <select id="YZ"></select>
                         </button>
                         <span class="title">View</span>
                     </div>
@@ -531,8 +531,8 @@
                     <div class="group">
                         <button class="ribbon-button" onclick="JointRestraint()" data-role="hint"
                         data-hint-position="bottom" data-hint-text="Add Joint Restraint">
-                            <span class="icon">
-                                <img alt="Restraint" src="Assets/images/JointRestraintIcon.png">
+                            <span class="icon"> 
+                                <img alt="Restraint" src="Assets/images/HingedIcon.JPG">
                             </span>
                             <span class="caption">Joint Restraint</span>
                         </button>
@@ -577,10 +577,6 @@
                         <span class="title">Assign Loads</span>
 
                     </div>
-                    <button id = "Hinge">Hinge</button>
-                    <button id = "Fix">Fix</button>
-                    <button id = "Roller">Roller</button>
-                    <button id = "Free">Free</button>
                     <button id = "Rotate">Rotate</button>
                 </div>
                 <!-- Analyse & Results Tab -->
@@ -687,7 +683,7 @@
 
         <!-- Status Bar -->
         <div style="background-color: rgb(235,235,235); z-index: 3; position: absolute;" id="Status_bar">
-            <img style="width: 30px; margin-left: 10px; margin-bottom: 5px; margin-top: 5px; " src="Assets/images/KiweIcon.png" alt="KiweIcon" />
+            <img style="width: 20px; margin-left: 10px; margin-bottom: 5px; margin-top: 5px; " src="Assets/images/KiweIcon.png" alt="KiweIcon" />
             <span id = "StatusBar">Welcome to KIEW Structural Analysis - Status Bar - </span>
         </div>
 
@@ -735,10 +731,12 @@
 
     <script type="module" src="main.js"></script>
 
+    <script src="./Classes.js"></script>
     <script src="./global.js"></script>
     <script src="./TextLabels.js"></script>
     <script src="./GlobalArrows.js"></script>
     <script src="./Assets/js/main3.js"></script>
+    <script src="./Assets/js/Assign.js"></script>
     <script src="./Assets/Units.js/Units.js"></script>
     <script src="./Assets/grids.js/Grids.js"></script>
     <script src="./loads-classes.js"></script>   
