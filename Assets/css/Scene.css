@@ -1,8 +1,8 @@
-/* body {
-    overflow-y: initial;
-    overflow-x: initial;
+body {
+    overflow-y: hidden;
+    overflow-x: hidden;
     margin: auto;
-} */
+}
 
 
 /* #webgl{

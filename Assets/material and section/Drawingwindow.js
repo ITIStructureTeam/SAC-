@@ -1,16 +1,17 @@
  let drawWin = `
- <div
+ <div id = "DrawingWindow"
  class="main-window"
  data-on-window-create="InitFramePropWindow"
  data-role="window"
+ data-btn-close="false"
  data-title="Frame Properties"
  data-btn-min="false"
  data-btn-max="false"
  data-resizable="false"
- data-place="center"
+ data-place="left"
  data-width="200">
     <table class="table compact" >
-        <tbody style="height:130px" >
+        <tbody style="height:100px" >
         <tr>
             <td>
                 <label>Section</label>
@@ -30,6 +31,10 @@
         </tr>
         </tbody>
     </table>
+
+    <div>
+        <button onclick="CloseDraw(); ExitDrawingMode()" style="left:100px; width:50;">close</button>
+    </div>
     
 </div>
 `
@@ -62,3 +67,20 @@ function GetSelectedSection(){
 
     return Section.SectionList.get(selectedId);  
 }
+
+
+function ExitDrawingMode(){
+    DrawingModeActive = false;
+    SelectionModeActive = true;
+}
+
+function CloseDraw() {
+    Metro.window.close('#DrawingWindow');
+}
+
+document.addEventListener('keydown', function(event){
+	if(event.key === "Escape"){
+        DrawingModeActive = false;
+        CloseDraw();
+    }
+});
