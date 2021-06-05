@@ -602,7 +602,7 @@ function CloseRestraint() {
 function JointRestraint() {
     if ($("#JointRestraint").length > 0) { alert('Window is Opened'); return; }
     $('body').append(`<div id="JointRestraint" data-top="200" style="z-index: 3;  " data-left="500" data-role="window"
-    data-width="330" data-height="330" data-resizable="false" data-title="Joint Restraint"
+    data-width="330" data-height="340" data-resizable="false" data-title="Joint Restraint"
     data-icon="<img src='Assets/images/JointRestraintIcon.png'>" data-btn-min="false" data-btn-max="false">
 
     <div class="flex-rowm">
