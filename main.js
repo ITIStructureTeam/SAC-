@@ -2633,27 +2633,6 @@ function GetMaxLoad (pattern){
 }
 
 
-
-
-function GetMaxLoad (pattern){
-    let frames = DrawLine.GetDrawnFrames();
-    let maxLoads = [];
-    for (const frame of frames) {
-        let loads = frame.LoadsAssigned.get(pattern);
-        for(const load of loads){
-            if(load.Magnitude instanceof Array){
-                let absvals = [];
-                load.Magnitude.forEach(value => absvals.push(Math.abs(value)) );
-                maxLoads.push(Math.max(...absvals));
-            } 
-            else maxLoads.push(Math.abs(load.Magnitude));
-        }
-
-    }
-    return Math.max(...maxLoads);
-}
-
-
 document.getElementById("Run").onclick=function(){Run()};
 function Run()
 {   
@@ -2685,95 +2664,6 @@ function Run()
 
 
 
-
-function DrawHinge(position)
-{
-    const material = new THREE.LineBasicMaterial({ alphaTest:1, opacity:1 });
-    material.color = {r:0, g:0.4, b: 0.25, a:1};
-    let geometry = new THREE.BufferGeometry();
-    let vertices =[];  
-    vertices.push(0 ,0 ,0);
-    vertices.push(0.35, 0, -0.35);
-    vertices.push(-0.35, 0, -0.35);
-    vertices.push(0 ,0 ,0);
-    vertices.push(0, 0.35, -0.35);
-    vertices.push(0, -0.35, -0.35);
-    vertices.push(0 ,0 ,0);
-    geometry.setAttribute( 'position', new THREE.Float32BufferAttribute( vertices, 3 ) );
-    let hinge = new THREE.Line( geometry, material );
-    hinge.position.x = position[0];
-    hinge.position.y = position[1];
-    hinge.position.z = position[2];
-    return hinge;
-}
-
-function DrawFix(position)
-{
-    const material = new THREE.LineBasicMaterial();
-    material.color = {r:0, g:0.4, b: 0.25, a:1};
-    let geometry = new THREE.BufferGeometry();
-    let vertices =[];  
-    vertices.push(0 ,0 ,0);
-    vertices.push(0.45, 0, 0);
-    vertices.push(0.45, 0, -0.35);
-    vertices.push(-0.45, 0, -0.35);
-    vertices.push(-0.45, 0, 0);
-    vertices.push(0 ,0 ,0);
-    vertices.push(0, 0.45, 0);
-    vertices.push(0, 0.45, -0.35);
-    vertices.push(0, -0.45, -0.35);
-    vertices.push(0, -0.45, 0);
-    vertices.push(0 ,0 ,0);
-    geometry.setAttribute( 'position', new THREE.Float32BufferAttribute( vertices, 3 ) );
-    const fix = new THREE.Line( geometry, material );
-    fix.position.x = position[0];
-    fix.position.y = position[1];
-    fix.position.z = position[2];
-    return fix;
-}
-
-
-
-document.getElementById("Run").onclick=function(){Run()};
-function Run()
-{ 
-    //const Frames = [...DrawLine.GetDrawnFrames()];
-
-    var OutPut = JSON.stringify(DrawLine.GetDrawnFrames());
-    console.log(OutPut)
-    // $.ajax({
-    //     type: "POST",
-    //     url: "http://192.168.1.10:8080/Main.html",                   ///// URL must be specified
-    //     contentType: "application/json; charset=utf-8",
-    //     dataType: "json",
-    //     data: "{Frames: " + OutPut + "}",
-    //     cache: false,
-    //     success: function (result) {
-    
-    //     },
-    //     error: function (ex) {
-    //         WriteToConsole(ex.responseText);
-    //     }
-    // });
-
-
-// var fs = require('fs');
-// fs.writeFile("OutPut.json", OutPut, function(err) {
-//     if (err) {
-//         console.log(err);
-//     }
-// });
-}
-
-
-function DrawPoint(position, alphaTest=0)
-{
-    let dotGeometry = new THREE.BufferGeometry();
-    dotGeometry.setAttribute( 'position', new THREE.Float32BufferAttribute( position, 3 ) );
-    let dotMaterial = new THREE.PointsMaterial( { size: 1, sizeAttenuation: false, alphaTest:alphaTest, transparent: true, opacity: 0.8 } );
-    let dot = new THREE.Points( dotGeometry, dotMaterial );
-    return dot;
-}
 
 
 function DrawHinge(position)
