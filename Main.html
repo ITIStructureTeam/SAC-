@@ -210,12 +210,12 @@
                     <!-- Modify Group (Pannel)    Tab Edit -->
                     <div class="group">
 
-                        <button class="ribbon-button">
+                        <!-- <button class="ribbon-button">
                             <span class="icon">
                                 <img alt="Cut" src="Assets/images/CutIcon.png">
                             </span>
                             <span class="caption">Cut</span>
-                        </button>
+                        </button> -->
 
                         <button id = "Copy" class="ribbon-button" onclick="CopyWindow()">
                             <span class="icon">
@@ -224,12 +224,18 @@
                             <span class="caption">Copy</span>
                         </button>
 
-                        <button class="ribbon-button">
+                        <button id = "Move" class="ribbon-button" onclick="MoveWindow()">
+                            <span class="icon">
+                                <img alt="Move" src="Assets/images/MoveIcon.png">
+                            </span>
+                            <span class="caption">Move</span>
+                        </button>
+                        <!-- <button class="ribbon-button">
                             <span class="icon">
                                 <img alt="Paste" src="Assets/images/PasteIcon.jpg">
                             </span>
                             <span class="caption">Paste</span>
-                        </button>
+                        </button> -->
 
                         <button id = "Delete" class="ribbon-button">
                             <span class="icon">
@@ -243,12 +249,12 @@
                     <!-- Geometry Group (Pannel)    Tab Edit -->
                     <div class="group">
 
-                        <button class="ribbon-button">
+                        <!-- <button class="ribbon-button">
                             <span class="icon">
                                 <img alt="Replicate" src="Assets/images/ReplicateIcon.png">
                             </span>
                             <span class="caption">Replicate</span>
-                        </button>
+                        </button> -->
 
                         <button id="Extrude" class="ribbon-button" data-role="hint" data-hint-position="bottom"
                             data-hint-text="Extrude View">
@@ -264,13 +270,6 @@
                                 <img alt="Standard View" src="Assets/images/UndeformedShapeIcon.jpg">
                             </span>
                             <span class="caption">Standard</span>
-                        </button>
-
-                        <button id = "Move" class="ribbon-button" onclick="MoveWindow()">
-                            <span class="icon">
-                                <img alt="Move" src="Assets/images/MoveIcon.png">
-                            </span>
-                            <span class="caption">Move</span>
                         </button>
 
                         <span class="title">Geometry</span>
@@ -542,6 +541,14 @@
                             </span>
                             <span class="caption">Frame Section</span>
                         </button>
+
+                        <button id="Rotate" class="ribbon-button" onclick="RotateWindow()">
+                            <span class="icon">
+                                <img alt="LocalAxis" src="Assets/images/LocalAxis.png">
+                            </span>
+                            <span class="caption">Frame Axis</span>
+                        </button>
+
                         <button class="ribbon-button">
                             <span class="icon">
                                 <img alt="Area Section" src="Assets/images/AreaSectionIcon.png">
@@ -577,7 +584,7 @@
                         <span class="title">Assign Loads</span>
 
                     </div>
-                    <button id = "Rotate">Rotate</button>
+                   
                 </div>
                 <!-- Analyse & Results Tab -->
                 <div class="section" id="Analyse-Section">
