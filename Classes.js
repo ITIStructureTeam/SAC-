@@ -1209,11 +1209,12 @@ class AssignFrameSection{
 
 class Copy
 {
-    constructor(Delta)
+    constructor(Delta, repetition )
     {
         this.Delta = Delta;
         this.CopiedList = [];
         this.Copies = [];
+        this.repitition = repetition;
         for(let i = 0; i <DrawLine.SelectedLines.length; i++){
             this.CopiedList.push(DrawLine.SelectedLines[i]);
         }
@@ -1221,21 +1222,30 @@ class Copy
     excute()
     {
         Unselect();
-        for(let i = 0; i<this.CopiedList.length ; i++)
+        for(let k = 1; k <= this.repitition; k++ )
         {
-            let points = [];
-            points.push(this.CopiedList[i].Frame.StartPoint.position[0] + this.Delta[0])
-            points.push(this.CopiedList[i].Frame.StartPoint.position[1] + this.Delta[1])
-            points.push(this.CopiedList[i].Frame.StartPoint.position[2] + this.Delta[2])
-            points.push(this.CopiedList[i].Frame.EndPoint.position[0] + this.Delta[0])
-            points.push(this.CopiedList[i].Frame.EndPoint.position[1] + this.Delta[1])
-            points.push(this.CopiedList[i].Frame.EndPoint.position[2] + this.Delta[2])
-    
-            let Copy = new DrawLine(new FrameElement(points, this.CopiedList[i].Frame.Section));
-            let number = this.CopiedList[i].Frame.AssociatedPoints.length +1;
-            Copy.Frame.AddPointsAtEqualDistances(number);
-            this.Copies.push(Copy); 
-            Copy.excute();
+            for(let i = 0; i<this.CopiedList.length ; i++)
+            {
+                let points = [];
+                points.push(this.CopiedList[i].Frame.StartPoint.position[0] + this.Delta[0]*k)
+                points.push(this.CopiedList[i].Frame.StartPoint.position[1] + this.Delta[1]*k)
+                points.push(this.CopiedList[i].Frame.StartPoint.position[2] + this.Delta[2]*k)
+                points.push(this.CopiedList[i].Frame.EndPoint.position[0] + this.Delta[0]*k)
+                points.push(this.CopiedList[i].Frame.EndPoint.position[1] + this.Delta[1]*k)
+                points.push(this.CopiedList[i].Frame.EndPoint.position[2] + this.Delta[2]*k)
+            
+                let Copy = new DrawLine(new FrameElement(points, this.CopiedList[i].Frame.Section));
+                let number = this.CopiedList[i].Frame.AssociatedPoints.length +1;
+                Copy.Frame.Rotation = this.CopiedList[i].Frame.Rotation;
+                Copy.Frame.StartPoint.Restraint = this.CopiedList[i].Frame.StartPoint.Restraint;
+                Copy.Frame.StartPoint.ViewIndication();
+                Copy.Frame.EndPoint.Restraint = this.CopiedList[i].Frame.EndPoint.Restraint;
+                Copy.Frame.EndPoint.ViewIndication();
+                secUpdated = true;
+                Copy.Frame.AddPointsAtEqualDistances(number);
+                this.Copies.push(Copy); 
+                Copy.excute();
+            }
         }
         this.CopiedList = [];
     }
@@ -1291,6 +1301,12 @@ class Move
             let move = new DrawLine(new FrameElement(points, this.TempList[i].Frame.Section));
             let number = this.TempList[i].Frame.AssociatedPoints.length +1;
             move.Frame.AddPointsAtEqualDistances(number);
+            move.Frame.Rotation = this.TempList[i].Frame.Rotation;
+            secUpdated = true;
+            move.Frame.StartPoint.Restraint = this.TempList[i].Frame.StartPoint.Restraint;
+            move.Frame.StartPoint.ViewIndication();
+            move.Frame.EndPoint.Restraint = this.TempList[i].Frame.EndPoint.Restraint;
+            move.Frame.EndPoint.ViewIndication();
             this.Moved.push(move); 
             move.excute();
             this.TempList[i].undo();
@@ -1382,8 +1398,9 @@ class RotateFrame
             this.TempRotations.push(DrawLine.SelectedLines[i].Frame.Rotation)
         }
     }
-    excute()
+    excute() 
     {
+        Unselect();
         for(let i = 0; i < this.SelectedFrames.length; i++)
         {
             this.SelectedFrames[i].Frame.Rotation = this.rad;
@@ -1427,12 +1444,6 @@ function Redo()
 {
     commands.redoCommand();
     Unselect();
-}
-
-document.getElementById("Delete").onclick=function(){DeleteButton()};
-function DeleteButton()
-{
-    commands.excuteCommand(new Delete(DrawLine.SelectedLines));
 }
 
 
@@ -1626,14 +1637,5 @@ function DrawPoint(position, alphaTest=0)
 }
 
 
-
-
-
-document.getElementById("Rotate").onclick=function(){Rotate()};
-function Rotate()
-{
-    const rotation = 45;
-    commands.excuteCommand(new RotateFrame(rotation));
-}
 
 

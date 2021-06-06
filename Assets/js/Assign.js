@@ -5,9 +5,9 @@ function CloseRestraint() {
 }
 
 function JointRestraint() {
-    $('body').append(`<div id="JointRestraint" data-top="200" style="z-index: 3;  " data-left="500" data-role="window"
-    data-width="330" data-height="340" data-resizable="false" data-title="Joint Restraint"
-    data-icon="<img src='Assets/images/JointRestraintIcon.png'>" data-btn-min="false" data-btn-max="false">
+    $('body').append(`<div id="JointRestraint" data-top="200" style="z-index: 3;  " data-left="200" data-role="window"
+    data-width="330" data-height="320" data-resizable="false" data-title="Joint Restraint"
+    data-btn-min="false" data-btn-max="false">
 
     <div class="flex-rowm">
         <div class="flex-col" style="margin-top: 20px;">
@@ -34,13 +34,11 @@ function JointRestraint() {
 
 
     </div>
-    <div id="RestraintBtnGroup" data-role="panel">
-        <div class="node d-flex flex-justify-between">
-            <button class="button secondary" onclick="ApplyRestraint(); CloseRestraint();">OK</button>
-            <button onclick="CloseRestraint()">Cancel</button>
-            <button onclick="ApplyRestraint()">Apply</button>
+        <div style="margin-left:45px">
+            <button class="button info" style="width:35px; hight:30px; font-size:12px; margin-top:18px" onclick="ApplyRestraint(); CloseRestraint();">OK</button>
+            <button class="button default" style="width:65px; hight:30px; font-size:12px; margin-top:18px" onclick="ApplyRestraint()">Apply</button>
+            <button class="button default" style="width:65px; hight:30px; font-size:12px; margin-top:18px" onclick="CloseRestraint()">Cancel</button>    
         </div>
-    </div>
 </div>`)
 }
 
@@ -78,21 +76,21 @@ function ApplyRestraint()
 
 function MoveWindow() {
     $('body').append(`<div id="MoveElement" data-top="150" style="z-index: 3;  " data-left="150" data-role="window"
-    data-width="350" data-height="200" data-resizable="false" data-title="Move"
+    data-width="350" data-height="190" data-resizable="false" data-title="Move"
 
     <div>
-        <div style="margin-top: 10px; margin-left:10px; width: 60%; font-size:12px;">
+        <div style="margin-top: 10px; margin-left:10px; width: 80%; font-size:12px;">
             X-direction translation  
-            <input id = "Move-X" style="width:65px;"><br>
+            <input type="number" id = "Move-X" style="width:65px; margin-left:15px;"><br>
             Y-direction translation
-            <input id = "Move-Y" style="width:65px;"><br>
+            <input type="number" id = "Move-Y" style="width:65px; margin-left:15px;"><br>
             Z-direction translation
-            <input id = "Move-Z" style="width:65px;"><br><br>
+            <input type="number" id = "Move-Z" style="width:65px; margin-left:15px;"><br><br>
         </div>
         <div style="margin-left:55px">
-            <button style="width:35px; hight:30px; font-size:12px;" onclick="ApplyMoveButton(); CloseMoveWindow();">OK</button>
-            <button style="width:65px; hight:30px; font-size:12px;" onclick="ApplyMoveButton()">Apply</button>
-            <button style="width:65px; hight:30px; font-size:12px;" onclick="CloseMoveWindow()">Cancel</button>
+            <button class="button info" style="width:35px; hight:30px; font-size:12px;" onclick="ApplyMoveButton(); CloseMoveWindow();">OK</button>
+            <button class="button default" style="width:65px; hight:30px; font-size:12px;" onclick="ApplyMoveButton()">Apply</button>
+            <button class="button default" style="width:65px; hight:30px; font-size:12px;" onclick="CloseMoveWindow()">Cancel</button>
         </div>
     
 </div>`)
@@ -121,33 +119,35 @@ function ApplyMoveButton()
     {
         delta[2] = parseFloat(z);
     }
-    if(delta[0] !==0 || delta[1] !==0 || delta[2] !== 0)
+    if(DrawLine.SelectedLines.length>0)
     {
-        alert(delta)
-        commands.excuteCommand(new Move(delta));
+        if(delta[0] !==0 || delta[1] !==0 || delta[2] !== 0)
+        {
+            commands.excuteCommand(new Move(delta));
+        }
     }
 }
 
 
 function CopyWindow() {
     $('body').append(`<div id="CopyElement" data-top="150" style="z-index: 3;  " data-left="150" data-role="window"
-    data-width="350" data-height="200" data-resizable="false" data-title="Copy"
+    data-width="350" data-height="210" data-resizable="false" data-title="Copy"
 
     <div>
-        <div style="margin-top: 10px; margin-left:10px; width: 60%; font-size:12px;">
+        <div style="margin-top: 10px; margin-left:10px; width: 80%; font-size:12px;">
             X-direction translation  
-            <input id = "Copy-X" style="width:65px;"><br>
+            <input type="number" id = "Copy-X" style="width:65px; margin-left:15px;"><br>
             Y-direction translation
-            <input id = "Copy-Y" style="width:65px;"><br>
+            <input type="number" id = "Copy-Y" style="width:65px; margin-left:15px;"><br>
             Z-direction translation
-            <input id = "Copy-Z" style="width:65px;"><br>
+            <input type="number" id = "Copy-Z" style="width:65px ; margin-left:15px;"><br>
             Repitition
-            <input id = "Rep" style="width:65px; margin-left:68px;"><br><br>
+            <input type="number" id = "Rep" style="width:65px; margin-left:82px;"><br><br>
         </div>
         <div style="margin-left:55px">
-            <button style="width:35px; hight:30px; font-size:12px;" onclick="ApplyCopyButton(); CloseCopyWindow();">OK</button>
-            <button style="width:65px; hight:30px; font-size:12px;" onclick="ApplyCopyButton()">Apply</button>
-            <button style="width:65px; hight:30px; font-size:12px;" onclick="CloseCopyWindow()">Cancel</button>
+            <button class="button info" style="width:35px; hight:30px; font-size:12px;" onclick="ApplyCopyButton(); CloseCopyWindow();">OK</button>
+            <button class="button default" style="width:65px; hight:30px; font-size:12px;" onclick="ApplyCopyButton()">Apply</button>
+            <button class="button default" style="width:65px; hight:30px; font-size:12px;" onclick="CloseCopyWindow()">Cancel</button>
         </div>
     
 </div>`)
@@ -176,8 +176,71 @@ function ApplyCopyButton()
     {
         delta[2] = parseFloat(z);
     }
-    if(delta[0] !==0 || delta[1] !==0 || delta[2] !== 0)
+    let r = document.getElementById("Rep").value;
+    let copiable = true;
+    if(isNaN(r) || r < 1)
     {
-        commands.excuteCommand(new Copy(delta));
+        copiable = false;
+    }else{
+        r = Math.floor(parseFloat(r));
+    }
+
+    if(DrawLine.SelectedLines.length > 0 && copiable){
+        if(delta[0] !==0 || delta[1] !==0 || delta[2] !== 0)
+        {
+            commands.excuteCommand(new Copy(delta, r));
+        }
     }
 }
+
+
+
+
+
+
+
+
+
+
+document.getElementById("Delete").onclick=function(){DeleteButton()};
+function DeleteButton()
+{
+    commands.excuteCommand(new Delete(DrawLine.SelectedLines));
+}
+
+
+
+
+function RotateWindow() {
+    $('body').append(`<div id="RotateElement" data-top="150" style="z-index: 3;  " data-left="150" data-role="window"
+    data-width="350" data-height="165" data-resizable="false" data-title="Rotate Frame Element"
+
+    <div>
+        <div style="margin-top: 10px; margin-left:10px; width: 80%; font-size:12px;">
+            Rotate Frame element about it's local axis 
+            <input type="number" id = "RotateAboutAxis-1" style="width:65px; margin-top:10px;"> degrees <br><br>
+        
+        </div>
+        <div style="margin-left:55px">
+            <button class="button info" style="width:35px; hight:30px; font-size:12px;" onclick="Rotate(); CloseRotateWindow();">OK</button>
+            <button class="button default" style="width:65px; hight:30px; font-size:12px;" onclick="Rotate()">Apply</button>
+            <button class="button default" style="width:65px; hight:30px; font-size:12px;" onclick="CloseRotateWindow()">Cancel</button>
+        </div>
+    
+</div>`)
+}
+
+function CloseRotateWindow() {
+    Metro.window.close('#RotateElement');
+}
+
+function Rotate()
+{
+    const rotation = document.getElementById("RotateAboutAxis-1").value;
+
+    if(DrawLine.SelectedLines.length > 0 && rotation != 0){
+        commands.excuteCommand(new RotateFrame(rotation));
+    }
+}
+
+

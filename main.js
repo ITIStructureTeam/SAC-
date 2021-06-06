@@ -375,8 +375,18 @@ function ClickToSelectElement(event){
 }
 
 
-
-
+setInterval(CheckForUpdates, 700);
+function CheckForUpdates()
+{
+    if( secAssigned && DrawLine.SelectedLines.length){
+        commands.excuteCommand( new AssignFrameSection( assignedSection ) );
+        secAssigned = false;
+    }
+    if(secUpdated && !state){
+        DrawLine.DrawLinesArray.forEach( drawLine=> drawLine.ReExtrude());
+        secUpdated = false;
+    }
+}
 
 
 
@@ -396,15 +406,6 @@ function update(renderer, scene, camera, controls)
 
     resetPoints();
 
-
-    if( secAssigned && DrawLine.SelectedLines.length){
-        commands.excuteCommand( new AssignFrameSection( assignedSection ) );
-        secAssigned = false
-    }
-    if(secUpdated && !state){
-        DrawLine.DrawLinesArray.forEach( drawLine=> drawLine.ReExtrude());
-        secUpdated = false
-    }
     if(DrawingModeActive == true)
     {
         window.addEventListener( 'click', ClickToDrawLine, false );
@@ -543,7 +544,7 @@ function GridSelections()
     let position = 0;
     for (let i = 0; i <= listz.length; i++)
     {
-        const text = "Z = "+position;
+        const text = "Z = "+ projUnits.LengthConvert(position, true);
         position += listz[i];
         $("#XY").append(`<option value=${position} >${text}</option>`);
     }
@@ -551,7 +552,7 @@ function GridSelections()
     position = 0;
     for (let i = 0; i <= listy.length; i++)
     {
-        const text = "Z = "+position;
+        const text = "Z = "+ projUnits.LengthConvert(position, true);
         position += listy[i];
         $("#XZ").append(`<option value=${position} >${text}</option>`);
     }
@@ -559,7 +560,7 @@ function GridSelections()
     position = 0;
     for (let i = 0; i <= listx.length; i++)
     {
-        const text = "Z = "+position;
+        const text = "Z = "+ projUnits.LengthConvert(position, true);
         position += listx[i];
         $("#YZ").append(`<option value=${position} >${text}</option>`);
     }
@@ -668,7 +669,7 @@ function XYView(XYindex)
     txSpriteY = makeTextSprite( "Y", -2, 0.6, ViewPosition, { fontsize: 200, fontface: "Georgia", textColor: { r:6, g:117, b:201, a:1.0 }, vAlign:"center", hAlign:"center" } );
     scene.add( txSpriteY );  
 
-    document.getElementById("StatusBar").innerHTML = "Z = " + ViewPosition + "m" ; 
+    document.getElementById("StatusBar").innerHTML = "Z = " + projUnits.LengthConvert(ViewPosition, true) + projUnits.LenUnit ; 
 }
 
 document.getElementById("XZSection").onclick=function(){XZSection()};
@@ -739,7 +740,7 @@ function XZView(XZindex){
     txSpriteZ = makeTextSprite( "Z", -2, ViewPosition,0.6, { fontsize: 200, fontface: "Georgia", textColor: { r:5, g:166, b:96, a:1.0 }, vAlign:"center", hAlign:"center" } );
     scene.add( txSpriteZ );  
 
-    document.getElementById("StatusBar").innerHTML = "Y = " + ViewPosition + "m" ; 
+    document.getElementById("StatusBar").innerHTML = "Y = " + projUnits.LengthConvert(ViewPosition, true) + projUnits.LenUnit ; 
 }
 
 document.getElementById("YZSection").onclick=function(){YZSection()};
@@ -812,7 +813,7 @@ function YZView(YZindex){
     txSpriteZ = makeTextSprite( "Z", ViewPosition, -2, 0.6, { fontsize: 200, fontface: "Georgia", textColor: { r:5, g:166, b:96, a:1.0 }, vAlign:"center", hAlign:"center" } );
     scene.add( txSpriteZ );
 
-    document.getElementById("StatusBar").innerHTML = "X = " + ViewPosition + "m" ; 
+    document.getElementById("StatusBar").innerHTML = "X = " + projUnits.LengthConvert(ViewPosition, true) + projUnits.LenUnit ; 
 }
 
 document.getElementById("ThreeD").onclick=function(){ThreeD()};
