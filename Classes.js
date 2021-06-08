@@ -1,4 +1,3 @@
-
 // Global variables for init function
 var
  raycaster,
@@ -79,6 +78,7 @@ class Commands
 // create an instance of command object 
 var commands = new Commands()
 
+
 // Frame Element class
 class FrameElement
 {
@@ -134,9 +134,13 @@ class FrameElement
     {
         let frameIndex = this.Section.AssignedToFrames.indexOf(this.Label);
         this.Section.AssignedToFrames.splice(frameIndex,1);
+        this.LoadsAssigned.forEach((value,key) => {
+            let pattern = LoadPattern.LoadPatternsList.get(key);
+            let frameIndex = pattern.OnElements.indexOf(this.Label);
+            pattern.OnElements.splice(frameIndex,1);
+        });
         this.StartPoint.undo(this.Label);
         this.EndPoint.undo(this.Label);
-
         for(let i = 0; i <this.AssociatedPoints.length; i++){
             this.AssociatedPoints[i].undo();
         }
@@ -145,6 +149,10 @@ class FrameElement
     redo()
     {
         this.Section.AssignedToFrames.push(this.Label);
+        this.LoadsAssigned.forEach((value,key) => {
+            let pattern = LoadPattern.LoadPatternsList.get(key);
+            pattern.OnElements.push(this.Label);
+        });
         this.StartPoint.redo(this.Label);
         this.EndPoint.redo(this.Label);
         this.Section.AssignedToFrames.push(this);
@@ -158,7 +166,7 @@ class FrameElement
         this.Label = null;
         this.StartPoint.remove();
         this.EndPoint.remove();
-      
+        this.LoadsAssigned = null;
         for(let i = 0; i <this.AssociatedPoints.length; i++){
             this.AssociatedPoints[i].remove();
         }
@@ -189,8 +197,7 @@ class FrameElement
             EndPoint:this.EndPoint,
             Rotation:this.Rotation * 180/Math.PI,
             Loads:this.LoadsAssigned
-
-            }
+        }
     }
 }
 
@@ -204,7 +211,9 @@ class DrawLine
     #name;
     static #drawLinesArray = new Array();
     static SelectedLines = [];
-
+    static LoadsDisplayed = false;
+    static DisplayedPattern;
+    #dispLoads;
     constructor(frame)
     { 
         this.#frame=frame;
@@ -226,7 +235,7 @@ class DrawLine
             this.Extrude.visible = true;
             this.line.visible = false;
         }
-
+        this.#dispLoads = [];       // array containg loads representation of the frame in  a certain load pattern
     }
 
     #SetLine(){
@@ -589,6 +598,15 @@ class DrawLine
         return selectedFrames;
     }
 
+    static HideLoads(){
+        DrawLine.DrawLinesArray.forEach( line => {
+            line.#dispLoads.forEach(load =>{
+                load.clear()
+                scene.remove(load);
+            });
+        });
+    }
+
     ReExtrude(){
         scene.remove(this.#extrude);
         this.#SetExtrude();
@@ -607,14 +625,65 @@ class DrawLine
 
     ReSetSecName(){
         scene.remove(this.name)
-        let SpritePosition = [(this.Frame.EndPoint.position[0]-this.Frame.StartPoint.position[0])/3, (this.Frame.EndPoint.position[1]-this.Frame.StartPoint.position[1])/3, (this.Frame.EndPoint.position[2]-this.Frame.StartPoint.position[2])/3];
-        this.#name = makeTextSprite
-        ( 
-        this.Frame.Section.Name, SpritePosition[0]+this.Frame.StartPoint.position[0]+0.2, SpritePosition[1]+this.Frame.StartPoint.position[1], SpritePosition[2]+this.Frame.StartPoint.position[2]-0.2,
-        {fontsize: 120, fontface: "Georgia", textColor:{r:160, g:160, b:160, a:1.0},
-        vAlign:"center", hAlign:"center", fillColor:{r:255, g:255, b:255, a:1.0},
-        borderColor: {r:0, g:0, b:0, a:1.0}, borderThickness: 1, radius:30}
-        );
+        this.#SetName();
+        scene.add(this.name);
+        if(state == true) this.name.visible=true;
+        else this.name.visible=false;
+    }
+
+    DisplayLoad(pattern){
+        pattern = (pattern==null)?DrawLine.DisplayedPattern:pattern;
+        // remove loads displayed last time
+        this.#dispLoads.forEach(load =>{
+            load.clear()
+            scene.remove(load);
+        });
+        this.#dispLoads.length = 0;
+
+        // draw loads applied to frame element in in a certain pattern
+        if(this.Frame.LoadsAssigned.has(pattern)){
+
+            this.Frame.LoadsAssigned.get(pattern).forEach(loadApply => {
+                let loadMesh = this.#DrawLoad(pattern,loadApply);  //object 3D (group)
+                this.#dispLoads.push(loadMesh);
+            });
+
+        }
+
+        // add loads representation to scene
+        this.#dispLoads.forEach(dispLoad => scene.add(dispLoad));
+
+        // check the mode of the editor to make loads visible or invisible
+        if(DrawLine.LoadsDisplayed){
+            this.#dispLoads.forEach(dispLoad => dispLoad.visible = true);
+            //console.log(this.#dispLoads);
+        }else{
+            this.#dispLoads.forEach(dispLoad => dispLoad.visible = false);
+        }
+
+    }
+
+    #DrawLoad(patternId ,AppliedLoad){
+        const scale = 1.25 / GetMaxLoad(patternId);
+        const startPoint = this.Frame.StartPoint.position;
+        const endPoint = this.Frame.EndPoint.position;
+        const magnitudes = AppliedLoad.Magnitude;
+        const dir = AppliedLoad.Dir;
+        const coordSys = AppliedLoad.CoordSys;       
+        const relDist = AppliedLoad.Distance ;
+        let load;
+        switch(AppliedLoad.Shape){
+            case ELoadShape.Distributed:
+                
+                const loadPos1 = GetAbsoluteCoord(relDist[0] ,startPoint, endPoint);
+                const loadPos2 = GetAbsoluteCoord(relDist[1] ,startPoint, endPoint);
+                load=DistributedLoadIndication(magnitudes[0] ,loadPos1, loadPos2, dir, 0, scale, magnitudes[1], coordSys);
+                break;
+            case ELoadShape.Point:
+                load=PointLoadIndication (magnitudes, relDist, startPoint, endPoint,  dir, 0, scale , coordSys);
+                break;
+        }
+        return load;
     }
 
     excute()
@@ -631,6 +700,11 @@ class DrawLine
     undo() 
     {
         DrawLine.DrawLinesArray.splice(DrawLine.DrawLinesArray.indexOf(this),1);
+        this.#dispLoads.forEach(load =>{
+            load.clear()
+            scene.remove(load);
+        });
+        this.#dispLoads.length = 0; 
         scene.remove(this.refline);
         scene.remove(this.line);
         scene.remove(this.Extrude);
@@ -686,12 +760,17 @@ class DrawLine
 
     Hide()
     {
-         scene.remove(this.line);
-         scene.remove(this.Extrude);
-         scene.remove(this.refline);
-         scene.remove(this.label);
-         scene.remove(this.name);
+        scene.remove(this.line);
+        scene.remove(this.Extrude);
+        scene.remove(this.refline);
+        scene.remove(this.label);
+        scene.remove(this.name);
+        this.#dispLoads.forEach(load =>{
+            load.clear()
+            scene.remove(load);
+        });
     }
+
     Show()
     {
         scene.add(this.line);
@@ -699,7 +778,9 @@ class DrawLine
         scene.add(this.refline);
         scene.add(this.label);
         scene.add(this.name);
+        if(DrawLine.DisplayedPattern) this.DisplayLoad(DrawLine.DisplayedPattern);
     }
+
     InView()
     {
         if(view == "XY")
@@ -913,189 +994,74 @@ class Point
 }
 
 
-class AppliedLoadInfo{
-
-    //#frame;
-    //#patternName
-    #coordSys;
-    #dir;
-    #type
-    #shape;
-    #distance;
-    #magnitude;
-
-    //constructor(pattern, frame, coordSys , dir, type, shape, distance, magnitude)
-    constructor(coordSys , dir, type, shape, distance, magnitude){
-        //this.Frame = frame;             // FrameElement Object
-        //this.PatternName = pattern      // pattern Name
-        this.CoordSys = coordSys;       // for local (true)  for global (false)
-        this.Dir = dir;                 // 1(x) or 2(z) or 3(y)
-        this.Type = type;               // for force (0)   for moment (1)
-        this.Shape = shape;             // for point(0)   for distr  (1)
-        this.Distance = distance;       // one number for point  |  array of two numbers for distributed    (RELATIVE DISTANCE)
-        this.Magnitude = magnitude;     // one number for point  |  array of two numbers for distributed
-    }
-    
-    /* set Frame (frame){
-
-        this.#frame = frame
-        if(frame.LoadsAssigned.has(this.PatternName)){
-            let appliedLoads = frame.LoadsAssigned.get(this.PatternName);
-            let similarLoads = appliedLoads.filter(load => (load.Shape == this.AppliedLoad.Shape && load.Type == this.AppliedLoad.Type) );
-            if(!similarLoads.length) appliedLoads.push(this.AppliedLoad);
-            else{
-                if(similarLoads[0].Shape == ELoadShape.Distributed){
-                    let index = appliedLoads.indexOf(similarLoads[0]);
-                    appliedLoads[index] = this.AppliedLoad;
-                }
-                else{
-                    let atSameDis = similarLoads.filter(simLoad => simLoad.Distance == this.AppliedLoad.Distance);
-                    if(! atSameDis.length) appliedLoads.push(this.AppliedLoad);
-                    else {
-                        let index = appliedLoads.indexOf(atSameDis[0]);
-                        appliedLoads[index] = this.AppliedLoad;
-                    }
-                }
-            }
-        }else{
-            frame.LoadsAssigned.set(this.PatternName,[this.AppliedLoad]);
-        }
-
-    }
-
-    set PatternName(name){
-        if(! LoadPattern.LoadPatternsList.has(name)) throw new TypeError('invalid load pattern');
-        this.#patternName = name;
-        let pattern = LoadPattern.LoadPatternsList.get(name);
-        if(! pattern.OnElements.includes(this.Frame.Label)) pattern.OnElements.push(this.Frame.Label);
-    } */
-
-    set CoordSys(value){
-        if (!(Object.values(ECoordSys).includes(value))) throw new TypeError('Coordinate Systems accepts only true for loacal or false for global');
-        this.#coordSys = value;
-    }
-    set Dir(value){
-        if(value !== 1 && value !==2 && value !== 3) throw new TypeError('direction accepts only 1 or 2 or 3');
-        this.#dir = value
-    }
-    set Type(value){
-        if (!(Object.values(ELoadType).includes(value))) throw new TypeError('laod type accepts only 0 for force or 1 for moment');
-        this.#type = value;
-    }
-    set Shape(value){
-        if (!(Object.values(ELoadShape).includes(value))) throw new TypeError('load shape accepts only 0 for point or 1 for distributed');
-        this.#shape = value;
-    }
-    set Distance(value){
-        if(this.Shape == ELoadShape.Point){
-            if(isNaN(value)) throw new TypeError('distance must be a number');
-        }
-        if(this.Shape == ELoadShape.Distributed){
-            if( (! (value instanceof Array)) || value.length < 2 || value.slice(0,2).some(val=> isNaN(val)) )
-            throw new TypeError ('Distance for distributed load must be in a form of array containing two numbers');
-        }
-        this.#distance = value;
-    }
-
-    set Magnitude(value){
-        if(this.Shape == ELoadShape.Point){
-            if(isNaN(value)) throw new TypeError('Magnitude must be a number');
-        }
-        if(this.Shape == ELoadShape.Distributed){
-            if( (! (value instanceof Array)) || value.length < 2 || value.slice(0,2).some(val=> isNaN(val)) )
-            throw new TypeError ('Magnitude for distributed load must be in a form of array containing two numbers one for each distance');
-        }
-        this.#magnitude = value;
-    }
-
-   /*  get Frame(){
-        return this.#frame;
-    }
-    get PatternName(){
-        return this.#patternName
-    } */
-    
-    get CoordSys(){
-        return this.#coordSys;
-    }
-    get Dir(){
-        return this.#dir;
-    }
-    get Type(){
-        return this.#type;
-    }
-    get Shape(){
-        return this.#shape;
-    }
-    get Distance(){
-        return this.#distance;
-    }
-    get Magnitude(){
-        return this.#magnitude;
-    }
-
-}
-
 
 class AssignFrameLoad{
 
     constructor(lines, pattern, appliedLoadInfo){
 
-        this.Lines = [...lines];                //array of DrawLine objects                 
-        this.PrevLoads = [];                    //array containing previous LoadsAssigned for each frame
-        this.Lines.forEach(line => this.PrevLoads.push(line.Frame.LoadsAssigned));
-        this.Pattern = pattern;                 //pattern name
-        this.PrevPatternOnElements = LoadPattern.LoadPatternsList.get(this.Pattern).OnElements
-        this.AppliedLoad = appliedLoadInfo;     //instance of AppliedLoadInfo Class
+        this.Lines = [...lines];                //array of DrawLine objects                    
+        this.Pattern = pattern;                 //pattern id
+        this.AppliedLoad = appliedLoadInfo;     //instance (array) of AppliedLoadInfo Class
     }
 
     excute(){
         this.#PushInFrameLoadsAssigned();
         this.#PushInPatternOnElements();
-        //draw...        
-        for (const line of this.Lines) {
-            const load = this.DrawLoad(this.AppliedLoad.Shape,line);
-            line.load = load;
-            scene.add(load);
-        }
-        console.log(DrawLine.DrawLinesArray)
+        //draw...
+        Standard();
+        Labels();        
+        DrawLine.LoadsDisplayed = true;
+        DrawLine.DrawLinesArray.forEach(line => line.DisplayLoad(this.Pattern));
     }
 
     undo(){
-        for (let i = 0; i < this.Frames.length; i++) {
-            this.Frames[i].LoadsAssigned = this.PrevLoads[i];
-        }
-        LoadPattern.LoadPatternsList.get(this.Pattern).OnElements = this.PrevPatternOnElements;
+        
+        this.#PopFromFrameLoadsAssigned();
+        Standard();
+        Labels();     
+        DrawLine.LoadsDisplayed = true;    
+        this.Lines.forEach(line => line.DisplayLoad(this.Pattern));
+
     }
 
     redo(){
-        excute();
+
+        this.excute();
+    }
+
+    remove(){
+        this.Lines.length = 0;
+        this.Pattern = null;
     }
 
     #PushInFrameLoadsAssigned(){
-
+        
         for (const line of this.Lines) {
-            if(line.Frame.LoadsAssigned.has(this.Pattern)){
-                let appliedLoads = line.Frame.LoadsAssigned.get(this.Pattern);
-                let similarLoads = appliedLoads.filter(load => (load.Shape == this.AppliedLoad.Shape && load.Type == this.AppliedLoad.Type) );
-                if(!similarLoads.length) appliedLoads.push(this.AppliedLoad);
-                else{
-                    if(similarLoads[0].Shape == ELoadShape.Distributed){
-                        let index = appliedLoads.indexOf(similarLoads[0]);
-                        appliedLoads[index] = this.AppliedLoad;
-                    }
+
+            this.AppliedLoad.forEach( appLoad => {
+                    
+                if(line.Frame.LoadsAssigned.has(this.Pattern)){
+                    let appliedLoads = line.Frame.LoadsAssigned.get(this.Pattern);
+                    let similarLoads = appliedLoads.filter(load => (load.Shape == appLoad.Shape && load.Type == appLoad.Type) );
+                    if(!similarLoads.length) appliedLoads.push(appLoad);
                     else{
-                        let atSameDis = similarLoads.filter(simLoad => simLoad.Distance == this.AppliedLoad.Distance);
-                        if(! atSameDis.length) appliedLoads.push(this.AppliedLoad);
-                        else {
-                            let index = appliedLoads.indexOf(atSameDis[0]);
-                            appliedLoads[index] = this.AppliedLoad;
+                        if(similarLoads[0].Shape == ELoadShape.Distributed){
+                            let index = appliedLoads.indexOf(similarLoads[0]);
+                            appliedLoads[index] = appLoad;
+                        }
+                        else{
+                            let atSameDis = similarLoads.filter(simLoad => simLoad.Distance == appLoad.Distance);
+                            if(! atSameDis.length) appliedLoads.push(appLoad);
+                            else {
+                                let index = appliedLoads.indexOf(atSameDis[0]);
+                                appliedLoads[index] = appLoad;
+                            }
                         }
                     }
+                }else{
+                    line.Frame.LoadsAssigned.set(this.Pattern,[appLoad]);
                 }
-            }else{
-                line.Frame.LoadsAssigned.set(this.Pattern,[this.AppliedLoad]);
-            }
+            })
         }
     }
 
@@ -1106,30 +1072,26 @@ class AssignFrameLoad{
         }
     }
 
-    DrawLoad(shape, line){
-        const scale = 1.25 / GetMaxLoad(this.Pattern);
-        const startPoint = line.Frame.StartPoint.position;
-        const endPoint = line.Frame.EndPoint.position;
-        const magnitudes = this.AppliedLoad.Magnitude;
-        const dir = this.AppliedLoad.Dir;
-        const coordSys = this.AppliedLoad.CoordSys;       
-        const relDist = this.AppliedLoad.Distance;
-        let load;
-        switch(shape){
-            case ELoadShape.Distributed:
-                
-                const loadPos1 = GetAbsoluteCoord(relDist[0] ,startPoint, endPoint);
-                const loadPos2 = GetAbsoluteCoord(relDist[1] ,startPoint, endPoint);
-                console.log(loadPos1, loadPos2)
-                load=DistributedLoadIndication(magnitudes[0] ,loadPos1, loadPos2, dir, 0, scale, magnitudes[1], coordSys);
+    #PopFromFrameLoadsAssigned(){
 
-                break;
-            case ELoadShape.Point:
-                load=PointLoadIndication (magnitudes, relDist, startPoint, endPoint,  dir, 0, scale , coordSys);
-                break;
+        for (const line of this.Lines) {
+            if(line.Frame.LoadsAssigned.has(this.Pattern)){
+
+                let pattApplLoads = line.Frame.LoadsAssigned.get(this.Pattern);
+                for (const appLoad of this.AppliedLoad) {
+                    let index = pattApplLoads.indexOf(appLoad);
+                    pattApplLoads.splice(index,1);              
+                }
+                if(!pattApplLoads.length){
+                    line.Frame.LoadsAssigned.delete(this.Pattern);
+                    let pattern = LoadPattern.LoadPatternsList.get(this.Pattern);
+                    let frameIndex = pattern.OnElements.indexOf(line.Frame.Label);
+                    pattern.OnElements.splice(frameIndex,1);
+                }
+            }
         }
-        return load;
     }
+    
 }
 
 
@@ -1188,6 +1150,7 @@ class AssignFrameSection{
     excute(){
         this.selectedFrames.forEach(frame => frame.Section = this.newSection);
         this.selectedLines.forEach(drawLine=>drawLine.ReExtrude());
+        DrawLine.DrawLinesArray.forEach(drawLine=>drawLine.ReSetSecName());
     }
     undo(){
         for (let i = 0; i < this.selectedFrames.length; i++) {
@@ -1206,6 +1169,68 @@ class AssignFrameSection{
     }  
 }
 
+document.querySelector('#point-load-btn').addEventListener("click", function(){
+    if(!document.querySelector('.main-window')){
+        $('body').append(GetPtLoadWin());
+        AppliedLoadPatts();
+        document.querySelector('#coord-sys').addEventListener("change",FillLoadsDirs);
+        document.querySelector('#ok-ptload-btn').addEventListener('click', function(){
+            let appliedLoads =  GetPtLoadInfo();
+            let patternId = GetAppLoadPatternId();
+            DrawLine.DisplayedPattern = patternId
+            if(DrawLine.SelectedLines.length && appliedLoads.length){
+
+                commands.excuteCommand(new AssignFrameLoad(DrawLine.SelectedLines, patternId, appliedLoads));
+            }
+            //console.log(appliedLoads, patternId);
+            document.querySelector('.main-window').parentElement.parentElement.remove();
+        });
+        document.querySelector('#close-ptload-btn').addEventListener('click', function(){
+            document.querySelector('.main-window').parentElement.parentElement.remove();
+        });
+    }
+});
+
+document.querySelector('#distributed-load-btn').addEventListener("click", function(){
+    if(!document.querySelector('.main-window')){
+        $('body').append(GetDistLoadWin());
+        AppliedLoadPatts();
+        document.querySelector('#coord-sys').addEventListener("change",FillLoadsDirs);
+        document.querySelector('#ok-disload-btn').addEventListener('click', function(){
+            let appliedLoads =  GetDistLoadInfo();
+            let patternId = GetAppLoadPatternId();
+            DrawLine.DisplayedPattern = patternId;
+            if(DrawLine.SelectedLines.length && appliedLoads.length){
+
+                commands.excuteCommand(new AssignFrameLoad(DrawLine.SelectedLines, patternId, appliedLoads));
+            }
+            document.querySelector('.main-window').parentElement.parentElement.remove();
+        });
+        document.querySelector('#close-disload-btn').addEventListener('click', function(){
+            document.querySelector('.main-window').parentElement.parentElement.remove();
+        })
+    }
+});
+
+document.querySelector('#disp-load-btn').addEventListener("click", function(){
+    if(!document.querySelector('.main-window')){
+        $('body').append(dispLoadsWindow);
+        DispLoadPatts();
+        document.querySelector('#ok-disp-load-btn').addEventListener("click", function(){
+            // go in show load mode
+            let patId = GetDispLoadPatternId();
+            DrawLine.LoadsDisplayed = true;
+            DrawLine.DisplayedPattern = patId
+            DrawLine.DrawLinesArray.forEach(line => {                
+                line.DisplayLoad(patId);
+            });
+            document.querySelector('.main-window').parentElement.parentElement.remove();
+        });
+        document.querySelector('#close-disp-load-btn').addEventListener("click", function(){
+            document.querySelector('.main-window').parentElement.parentElement.remove();
+        });
+    }
+});
 
 class Copy
 {
@@ -1431,7 +1456,6 @@ class RotateFrame
 }
 
 
-
 document.getElementById("Undo").onclick=function(){Undo()};
 function Undo()
 {
@@ -1446,11 +1470,12 @@ function Redo()
     Unselect();
 }
 
-
 document.getElementById("Extrude").onclick=function(){Extrude()};
 function Extrude()
 {   
     state = false;
+    DrawLine.LoadsDisplayed = false;
+    DrawLine.HideLoads();
     DrawLine.ExtrudeView();
     document.getElementById("Labels").checked = false;                     
     document.getElementById("Sections").checked = false;
@@ -1501,9 +1526,6 @@ document.addEventListener('dblclick',()=>{
     Unselect();
 });
 
-
-
-
 function Unselect()
 {
     while(DrawLine.SelectedLines.length > 0)
@@ -1519,9 +1541,6 @@ function Unselect()
         Point.SelectedPoints.shift();
     }
 }
-
-
-
 
 
 function DrawHinge(position)
@@ -1544,6 +1563,7 @@ function DrawHinge(position)
     hinge.position.z = position[2];
     return hinge;
 }
+
 
 function DrawFix(position)
 {
@@ -1635,7 +1655,3 @@ function DrawPoint(position, alphaTest=0)
     let dot = new THREE.Points( dotGeometry, dotMaterial );
     return dot;
 }
-
-
-
-

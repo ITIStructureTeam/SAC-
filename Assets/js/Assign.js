@@ -44,7 +44,7 @@ function JointRestraint() {
 
 //document.getElementById("Hinge").onclick=function(){Hinge()};
 function Hinge()
-{
+{  
     restraint = [true, true, true, false, false, false];
 }
 
@@ -67,11 +67,12 @@ function ApplyRestraint()
 {
     if(Point.SelectedPoints.length > 0)
     {
+        Labels();
+        DrawLine.LoadsDisplayed = false;
+        DrawLine.HideLoads();
         commands.excuteCommand(new AssignRestraints(restraint));
     }
 }
-
-
 
 
 function MoveWindow() {
@@ -237,8 +238,10 @@ function CloseRotateWindow() {
 function Rotate()
 {
     const rotation = document.getElementById("RotateAboutAxis-1").value;
-
     if(DrawLine.SelectedLines.length > 0 && rotation != 0){
+        Labels();
+        DrawLine.LoadsDisplayed = false;
+        DrawLine.HideLoads();
         commands.excuteCommand(new RotateFrame(rotation));
     }
 }

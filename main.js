@@ -152,6 +152,9 @@ document.addEventListener('keydown',  function ( event ) {
 
 function ClickToDrawLine(event)  
 {
+    // hide loads if shown
+    DrawLine.LoadsDisplayed = false;
+    DrawLine.HideLoads();
 	// update the picking ray with the camera and mouse position
 	raycaster.setFromCamera( mouse, camera );
 
@@ -189,7 +192,7 @@ function ClickToDrawLine(event)
     }
 }
 
-//#region Keys
+
 document.addEventListener('keydown', function(event){
 	if(event.key === "Escape"){
 		points = [];
@@ -211,7 +214,7 @@ document.addEventListener('keydown', function(event){
 	}
     if(event.shiftKey || event.ctrlKey){
         SelectionModeActive = false;
-        document.querySelector("body").style = "cursor:alias"
+	 document.querySelector("body").style = "cursor:alias"
     }
     if(event.key === "Delete"){
         DeleteButton();
@@ -222,7 +225,7 @@ document.addEventListener("keyup", function(){
     if(DrawingModeActive == false)
     {
         SelectionModeActive = true;
-        document.querySelector("body").style = "cursor:default"
+	document.querySelector("body").style = "cursor:default"
     }  
 });
 
@@ -236,7 +239,6 @@ document.addEventListener( 'mouseup', function ( event ) {
     {
         document.querySelector("body").style = "cursor:default"
     }});
-
 
 
 
@@ -379,16 +381,26 @@ setInterval(CheckForUpdates, 700);
 function CheckForUpdates()
 {
     if( secAssigned && DrawLine.SelectedLines.length){
+        DrawLine.LoadsDisplayed=false;
+        DrawLine.HideLoads();
         commands.excuteCommand( new AssignFrameSection( assignedSection ) );
         secAssigned = false;
+        if(state == true){
+            DrawLine.DisplaySectionNames();
+        }
     }
+
     if(secUpdated && !state){
         DrawLine.DrawLinesArray.forEach( drawLine=> drawLine.ReExtrude());
-        secUpdated = false;
+        secUpdated = false
     }
+
+    if(unitsUpdated){
+        DrawLine.DrawLinesArray.forEach( line => line.DisplayLoad());
+        unitsUpdated = false;
+    }
+
 }
-
-
 
 function update(renderer, scene, camera, controls)
 {
@@ -404,13 +416,15 @@ function update(renderer, scene, camera, controls)
         Point.SelectedPoints[i].crosshair.lookAt(camera.position);
     }
 
-    resetPoints();
+    resetPoints();    
+
+    
 
     if(DrawingModeActive == true)
     {
         window.addEventListener( 'click', ClickToDrawLine, false );
         hover();
-        SelectionModeActive == false;   
+        SelectionModeActive == false;
     }
     else{
         window.removeEventListener( 'click', ClickToDrawLine, false );
@@ -430,12 +444,12 @@ function update(renderer, scene, camera, controls)
         update(renderer, scene, camera, controls);
     });
 
-
 }
 
 
 
 // for grids
+
 
 document.querySelector('#grids-btn').addEventListener("click",function(){
     if(!document.querySelector('.main-window')){
@@ -498,8 +512,8 @@ document.querySelector('#grids-btn').addEventListener("click",function(){
                     }
                     removeSelectionGrids();
                 }
-                GridSelections();
                 
+                GridSelections();
                 group = GridPoints(listx,listy,listz,listx.length,listy.length,listz.length);
                 gridLines = GridLine(listx,listy,listz,listx.length,listy.length,listz.length);
                 scene.add(group);
@@ -510,7 +524,6 @@ document.querySelector('#grids-btn').addEventListener("click",function(){
                 document.querySelector('#grids-window').parentElement.parentElement.remove();
                 gridsUpdated=true;
             }
-
         });
 
         document.querySelector('#grids-close').addEventListener("click",function(){
@@ -521,8 +534,7 @@ document.querySelector('#grids-btn').addEventListener("click",function(){
     }
 });
 
-
-if(gridLines.length == 0){
+if(gridLines == null){
     listx = [6,6,6]
     listy = [4,4,4]
     listz = [3,3,3] 
@@ -535,7 +547,6 @@ if(gridLines.length == 0){
         scene.add(element);
     });
 }
-
 
 
  
@@ -595,11 +606,6 @@ function removeSelectionGrids()
 }
 
  
-
-
-
-
-
 
 document.getElementById("XYSection").onclick=function(){XYSection()};
 function XYSection()
@@ -740,7 +746,7 @@ function XZView(XZindex){
     txSpriteZ = makeTextSprite( "Z", -2, ViewPosition,0.6, { fontsize: 200, fontface: "Georgia", textColor: { r:5, g:166, b:96, a:1.0 }, vAlign:"center", hAlign:"center" } );
     scene.add( txSpriteZ );  
 
-    document.getElementById("StatusBar").innerHTML = "Y = " + projUnits.LengthConvert(ViewPosition, true) + projUnits.LenUnit ; 
+    document.getElementById("StatusBar").innerHTML = "Y = " + projUnits.LengthConvert(ViewPosition, true) + projUnits.LenUnit ;
 }
 
 document.getElementById("YZSection").onclick=function(){YZSection()};
@@ -925,6 +931,7 @@ function resetScene()
     {
         Point.PointsArray[i].InView();
     }
+
 }
 
 function removeArrows()
@@ -936,7 +943,6 @@ function removeArrows()
     arrows.remove( arrowHelperZ );
     scene.remove(txSpriteZ);
 }
-
 
 
 
@@ -1102,27 +1108,6 @@ function ResultsDiagram(results ,startPoint, endPoint, direction, rz, scale = 1,
 //#endregion
 
 
-function GetMaxLoad (pattern){
-    let frames = DrawLine.GetDrawnFrames();
-    let maxLoads = [];
-    for (const frame of frames) {
-        let loads = frame.LoadsAssigned.get(pattern);
-        for(const load of loads){
-            if(load.Magnitude instanceof Array){
-                let absvals = [];
-                load.Magnitude.forEach(value => absvals.push(Math.abs(value)) );
-                maxLoads.push(Math.max(...absvals));
-            } 
-            else maxLoads.push(Math.abs(load.Magnitude));
-        }
-
-    }
-    return Math.max(...maxLoads);
-}
-
-
-
-
 
 
 document.getElementById("Run").onclick=function(){Run()};
@@ -1155,7 +1140,3 @@ function Run()
 //     }
 // });
 }
-
-
-
-

@@ -1,12 +1,13 @@
  let drawWin = `
- <div id = "DrawingWindow"
+ <div
+ id = "DrawingWindow"
  class="main-window"
  data-on-window-create="InitFramePropWindow"
  data-role="window"
- data-btn-close="false"
  data-title="Frame Properties"
  data-btn-min="false"
  data-btn-max="false"
+ data-btn-close="false"
  data-resizable="false"
  data-place="left"
  data-width="200">
@@ -31,11 +32,9 @@
         </tr>
         </tbody>
     </table>
-
-    <div>
+     <div>
         <button onclick="CloseDraw(); ExitDrawingMode()" style="left:100px; width:50;">close</button>
     </div>
-    
 </div>
 `
 
@@ -64,10 +63,8 @@ function FillSectionList(){
 //this function is also called in main.js when line is drawing
 function GetSelectedSection(){
     let selectedId = document.querySelector('#frameprop-sec-list').value;
-
     return Section.SectionList.get(selectedId);  
 }
-
 
 function ExitDrawingMode(){
     DrawingModeActive = false;
@@ -83,4 +80,4 @@ document.addEventListener('keydown', function(event){
         DrawingModeActive = false;
         CloseDraw();
     }
-});
+}); 

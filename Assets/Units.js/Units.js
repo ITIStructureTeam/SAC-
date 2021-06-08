@@ -155,13 +155,13 @@ class ProjUnits {
                     converted = forceValue * 1000;
                     break;
                 case EForceUnits.t:
-                    converted = forceValue / 9.80665;
+                    converted = parseFloat((forceValue / 9.80665).toFixed(3));
                     break;
                 case EForceUnits.kg:
-                    converted = forceValue * 1000 / 9.80665;
+                    converted = parseFloat((forceValue * 1000 / 9.80665).toFixed(3));
                     break;
                 case EForceUnits.kN:
-                    converted = forceValue
+                    converted = parseFloat(forceValue.toFixed(3));
                     break;
             }
         }
@@ -257,10 +257,10 @@ class ProjUnits {
                     converted = strengthValue * (10e6);
                     break;
                 case EStrenUnits.t_cm2:
-                    converted = strengthValue / 98.066501;
+                    converted = parseFloat((strengthValue / 98.066501).toFixed(3));
                     break;
                 case EStrenUnits.kg_cm2:
-                    converted = strengthValue / 0.098066501;
+                    converted = parseFloat((strengthValue / 0.098066501).toFixed(3));
                     break;
                 case EStrenUnits.kPa:
                     converted = strengthValue*1000;
@@ -286,7 +286,7 @@ class ProjUnits {
             //convert from kN/m3
             switch (this.DensUnit) {
                 case EDensUnits.t_m3:
-                    converted = densityValue / 9.80665;
+                    converted = parseFloat((densityValue / 9.80665).toFixed(3));
                     break;
                 case EDensUnits.KN_m3:
                     converted = densityValue;

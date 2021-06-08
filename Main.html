@@ -49,7 +49,7 @@
 
 </head>
 
- <body>   <!--onload="init()"> -->
+<body >
     <div id="webgl">
         <!-- SideBar -->
         <!-- <aside class="sidebar pos-absolute z-1" data-role="sidebar" data-toggle="#sidebar-toggle-4" id="sb4" data-static-shift=".shifted-content-2" data-static="md">
@@ -198,8 +198,7 @@
                             </span>
                             <span class="caption">Undo</span>
                         </button>
-                        <button id="Redo" class="ribbon-button" data-role="hint" data-hint-position="bottom"
-                            data-hint-text="Redo">
+                        <button id="Redo" class="ribbon-button" data-role="hint" data-hint-position="bottom" data-hint-text="Redo">
                             <span class="icon">
                                 <img src="Assets/images/RedoIcon.png" alt="Redo">
                             </span>
@@ -210,12 +209,12 @@
                     <!-- Modify Group (Pannel)    Tab Edit -->
                     <div class="group">
 
-                        <!-- <button class="ribbon-button">
+                        <!--<button class="ribbon-button">
                             <span class="icon">
                                 <img alt="Cut" src="Assets/images/CutIcon.png">
                             </span>
                             <span class="caption">Cut</span>
-                        </button> -->
+                        </button>-->
 
                         <button id = "Copy" class="ribbon-button" onclick="CopyWindow()">
                             <span class="icon">
@@ -223,19 +222,20 @@
                             </span>
                             <span class="caption">Copy</span>
                         </button>
-
+                        
                         <button id = "Move" class="ribbon-button" onclick="MoveWindow()">
                             <span class="icon">
                                 <img alt="Move" src="Assets/images/MoveIcon.png">
                             </span>
                             <span class="caption">Move</span>
                         </button>
-                        <!-- <button class="ribbon-button">
+
+                        <!--<button class="ribbon-button">
                             <span class="icon">
                                 <img alt="Paste" src="Assets/images/PasteIcon.jpg">
                             </span>
                             <span class="caption">Paste</span>
-                        </button> -->
+                        </button>-->
 
                         <button id = "Delete" class="ribbon-button">
                             <span class="icon">
@@ -249,34 +249,39 @@
                     <!-- Geometry Group (Pannel)    Tab Edit -->
                     <div class="group">
 
-                        <!-- <button class="ribbon-button">
+                        <!--<button class="ribbon-button">
                             <span class="icon">
                                 <img alt="Replicate" src="Assets/images/ReplicateIcon.png">
                             </span>
                             <span class="caption">Replicate</span>
-                        </button> -->
+                        </button>-->
 
-                        <button id="Extrude" class="ribbon-button" data-role="hint" data-hint-position="bottom"
-                            data-hint-text="Extrude View">
+                        <button id="Extrude" class="ribbon-button">
                             <span class="icon">
                                 <img alt="Extrude" src="Assets/images/Extrudeicon.png">
                             </span>
                             <span class="caption">Extrude</span>
                         </button>
 
-                        <button id="Standard" onclick="Standard()" class="ribbon-button"  data-role="hint"
-                            data-hint-position="bottom" data-hint-text="Standard View">
+                        <button id="Standard" onclick="Standard()" class="ribbon-button">
                             <span class="icon">
                                 <img alt="Standard View" src="Assets/images/UndeformedShapeIcon.jpg">
                             </span>
                             <span class="caption">Standard</span>
                         </button>
 
+                        <button id = "Move" class="ribbon-button">
+                            <span class="icon">
+                                <img alt="Move" src="Assets/images/MoveIcon.png">
+                            </span>
+                            <span class="caption">Move</span>
+                        </button>
+
                         <span class="title">Geometry</span>
                     </div>
                     <!-- Elements Group (Pannel)    Tab Edit -->
                     <div class="group">
-                        <button class="ribbon-button">
+                        <button class="ribbon-button" id="disp-load-btn">
                             <span class="icon">
                                 <img alt="Edit" src="Assets/images/EditPoints.png">
                             </span>
@@ -414,8 +419,7 @@
                 <div class="section" id="Define-Section">
                     <!-- Materials Group (Pannel)    Tab Define -->
                     <div class="group">
-                        <button id="materialsBtn" class="ribbon-button" data-role="hint" data-hint-position="bottom"
-                            data-hint-text="Define Materials">
+                        <button id="materialsBtn" class="ribbon-button">
                             <span class="icon">
                                 <img alt="Material" src="Assets/images/MaterialIcon.webp">
                             </span>
@@ -443,15 +447,19 @@
                     </div>
                     <!-- Loads Group (Pannel)    Tab Define -->
                     <div class="group">
-                        <button class="ribbon-button" onclick="LoadPattern()" data-role="hint"
+                        <button class="ribbon-button" id="pattern-btn" data-role="hint"
                             data-hint-position="bottom" data-hint-text="Load Pattern">
+                        <!--<button class="ribbon-button" onclick="LoadPattern()" data-role="hint"
+                            data-hint-position="bottom" data-hint-text="Load Pattern">-->
                             <span class="icon">
                                 <img alt="Load Pattern" src="Assets/images/LoadPatternIcon.png">
                             </span>
                             <span class="caption">Load pattern</span>
                         </button>
-                        <button class="ribbon-button" onclick="LoadCombination()" data-role="hint"
+                        <button class="ribbon-button"  data-role="hint" id="combo-btn"
                             data-hint-position="bottom" data-hint-text="Load Combination">
+                        <!--<button class="ribbon-button" onclick="LoadCombination()" data-role="hint"
+                            data-hint-position="bottom" data-hint-text="Load Combination">-->
                             <span class="icon">
                                 <img alt="Compo" src="Assets/images/LoadCompinationIcon.JPG">
                             </span>
@@ -471,8 +479,7 @@
                             <span class="caption">Point</span>
                         </button>
 
-                        <button id="Draw" class="ribbon-button"  data-role="hint" data-hint-position="bottom"
-                            data-hint-text="Draw Frame">
+                        <button id="Draw" class="ribbon-button">
                             <span class="icon">
                                 <img alt="Frame" src="Assets/images/FrameIcon.jpg">
                             </span>
@@ -487,8 +494,7 @@
                         <span class="title">Draw</span>
                     </div>
                     <div class="group">
-                        <button id="grids-btn" class="ribbon-button"  data-role="hint"
-                            data-hint-position="bottom" data-hint-text="Draw Grids">
+                        <button id="grids-btn" class="ribbon-button">
                             <span class="icon">
                                 <img alt="Grid" src="Assets/images/GridIcon.png">
                             </span>
@@ -530,7 +536,7 @@
                     <div class="group">
                         <button class="ribbon-button" onclick="JointRestraint()" data-role="hint"
                         data-hint-position="bottom" data-hint-text="Add Joint Restraint">
-                            <span class="icon"> 
+                            <span class="icon">
                                 <img alt="Restraint" src="Assets/images/HingedIcon.JPG">
                             </span>
                             <span class="caption">Joint Restraint</span>
@@ -541,14 +547,14 @@
                             </span>
                             <span class="caption">Frame Section</span>
                         </button>
-
+                        
                         <button id="Rotate" class="ribbon-button" onclick="RotateWindow()">
                             <span class="icon">
                                 <img alt="LocalAxis" src="Assets/images/LocalAxis.png">
                             </span>
                             <span class="caption">Frame Axis</span>
                         </button>
-
+                        
                         <button class="ribbon-button">
                             <span class="icon">
                                 <img alt="Area Section" src="Assets/images/AreaSectionIcon.png">
@@ -559,17 +565,16 @@
                     </div>
                     <!-- Assign Loads Group (Pannel)    Tab Assign -->
                     <div class="group">
-<!--                         <button class="ribbon-button" id="point-load-btn"> -->
 
-                        <button class="ribbon-button" onclick="PointLoads()"  data-role="hint"
+
+                        <button class="ribbon-button" id="point-load-btn"  data-role="hint"
                         data-hint-position="bottom" data-hint-text="Add Point Loads">
-
                             <span class="icon">
                                 <img alt="Point Load" src="Assets/images/PointLoadIcon.png">
                             </span>
                             <span class="caption">Point Loads</span>
                         </button>
-                        <button class="ribbon-button">
+                        <button class="ribbon-button" id="distributed-load-btn">
                             <span class="icon">
                                 <img alt="Uniform" src="Assets/images/DistributedLoadsIcon.jpg">
                             </span>
@@ -584,7 +589,6 @@
                         <span class="title">Assign Loads</span>
 
                     </div>
-                   
                 </div>
                 <!-- Analyse & Results Tab -->
                 <div class="section" id="Analyse-Section">
@@ -713,7 +717,6 @@
         </div>
     </div>
 
-
     <title>KIWE STRUCTURES</title>
     <script src="./Assets/metro4-dist/js/metro.min.js"></script>
     <!-- <script src="./Assets//node_modules/three/build/three.js"></script> -->
@@ -746,9 +749,13 @@
     <script src="./Assets/js/Assign.js"></script>
     <script src="./Assets/Units.js/Units.js"></script>
     <script src="./Assets/grids.js/Grids.js"></script>
-    <script src="./loads-classes.js"></script>   
-
+    <!--<script src="./Assets/js/BelalLoads.js"></script>-->
+    <script src="./Assets/Loads.js/loads-classes.js"></script>   
+    <script src="./Assets/Loads.js/LoadPatternWindow.js"></script>
+    <script src="./Assets/Loads.js/LoadComboWindow.js"></script>
     <script src="./Assets/Units.js/UnitsWindow.js"></script>
+    <script src="./Assets/Loads.js/AssignLoadWindow.js"></script>
+    <script src="./Assets/Loads.js/DisplayLoadsWindow.js"></script>
     <script src="./Assets/material and section/MaterialMetroForm.js"></script>
     <script src="./Assets/material and section/SectionMetroForm.js"></script>
     <script src="./Assets/material and section/Drawingwindow.js"></script>
