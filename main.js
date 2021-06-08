@@ -214,7 +214,7 @@ document.addEventListener('keydown', function(event){
 	}
     if(event.shiftKey || event.ctrlKey){
         SelectionModeActive = false;
-	document.querySelector("body").style = "cursor:alias"
+	 document.querySelector("body").style = "cursor:alias"
     }
     if(event.key === "Delete"){
         DeleteButton();
@@ -225,6 +225,7 @@ document.addEventListener("keyup", function(){
     if(DrawingModeActive == false)
     {
         SelectionModeActive = true;
+	document.querySelector("body").style = "cursor:default"
     }  
 });
 //#endregion
