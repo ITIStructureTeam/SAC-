@@ -1112,7 +1112,9 @@ function ResultsDiagram(results ,startPoint, endPoint, direction, rz, scale = 1,
 
 document.getElementById("Run").onclick=function(){Run()};
 function Run()
-{   
+{ 
+    //const Frames = [...DrawLine.GetDrawnFrames()];
+
     var OutPut = JSON.stringify(DrawLine.GetDrawnFrames());
     console.log(OutPut)
     // $.ajax({
