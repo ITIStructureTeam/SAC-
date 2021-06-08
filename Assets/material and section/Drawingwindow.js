@@ -9,10 +9,10 @@
  data-btn-max="false"
  data-btn-close="false"
  data-resizable="false"
- data-place="center"
+ data-place="left"
  data-width="200">
     <table class="table compact" >
-        <tbody style="height:130px" >
+        <tbody style="height:100px" >
         <tr>
             <td>
                 <label>Section</label>
