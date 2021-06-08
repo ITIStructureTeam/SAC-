@@ -214,6 +214,7 @@ document.addEventListener('keydown', function(event){
 	}
     if(event.shiftKey || event.ctrlKey){
         SelectionModeActive = false;
+	document.querySelector("body").style = "cursor:alias"
     }
     if(event.key === "Delete"){
         DeleteButton();
