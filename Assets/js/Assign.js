@@ -44,42 +44,23 @@ function JointRestraint() {
 
 //document.getElementById("Hinge").onclick=function(){Hinge()};
 function Hinge()
-{
-   
-    if(Point.SelectedPoints.length > 0)
-    {
-        const restraints = [true, true, true, false, false, false];
-        commands.excuteCommand(new AssignRestraints(restraints));
-    }
+{  
+    restraint = [true, true, true, false, false, false];
 }
 
 function Fix() 
 {
-
-    if(Point.SelectedPoints.length > 0)
-    {
-        const restraints = [true, true, true, true, true, true];
-        commands.excuteCommand(new AssignRestraints(restraints));
-    }
+    restraint = [true, true, true, true, true, true];
 }
 
 function Roller()
 {
-
-    if(Point.SelectedPoints.length > 0)
-    {
-        const restraints = [true, false, false, false, false, false];
-        commands.excuteCommand(new AssignRestraints(restraints));
-    }
+    restraint = [true, false, false, false, false, false];
 }
 
 function Free()
 {
-    if(Point.SelectedPoints.length > 0)
-    {
-        const restraints = [false, false, false, false, false, false];
-        commands.excuteCommand(new AssignRestraints(restraints));
-    }
+    restraint = [false, false, false, false, false, false];
 }
 
 function ApplyRestraint()
