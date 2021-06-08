@@ -1,11 +1,13 @@
  let drawWin = `
  <div
+ id = "DrawingWindow"
  class="main-window"
  data-on-window-create="InitFramePropWindow"
  data-role="window"
  data-title="Frame Properties"
  data-btn-min="false"
  data-btn-max="false"
+ data-btn-close="false"
  data-resizable="false"
  data-place="center"
  data-width="200">
