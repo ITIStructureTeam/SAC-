@@ -1474,6 +1474,8 @@ document.getElementById("Extrude").onclick=function(){Extrude()};
 function Extrude()
 {   
     state = false;
+    DrawLine.LoadsDisplayed = false;
+    DrawLine.HideLoads();
     DrawLine.ExtrudeView();
     document.getElementById("Labels").checked = false;                     
     document.getElementById("Sections").checked = false;
