@@ -192,7 +192,7 @@ function ClickToDrawLine(event)
     }
 }
 
-//#region Keys
+
 document.addEventListener('keydown', function(event){
 	if(event.key === "Escape"){
 		points = [];
@@ -228,7 +228,18 @@ document.addEventListener("keyup", function(){
 	document.querySelector("body").style = "cursor:default"
     }  
 });
-//#endregion
+
+document.addEventListener( 'mousedown', function ( event ) {
+    if(event.button === 2)
+    {
+        document.querySelector("body").style = "cursor:grabbing"
+    }});
+document.addEventListener( 'mouseup', function ( event ) {
+    if(event.button === 2)
+    {
+        document.querySelector("body").style = "cursor:default"
+    }});
+
 
 
 
