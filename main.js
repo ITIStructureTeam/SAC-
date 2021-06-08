@@ -589,19 +589,19 @@ function GridSelections()
 
 function removeSelectionGrids()
 {
-    const xy = document.getElementById("XY");
-    for (let i = xy.length - 1; i >= 0; i--) {
-        xy.remove(i);
+    const xy = $('#XY').children().length;
+    for (let i = xy - 1; i >= 0; i--) {
+        $('#XY').children()[i].remove(); 
     }
     
-    const xz = document.getElementById("XZ");
-    for (let i = xz.length - 1; i >= 0; i--) {
-        xz.remove(i);
+    const xz = $('#XZ').children().length;
+    for (let i = xz - 1; i >= 0; i--) {
+        $('#XZ').children()[i].remove(); 
     }
     
-    const yz = document.getElementById("YZ");
-    for (let i = yz.length - 1; i >= 0; i--) {
-        yz.remove(i);
+    const yz = $('#YZ').children().length;
+    for (let i = yz - 1; i >= 0; i--) {
+        $('#YZ').children()[i].remove(); 
     }
 }
 
