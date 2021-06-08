@@ -1244,7 +1244,7 @@ class Copy
             this.CopiedList.push(DrawLine.SelectedLines[i]);
         }
     }
-       excute()
+    excute()
     {
         Unselect();
         for(let k = 1; k <= this.repitition; k++ )
@@ -1326,6 +1326,12 @@ class Move
             let move = new DrawLine(new FrameElement(points, this.TempList[i].Frame.Section));
             let number = this.TempList[i].Frame.AssociatedPoints.length +1;
             move.Frame.AddPointsAtEqualDistances(number);
+            move.Frame.Rotation = this.TempList[i].Frame.Rotation;
+            secUpdated = true;
+            move.Frame.StartPoint.Restraint = this.TempList[i].Frame.StartPoint.Restraint;
+            move.Frame.StartPoint.ViewIndication();
+            move.Frame.EndPoint.Restraint = this.TempList[i].Frame.EndPoint.Restraint;
+            move.Frame.EndPoint.ViewIndication();
             this.Moved.push(move); 
             move.excute();
             this.TempList[i].undo();
