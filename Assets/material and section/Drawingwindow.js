@@ -65,3 +65,19 @@ function GetSelectedSection(){
     let selectedId = document.querySelector('#frameprop-sec-list').value;
     return Section.SectionList.get(selectedId);  
 }
+
+function ExitDrawingMode(){
+    DrawingModeActive = false;
+    SelectionModeActive = true;
+}
+
+function CloseDraw() {
+    Metro.window.close('#DrawingWindow');
+}
+
+document.addEventListener('keydown', function(event){
+	if(event.key === "Escape"){
+        DrawingModeActive = false;
+        CloseDraw();
+    }
+}); 
