@@ -32,7 +32,9 @@
         </tr>
         </tbody>
     </table>
-    
+     <div>
+        <button onclick="CloseDraw(); ExitDrawingMode()" style="left:100px; width:50;">close</button>
+    </div>
 </div>
 `
 
