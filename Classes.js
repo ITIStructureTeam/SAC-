@@ -1239,6 +1239,7 @@ class Copy
         this.Delta = Delta;
         this.CopiedList = [];
         this.Copies = [];
+        this.repitition = repetition;
         for(let i = 0; i <DrawLine.SelectedLines.length; i++){
             this.CopiedList.push(DrawLine.SelectedLines[i]);
         }
