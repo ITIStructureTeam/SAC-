@@ -237,11 +237,13 @@ function CloseRotateWindow() {
 
 function Rotate()
 {
-    Labels();
-    DrawLine.LoadsDisplayed = false;
-    DrawLine.HideLoads();
-    const rotation = 45;
-    commands.excuteCommand(new RotateFrame(rotation));
+    const rotation = document.getElementById("RotateAboutAxis-1").value;
+    if(DrawLine.SelectedLines.length > 0 && rotation != 0){
+        Labels();
+        DrawLine.LoadsDisplayed = false;
+        DrawLine.HideLoads();
+        commands.excuteCommand(new RotateFrame(rotation));
+    }
 }
 
 
