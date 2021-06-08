@@ -249,17 +249,6 @@ document.addEventListener( 'mouseup', function ( event ) {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
 const selection = new THREE.SelectionBox( camera, scene );
 const helper = new THREE.SelectionHelper( selection, renderer, 'selectBox' );
 
