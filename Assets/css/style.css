@@ -4,7 +4,7 @@
 
 #toolbaricons {
     position: absolute;
-    top: 0px;
+    top: 1px;
     left: 0px;
     right: 0px;
 }
@@ -35,7 +35,7 @@
 }
 
 #sb4 {
-    margin-top: 129px;
+    margin-top: 128px;
     background-color: rgb(235, 235, 235);
     width: 300px;
     z-index: 1;
