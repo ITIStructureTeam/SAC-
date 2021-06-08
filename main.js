@@ -552,35 +552,39 @@ if(gridLines == null){
  
 function GridSelections()
 {
-    const xy = document.getElementById("XY");
-    var position = 0;
+    let position = 0;
     for (let i = 0; i <= listz.length; i++)
     {
-        const option = document.createElement("option");
-        option.text = "Z = "+position;
-        xy.add(option, xy[i]);
+        const text = "Z = "+ projUnits.LengthConvert(position, true);
         position += listz[i];
+        $("#XY").append(`<option value=${position} >${text}</option>`);
     }
-    
-    const xz = document.getElementById("XZ");
+
     position = 0;
-    for (let i = 0; i <= listy.length ; i++)
+    for (let i = 0; i <= listy.length; i++)
     {
-        const option = document.createElement("option");
-        option.text = "Y = "+position;
-        xz.add(option, xz[i]);
+        const text = "Z = "+ projUnits.LengthConvert(position, true);
         position += listy[i];
+        $("#XZ").append(`<option value=${position} >${text}</option>`);
     }
-    
-    const yz = document.getElementById("YZ");
+
     position = 0;
     for (let i = 0; i <= listx.length; i++)
     {
-        const option = document.createElement("option");
-        option.text = "X = "+position;
-        yz.add(option, yz[i]);
+        const text = "Z = "+ projUnits.LengthConvert(position, true);
         position += listx[i];
+        $("#YZ").append(`<option value=${position} >${text}</option>`);
     }
+    
+    // const yz = document.getElementById("YZ");
+    // position = 0;
+    // for (let i = 0; i <= listx.length; i++)
+    // {
+    //     const option = document.createElement("option");
+    //     option.text = "X = "+position;
+    //     yz.add(option, yz[i]);
+    //     position += listx[i];
+    // }
 }
 
 function removeSelectionGrids()
