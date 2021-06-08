@@ -274,7 +274,7 @@
                     </div>
                     <!-- Elements Group (Pannel)    Tab Edit -->
                     <div class="group">
-                        <button class="ribbon-button">
+                        <button class="ribbon-button" id="disp-load-btn">
                             <span class="icon">
                                 <img alt="Edit" src="Assets/images/EditPoints.png">
                             </span>
@@ -440,7 +440,7 @@
                     </div>
                     <!-- Loads Group (Pannel)    Tab Define -->
                     <div class="group">
-                        <button class="ribbon-button"  data-role="hint"
+                        <button class="ribbon-button" id="pattern-btn" data-role="hint"
                             data-hint-position="bottom" data-hint-text="Load Pattern">
                         <!--<button class="ribbon-button" onclick="LoadPattern()" data-role="hint"
                             data-hint-position="bottom" data-hint-text="Load Pattern">-->
@@ -449,7 +449,7 @@
                             </span>
                             <span class="caption">Load pattern</span>
                         </button>
-                        <button class="ribbon-button"  data-role="hint"
+                        <button class="ribbon-button"  data-role="hint" id="combo-btn"
                             data-hint-position="bottom" data-hint-text="Load Combination">
                         <!--<button class="ribbon-button" onclick="LoadCombination()" data-role="hint"
                             data-hint-position="bottom" data-hint-text="Load Combination">-->
@@ -552,14 +552,14 @@
                     <div class="group">
 
 
-                        <button class="ribbon-button" onclick="PointLoads()"  data-role="hint"
+                        <button class="ribbon-button" id="point-load-btn"  data-role="hint"
                         data-hint-position="bottom" data-hint-text="Add Point Loads">
                             <span class="icon">
                                 <img alt="Point Load" src="Assets/images/PointLoadIcon.png">
                             </span>
                             <span class="caption">Point Loads</span>
                         </button>
-                        <button class="ribbon-button">
+                        <button class="ribbon-button" id="distributed-load-btn">
                             <span class="icon">
                                 <img alt="Uniform" src="Assets/images/DistributedLoadsIcon.jpg">
                             </span>
@@ -737,9 +737,13 @@
     <script src="./Assets/js/main3.js"></script>
     <script src="./Assets/Units.js/Units.js"></script>
     <script src="./Assets/grids.js/Grids.js"></script>
-    <script src="./loads-classes.js"></script>   
-
+    <!--<script src="./Assets/js/BelalLoads.js"></script>-->
+    <script src="./Assets/Loads.js/loads-classes.js"></script>   
+    <script src="./Assets/Loads.js/LoadPatternWindow.js"></script>
+    <script src="./Assets/Loads.js/LoadComboWindow.js"></script>
     <script src="./Assets/Units.js/UnitsWindow.js"></script>
+    <script src="./Assets/Loads.js/AssignLoadWindow.js"></script>
+    <script src="./Assets/Loads.js/DisplayLoadsWindow.js"></script>
     <script src="./Assets/material and section/MaterialMetroForm.js"></script>
     <script src="./Assets/material and section/SectionMetroForm.js"></script>
     <script src="./Assets/material and section/Drawingwindow.js"></script>

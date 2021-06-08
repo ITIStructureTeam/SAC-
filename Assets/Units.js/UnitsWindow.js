@@ -126,6 +126,7 @@ data-width="250">
 </div>
 
 `
+let unitsUpdated = false;
 
 document.querySelector('#units-btn').addEventListener("click",function(){
     if(!document.querySelector('.main-window')){
@@ -146,6 +147,7 @@ document.querySelector('#units-btn').addEventListener("click",function(){
             projUnits.TempUnit=units[4].value;
             projUnits.DensUnit=units[5].value;
             document.querySelector('#units-window').parentElement.parentElement.remove();
+            unitsUpdated = true;
         });
         document.querySelector('#units-window .default').addEventListener("click",function(){
             document.querySelector('#units-window').parentElement.parentElement.remove();
