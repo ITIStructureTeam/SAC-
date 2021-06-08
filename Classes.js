@@ -1234,7 +1234,7 @@ document.querySelector('#disp-load-btn').addEventListener("click", function(){
 
 class Copy
 {
-    constructor(Delta)
+    constructor(Delta, repetition )
     {
         this.Delta = Delta;
         this.CopiedList = [];
