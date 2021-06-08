@@ -45,9 +45,7 @@ function JointRestraint() {
 //document.getElementById("Hinge").onclick=function(){Hinge()};
 function Hinge()
 {
-    Labels();
-    DrawLine.LoadsDisplayed = false;
-    DrawLine.HideLoads();
+   
     if(Point.SelectedPoints.length > 0)
     {
         const restraints = [true, true, true, false, false, false];
@@ -57,9 +55,7 @@ function Hinge()
 
 function Fix() 
 {
-    Labels();
-    DrawLine.LoadsDisplayed = false;
-    DrawLine.HideLoads();
+
     if(Point.SelectedPoints.length > 0)
     {
         const restraints = [true, true, true, true, true, true];
@@ -69,9 +65,7 @@ function Fix()
 
 function Roller()
 {
-    Labels();
-    DrawLine.LoadsDisplayed = false;
-    DrawLine.HideLoads();
+
     if(Point.SelectedPoints.length > 0)
     {
         const restraints = [true, false, false, false, false, false];
@@ -81,9 +75,6 @@ function Roller()
 
 function Free()
 {
-    Labels();
-    DrawLine.LoadsDisplayed = false;
-    DrawLine.HideLoads();
     if(Point.SelectedPoints.length > 0)
     {
         const restraints = [false, false, false, false, false, false];
@@ -95,6 +86,9 @@ function ApplyRestraint()
 {
     if(Point.SelectedPoints.length > 0)
     {
+         Labels();
+         DrawLine.LoadsDisplayed = false;
+         DrawLine.HideLoads();
         commands.excuteCommand(new AssignRestraints(restraint));
     }
 }
