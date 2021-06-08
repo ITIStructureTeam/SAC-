@@ -86,9 +86,9 @@ function ApplyRestraint()
 {
     if(Point.SelectedPoints.length > 0)
     {
-         Labels();
-         DrawLine.LoadsDisplayed = false;
-         DrawLine.HideLoads();
+        Labels();
+        DrawLine.LoadsDisplayed = false;
+        DrawLine.HideLoads();
         commands.excuteCommand(new AssignRestraints(restraint));
     }
 }
