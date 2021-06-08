@@ -626,4 +626,24 @@ function arrayEquals(a, b) {
     a.every((val, index) => val === b[index]);
 }
  
+function GetMaxLoad (pattern){
+    let frames = DrawLine.GetDrawnFrames();
+    let maxLoads = [];
+    
+    for (const frame of frames) {
+        if(frame.LoadsAssigned.has(pattern)){
+            let loads = frame.LoadsAssigned.get(pattern);
+            for(const load of loads){
+                if(load.Magnitude instanceof Array){
+                    let absvals = [];
+                    load.Magnitude.forEach(value => absvals.push(Math.abs(value)) );
+                    maxLoads.push(Math.max(...absvals));
+                } 
+                else maxLoads.push(Math.abs(load.Magnitude));
+            }
+        }
+    }
+    return Math.max(...maxLoads);
+}
+
 //#endregion
