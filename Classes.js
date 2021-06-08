@@ -1247,7 +1247,7 @@ class Copy
     excute()
     {
         Unselect();
-        for(let i = 0; i<this.CopiedList.length ; i++)
+        for(let k = 1; k <= this.repitition; k++ )
         {
             let points = [];
             points.push(this.CopiedList[i].Frame.StartPoint.position[0] + this.Delta[0])
