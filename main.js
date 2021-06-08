@@ -675,7 +675,7 @@ function XYView(XYindex)
     txSpriteY = makeTextSprite( "Y", -2, 0.6, ViewPosition, { fontsize: 200, fontface: "Georgia", textColor: { r:6, g:117, b:201, a:1.0 }, vAlign:"center", hAlign:"center" } );
     scene.add( txSpriteY );  
 
-    document.getElementById("StatusBar").innerHTML = "Z = " + ViewPosition + "m" ; 
+    document.getElementById("StatusBar").innerHTML = "Z = " + projUnits.LengthConvert(ViewPosition, true) + projUnits.LenUnit ; 
 }
 
 document.getElementById("XZSection").onclick=function(){XZSection()};
@@ -746,7 +746,7 @@ function XZView(XZindex){
     txSpriteZ = makeTextSprite( "Z", -2, ViewPosition,0.6, { fontsize: 200, fontface: "Georgia", textColor: { r:5, g:166, b:96, a:1.0 }, vAlign:"center", hAlign:"center" } );
     scene.add( txSpriteZ );  
 
-    document.getElementById("StatusBar").innerHTML = "Y = " + ViewPosition + "m" ; 
+    document.getElementById("StatusBar").innerHTML = "Y = " + projUnits.LengthConvert(ViewPosition, true) + projUnits.LenUnit ;
 }
 
 document.getElementById("YZSection").onclick=function(){YZSection()};
@@ -819,7 +819,7 @@ function YZView(YZindex){
     txSpriteZ = makeTextSprite( "Z", ViewPosition, -2, 0.6, { fontsize: 200, fontface: "Georgia", textColor: { r:5, g:166, b:96, a:1.0 }, vAlign:"center", hAlign:"center" } );
     scene.add( txSpriteZ );
 
-    document.getElementById("StatusBar").innerHTML = "X = " + ViewPosition + "m" ; 
+    document.getElementById("StatusBar").innerHTML = "X = " + projUnits.LengthConvert(ViewPosition, true) + projUnits.LenUnit ; 
 }
 
 document.getElementById("ThreeD").onclick=function(){ThreeD()};
