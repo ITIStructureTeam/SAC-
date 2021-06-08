@@ -1423,8 +1423,9 @@ class RotateFrame
             this.TempRotations.push(DrawLine.SelectedLines[i].Frame.Rotation)
         }
     }
-    excute()
+    excute() 
     {
+        Unselect();
         for(let i = 0; i < this.SelectedFrames.length; i++)
         {
             this.SelectedFrames[i].Frame.Rotation = this.rad;
@@ -1453,6 +1454,7 @@ class RotateFrame
         this.TempRotations=[]; 
     }
 }
+
 
 document.getElementById("Undo").onclick=function(){Undo()};
 function Undo()
