@@ -1244,7 +1244,7 @@ class Copy
             this.CopiedList.push(DrawLine.SelectedLines[i]);
         }
     }
-    excute()
+       excute()
     {
         Unselect();
         for(let k = 1; k <= this.repitition; k++ )
@@ -1258,7 +1258,7 @@ class Copy
                 points.push(this.CopiedList[i].Frame.EndPoint.position[0] + this.Delta[0]*k)
                 points.push(this.CopiedList[i].Frame.EndPoint.position[1] + this.Delta[1]*k)
                 points.push(this.CopiedList[i].Frame.EndPoint.position[2] + this.Delta[2]*k)
-
+            
                 let Copy = new DrawLine(new FrameElement(points, this.CopiedList[i].Frame.Section));
                 let number = this.CopiedList[i].Frame.AssociatedPoints.length +1;
                 Copy.Frame.Rotation = this.CopiedList[i].Frame.Rotation;
