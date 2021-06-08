@@ -1249,19 +1249,28 @@ class Copy
         Unselect();
         for(let k = 1; k <= this.repitition; k++ )
         {
-            let points = [];
-            points.push(this.CopiedList[i].Frame.StartPoint.position[0] + this.Delta[0])
-            points.push(this.CopiedList[i].Frame.StartPoint.position[1] + this.Delta[1])
-            points.push(this.CopiedList[i].Frame.StartPoint.position[2] + this.Delta[2])
-            points.push(this.CopiedList[i].Frame.EndPoint.position[0] + this.Delta[0])
-            points.push(this.CopiedList[i].Frame.EndPoint.position[1] + this.Delta[1])
-            points.push(this.CopiedList[i].Frame.EndPoint.position[2] + this.Delta[2])
-    
-            let Copy = new DrawLine(new FrameElement(points, this.CopiedList[i].Frame.Section));
-            let number = this.CopiedList[i].Frame.AssociatedPoints.length +1;
-            Copy.Frame.AddPointsAtEqualDistances(number);
-            this.Copies.push(Copy); 
-            Copy.excute();
+            for(let i = 0; i<this.CopiedList.length ; i++)
+            {
+                let points = [];
+                points.push(this.CopiedList[i].Frame.StartPoint.position[0] + this.Delta[0]*k)
+                points.push(this.CopiedList[i].Frame.StartPoint.position[1] + this.Delta[1]*k)
+                points.push(this.CopiedList[i].Frame.StartPoint.position[2] + this.Delta[2]*k)
+                points.push(this.CopiedList[i].Frame.EndPoint.position[0] + this.Delta[0]*k)
+                points.push(this.CopiedList[i].Frame.EndPoint.position[1] + this.Delta[1]*k)
+                points.push(this.CopiedList[i].Frame.EndPoint.position[2] + this.Delta[2]*k)
+
+                let Copy = new DrawLine(new FrameElement(points, this.CopiedList[i].Frame.Section));
+                let number = this.CopiedList[i].Frame.AssociatedPoints.length +1;
+                Copy.Frame.Rotation = this.CopiedList[i].Frame.Rotation;
+                Copy.Frame.StartPoint.Restraint = this.CopiedList[i].Frame.StartPoint.Restraint;
+                Copy.Frame.StartPoint.ViewIndication();
+                Copy.Frame.EndPoint.Restraint = this.CopiedList[i].Frame.EndPoint.Restraint;
+                Copy.Frame.EndPoint.ViewIndication();
+                secUpdated = true;
+                Copy.Frame.AddPointsAtEqualDistances(number);
+                this.Copies.push(Copy); 
+                Copy.excute();
+            }
         }
         this.CopiedList = [];
     }
