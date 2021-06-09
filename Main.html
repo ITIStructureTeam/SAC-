@@ -6,7 +6,7 @@
     <link href="Assets/css/style.css" rel="stylesheet" />
     <link href="Assets/images/KiweIcon.png" rel="icon" type="image/x-icon" />
     <link rel="stylesheet" href="./Assets/css/section-material style.css">
-    <link rel="stylesheet" href="./Assets/css/Scene.css">  
+    <link rel="stylesheet" href="./Assets/css/Scene.css">
 
     <meta charset="utf-8">
     <!-- Provide a short description of the page. -->
@@ -49,7 +49,7 @@
 
 </head>
 
-<body >
+<body>
     <div id="webgl">
         <!-- SideBar -->
         <!-- <aside class="sidebar pos-absolute z-1" data-role="sidebar" data-toggle="#sidebar-toggle-4" id="sb4" data-static-shift=".shifted-content-2" data-static="md">
@@ -94,7 +94,8 @@
                     </a>
                 </li>
                 <li>
-                    <a> <span><img height="32" width="32" src="Assets/images/SaveAsIcon.png " alt="SaveAsIcon"></span> Save As </a>
+                    <a> <span><img height="32" width="32" src="Assets/images/SaveAsIcon.png " alt="SaveAsIcon"></span>
+                        Save As </a>
                 </li>
                 <li class="divider"></li>
                 <li>
@@ -192,13 +193,15 @@
                 <div class="section" id="Edit-Section">
                     <!-- Actions Group (Pannel)  Tab Edit -->
                     <div class="group">
-                        <button id="Undo" class="ribbon-button" data-role="hint" data-hint-position="bottom" data-hint-text="Undo">
+                        <button id="Undo" class="ribbon-button" data-role="hint" data-hint-position="bottom"
+                            data-hint-text="Undo">
                             <span class="icon">
                                 <img src="Assets/images/UndoIcon.png" alt="Undo">
                             </span>
                             <span class="caption">Undo</span>
                         </button>
-                        <button id="Redo" class="ribbon-button" data-role="hint" data-hint-position="bottom" data-hint-text="Redo">
+                        <button id="Redo" class="ribbon-button" data-role="hint" data-hint-position="bottom"
+                            data-hint-text="Redo">
                             <span class="icon">
                                 <img src="Assets/images/RedoIcon.png" alt="Redo">
                             </span>
@@ -216,14 +219,14 @@
                             <span class="caption">Cut</span>
                         </button>-->
 
-                        <button id = "Copy" class="ribbon-button" onclick="CopyWindow()">
+                        <button id="Copy" class="ribbon-button" onclick="CopyWindow()">
                             <span class="icon">
                                 <img alt="Copy" src="Assets/images/CopyIcon.jpg">
                             </span>
                             <span class="caption">Copy</span>
                         </button>
-                        
-                        <button id = "Move" class="ribbon-button" onclick="MoveWindow()">
+
+                        <button id="Move" class="ribbon-button" onclick="MoveWindow()">
                             <span class="icon">
                                 <img alt="Move" src="Assets/images/MoveIcon.png">
                             </span>
@@ -237,7 +240,7 @@
                             <span class="caption">Paste</span>
                         </button>-->
 
-                        <button id = "Delete" class="ribbon-button">
+                        <button id="Delete" class="ribbon-button">
                             <span class="icon">
                                 <img alt="Delete" src="Assets/images/DeleteIcon.jpg">
                             </span>
@@ -270,7 +273,7 @@
                             <span class="caption">Standard</span>
                         </button>
 
-                        <button id = "Move" class="ribbon-button">
+                        <button id="Move" class="ribbon-button">
                             <span class="icon">
                                 <img alt="Move" src="Assets/images/MoveIcon.png">
                             </span>
@@ -319,21 +322,25 @@
                             </button>
                             <ul class="d-menu" data-role="dropdown" data-duration="100">
                                 <li>
-                                    <a> <span> <img alt="Frame Section" src="Assets/images/DevideLine.jpg"> </span> Devide Frame ... </a>
+                                    <a> <span> <img alt="Frame Section" src="Assets/images/DevideLine.jpg"> </span>
+                                        Devide Frame ... </a>
                                 </li>
                                 <li>
-                                    <a> <span> <img alt="Area Section" src="Assets/images/JoinFrameIcon.png"> </span> Join Frame ... </a>
+                                    <a> <span> <img alt="Area Section" src="Assets/images/JoinFrameIcon.png"> </span>
+                                        Join Frame ... </a>
                                 </li>
                             </ul>
                         </div>
                         <span class="title">Elements</span>
                     </div>
                     <div class="group">
-                        <input data-role="checkbox" type="checkbox" id="Labels" data-caption="Show Labels" onclick="Labels()">
-                        <input data-role="checkbox" type="checkbox" id="Sections" data-caption="Display Section" onclick="Labels()">
+                        <input data-role="checkbox" type="checkbox" id="Labels" data-caption="Show Labels"
+                            onclick="Labels()">
+                        <input data-role="checkbox" type="checkbox" id="Sections" data-caption="Display Section"
+                            onclick="Labels()">
                     </div>
 
-                
+
                 </div>
                 <!-- View Tab -->
                 <div class="section" id="View-Section">
@@ -419,7 +426,8 @@
                 <div class="section" id="Define-Section">
                     <!-- Materials Group (Pannel)    Tab Define -->
                     <div class="group">
-                        <button id="materialsBtn" class="ribbon-button">
+                        <button id="materialsBtn" class="ribbon-button" data-role="hint" data-hint-position="bottom"
+                            data-hint-text="Define Materials">
                             <span class="icon">
                                 <img alt="Material" src="Assets/images/MaterialIcon.webp">
                             </span>
@@ -437,28 +445,30 @@
                         </button>
                         <ul class="d-menu" data-role="dropdown" data-duration="100">
                             <li id="secBtn">
-                                <a> <span> <img alt="Frame Section" src="Assets/images/FramSectionIcon.png"> </span> Frame Section ... </a>
+                                <a> <span> <img alt="Frame Section" src="Assets/images/FramSectionIcon.png"> </span>
+                                    Frame Section ... </a>
                             </li>
                             <li>
-                                <a> <span> <img alt="Area Section" src="Assets/images/AreaSectionIcon.png"> </span> Area Section ... </a>
+                                <a> <span> <img alt="Area Section" src="Assets/images/AreaSectionIcon.png"> </span> Area
+                                    Section ... </a>
                             </li>
                         </ul>
                         <span class="title">Sections</span>
                     </div>
                     <!-- Loads Group (Pannel)    Tab Define -->
                     <div class="group">
-                        <button class="ribbon-button" id="pattern-btn" data-role="hint"
-                            data-hint-position="bottom" data-hint-text="Load Pattern">
-                        <!--<button class="ribbon-button" onclick="LoadPattern()" data-role="hint"
+                        <button class="ribbon-button" id="pattern-btn" data-role="hint" data-hint-position="bottom"
+                            data-hint-text="Load Pattern">
+                            <!--<button class="ribbon-button" onclick="LoadPattern()" data-role="hint"
                             data-hint-position="bottom" data-hint-text="Load Pattern">-->
                             <span class="icon">
                                 <img alt="Load Pattern" src="Assets/images/LoadPatternIcon.png">
                             </span>
                             <span class="caption">Load pattern</span>
                         </button>
-                        <button class="ribbon-button"  data-role="hint" id="combo-btn"
-                            data-hint-position="bottom" data-hint-text="Load Combination">
-                        <!--<button class="ribbon-button" onclick="LoadCombination()" data-role="hint"
+                        <button class="ribbon-button" data-role="hint" id="combo-btn" data-hint-position="bottom"
+                            data-hint-text="Load Combination">
+                            <!--<button class="ribbon-button" onclick="LoadCombination()" data-role="hint"
                             data-hint-position="bottom" data-hint-text="Load Combination">-->
                             <span class="icon">
                                 <img alt="Compo" src="Assets/images/LoadCompinationIcon.JPG">
@@ -535,7 +545,7 @@
                     <!-- Case Properities Group (Pannel)    Tab Assign -->
                     <div class="group">
                         <button class="ribbon-button" onclick="JointRestraint()" data-role="hint"
-                        data-hint-position="bottom" data-hint-text="Add Joint Restraint">
+                            data-hint-position="bottom" data-hint-text="Add Joint Restraint">
                             <span class="icon">
                                 <img alt="Restraint" src="Assets/images/HingedIcon.JPG">
                             </span>
@@ -547,14 +557,14 @@
                             </span>
                             <span class="caption">Frame Section</span>
                         </button>
-                        
+
                         <button id="Rotate" class="ribbon-button" onclick="RotateWindow()">
                             <span class="icon">
                                 <img alt="LocalAxis" src="Assets/images/LocalAxis.png">
                             </span>
                             <span class="caption">Frame Axis</span>
                         </button>
-                        
+
                         <button class="ribbon-button">
                             <span class="icon">
                                 <img alt="Area Section" src="Assets/images/AreaSectionIcon.png">
@@ -567,8 +577,8 @@
                     <div class="group">
 
 
-                        <button class="ribbon-button" id="point-load-btn"  data-role="hint"
-                        data-hint-position="bottom" data-hint-text="Add Point Loads">
+                        <button class="ribbon-button" id="point-load-btn" data-role="hint" data-hint-position="bottom"
+                            data-hint-text="Add Point Loads">
                             <span class="icon">
                                 <img alt="Point Load" src="Assets/images/PointLoadIcon.png">
                             </span>
@@ -594,7 +604,7 @@
                 <div class="section" id="Analyse-Section">
                     <!-- Analysis Group (Pannel)    Tab Analyse & Results -->
                     <div class="group">
-                        <button id = "Run" class="ribbon-button">
+                        <button id="Run" class="ribbon-button">
                             <span class="icon">
                                 <img alt="Run" src="Assets/images/RunIcon.png">
                             </span>
@@ -664,7 +674,7 @@
                     </div>
 
                 </div>
-                
+
                 <!-- Option Tab -->
                 <div class="section" id="Options-Section">
                     <div class="group">
@@ -687,26 +697,30 @@
                 </div>
             </div>
 
-            <button id="resizeribbonbtn" onclick="resizeribbon()" data-role="hint" data-hint-text="Resize Ribbon" data-hint-position="left">
+            <button id="resizeribbonbtn" onclick="resizeribbon()" data-role="hint" data-hint-text="Resize Ribbon"
+                data-hint-position="left">
                 &#8597;
             </button>
         </nav>
 
         <!-- Status Bar -->
         <div style="background-color: rgb(235,235,235); z-index: 3; position: absolute;" id="Status_bar">
-            <img style="width: 20px; margin-left: 10px; margin-bottom: 5px; margin-top: 5px; " src="Assets/images/KiweIcon.png" alt="KiweIcon" />
-            <span id = "StatusBar">Welcome to KIEW Structural Analysis - Status Bar - </span>
+            <img style="width: 20px; margin-left: 10px; margin-bottom: 5px; margin-top: 5px; "
+                src="Assets/images/KiweIcon.png" alt="KiweIcon" />
+            <span id="StatusBar">Welcome to KIEW Structural Analysis - Status Bar - </span>
         </div>
 
 
         <!-- Close Action ((Warning Message)) -->
         <div class="dialog" data-role="dialog" id="closebtn" data-close-button="true">
             <div class="dialog-title text-bold">
-                <img style="width: 60px; margin-left: 10px; margin-bottom: 5px; margin-top: 5px; " src="Assets/images/KiweIcon.png" alt="KiweIcon" /> KIWE Structural Analysis
+                <img style="width: 60px; margin-left: 10px; margin-bottom: 5px; margin-top: 5px; "
+                    src="Assets/images/KiweIcon.png" alt="KiweIcon" /> KIWE Structural Analysis
 
             </div>
             <div class="dialog-content text-medium">
-                <img height="60" width="60" src="Assets/images/CloseIcon.png" alt="CloseIcon"> Do you want to save the changes you made??
+                <img height="60" width="60" src="Assets/images/CloseIcon.png" alt="CloseIcon"> Do you want to save the
+                changes you made??
                 <div class="text-right text-normal">Your changes will be lost if you don't save them</div>
             </div>
 
@@ -741,7 +755,7 @@
 
     <script type="module" src="main.js"></script>
 
-    <script src="./Assets/Loads.js/loads-classes.js"></script> 
+    <script src="./Assets/Loads.js/loads-classes.js"></script>
     <script src="./Classes.js"></script>
     <script src="./global.js"></script>
     <script src="./TextLabels.js"></script>
@@ -751,7 +765,7 @@
     <script src="./Assets/Units.js/Units.js"></script>
     <script src="./Assets/grids.js/Grids.js"></script>
     <!--<script src="./Assets/js/BelalLoads.js"></script>-->
-       
+
     <script src="./Assets/Loads.js/LoadPatternWindow.js"></script>
     <script src="./Assets/Loads.js/LoadComboWindow.js"></script>
     <script src="./Assets/Units.js/UnitsWindow.js"></script>
