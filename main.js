@@ -22,12 +22,14 @@ camera = new THREE.PerspectiveCamera
     1000
 );
 camera.up = new THREE.Vector3( 0, 0, 1 );
+//THREE.Object3D.DefaultUp.set(0, 0, 1);
+THREE.Object3D.DefaultUp = new THREE.Vector3( 0, 0, 1 );
 camera.position.z = 40;
 camera.position.y = 25;
 camera.position.x = 40;
 
 camera.lookAt(8,0,16);
-THREE.Object3D.DefaultUp.set(0, 0, 1);
+
 
 // create light
 var light = GetLight(1.5);
@@ -1110,13 +1112,26 @@ function ResultsDiagram(results ,startPoint, endPoint, direction, rz, scale = 1,
 
 
 
+class RootData
+{
+    constructor()
+    {
+        this.Materials = [...Material.MaterialsList.values()];
+        this.Sections = [...Section.SectionList.values()];
+        this.Points = [...Point.PointsArray];
+        this.Frames = DrawLine.GetDrawnFrames();
+    }
+}
+
+
+
+
 document.getElementById("Run").onclick=function(){Run()};
 function Run()
 { 
     //const Frames = [...DrawLine.GetDrawnFrames()];
-
-    var OutPut = JSON.stringify(DrawLine.GetDrawnFrames());
-    console.log(OutPut)
+    let OutPut = JSON.stringify(new RootData());
+    console.log(OutPut);
     // $.ajax({
     //     type: "POST",
     //     url: "http://192.168.1.10:8080/Main.html",                   ///// URL must be specified

@@ -6,7 +6,6 @@ var
  renderer,
  ViewPosition;  
 
- 
  var HiddenGrids = [];
  var HiddenSnapping = []; 
 
@@ -192,11 +191,11 @@ class FrameElement
     toJSON()
     {
         return{Label:this.Label,
-            Section:this.Section,
-            StartPoint:this.StartPoint,
-            EndPoint:this.EndPoint,
+            Section:this.Section.Name,
+            StartPoint:this.StartPoint.Label,
+            EndPoint:this.EndPoint.Label,
             Rotation:this.Rotation * 180/Math.PI,
-            Loads:this.LoadsAssigned
+            Loads:Object.fromEntries(this.LoadsAssigned)
         }
     }
 }
@@ -459,9 +458,11 @@ class DrawLine
         }
        
         this.#extrude = new THREE.Mesh( geometry, material);
+
         this.#extrude.position.set(points[0].x,points[0].y,points[0].z);
+        //this.Extrude.DefaultUp.set(0, 0, 1);
         this.#extrude.lookAt(points[1])
-        this.#extrude.rotation.z = this.#frame.Rotation;
+        this.#extrude.rotateZ(this.#frame.Rotation);
 
         // if(points[1] - points[4] != 0 && points[2]-points[5] == 0 && points[0]-points[3] == 0){
         //     this.#extrude.material.color.setHex(0xa200ab);
@@ -671,16 +672,17 @@ class DrawLine
         const dir = AppliedLoad.Dir;
         const coordSys = AppliedLoad.CoordSys;       
         const relDist = AppliedLoad.Distance ;
+        const rotation = this.Frame.Rotation ;
         let load;
         switch(AppliedLoad.Shape){
             case ELoadShape.Distributed:
                 
                 const loadPos1 = GetAbsoluteCoord(relDist[0] ,startPoint, endPoint);
                 const loadPos2 = GetAbsoluteCoord(relDist[1] ,startPoint, endPoint);
-                load=DistributedLoadIndication(magnitudes[0] ,loadPos1, loadPos2, dir, 0, scale, magnitudes[1], coordSys);
+                load=DistributedLoadIndication(magnitudes[0] ,loadPos1, loadPos2, dir, rotation, scale, magnitudes[1], coordSys);
                 break;
             case ELoadShape.Point:
-                load=PointLoadIndication (magnitudes, relDist, startPoint, endPoint,  dir, 0, scale , coordSys);
+                load=PointLoadIndication (magnitudes, relDist, startPoint, endPoint,  dir, rotation, scale , coordSys);
                 break;
         }
         return load;
@@ -977,7 +979,7 @@ class Point
         {
             this.SupportIndication = DrawFix(this.position);
         }
-        else if(arrayEquals(this.Restraint, [true, false, false, false, false, false]))
+        else if(arrayEquals(this.Restraint, [false, false, true, false, false, false]))
         {
             this.SupportIndication = DrawRoller(this.position);
         }
@@ -1220,7 +1222,8 @@ document.querySelector('#disp-load-btn').addEventListener("click", function(){
             // go in show load mode
             let patId = GetDispLoadPatternId();
             DrawLine.LoadsDisplayed = true;
-            DrawLine.DisplayedPattern = patId
+            DrawLine.DisplayedPattern = patId;
+            Standard();
             DrawLine.DrawLinesArray.forEach(line => {                
                 line.DisplayLoad(patId);
             });
@@ -1262,12 +1265,14 @@ class Copy
                 let Copy = new DrawLine(new FrameElement(points, this.CopiedList[i].Frame.Section));
                 let number = this.CopiedList[i].Frame.AssociatedPoints.length +1;
                 Copy.Frame.Rotation = this.CopiedList[i].Frame.Rotation;
-                Copy.Frame.StartPoint.Restraint = this.CopiedList[i].Frame.StartPoint.Restraint;
+                Copy.Frame.StartPoint.Restraint = [...this.CopiedList[i].Frame.StartPoint.Restraint];
                 Copy.Frame.StartPoint.ViewIndication();
-                Copy.Frame.EndPoint.Restraint = this.CopiedList[i].Frame.EndPoint.Restraint;
+                Copy.Frame.EndPoint.Restraint = [...this.CopiedList[i].Frame.EndPoint.Restraint];
                 Copy.Frame.EndPoint.ViewIndication();
                 secUpdated = true;
                 Copy.Frame.AddPointsAtEqualDistances(number);
+                Copy.Frame.LoadsAssigned = this.cloneLoadsAssigned(this.CopiedList[i], Copy);
+                Copy.DisplayLoad();
                 this.Copies.push(Copy); 
                 Copy.excute();
             }
@@ -1295,6 +1300,18 @@ class Copy
         {
             this.Copies[i].remove();
         }
+    }
+
+    cloneLoadsAssigned(line, copy)
+    {
+        let map = new Map();
+        line.Frame.LoadsAssigned.forEach((value, key) => {
+            let tempLoads = [];
+            LoadPattern.LoadPatternsList.get(key).OnElements.push(copy.Frame.Label);
+            value.forEach(load => tempLoads.push(load.Clone()));
+            map.set(key,tempLoads);
+        });
+        return map;
     }
     
 }
@@ -1332,6 +1349,9 @@ class Move
             move.Frame.StartPoint.ViewIndication();
             move.Frame.EndPoint.Restraint = this.TempList[i].Frame.EndPoint.Restraint;
             move.Frame.EndPoint.ViewIndication();
+            move.Frame.LoadsAssigned = this.TempList[i].Frame.LoadsAssigned;
+            move.Frame.LoadsAssigned.forEach((value, key) => LoadPattern.LoadPatternsList.get(key).OnElements.push(move.Frame.Label));
+            move.DisplayLoad();
             this.Moved.push(move); 
             move.excute();
             this.TempList[i].undo();
@@ -1361,7 +1381,6 @@ class Move
             this.Moved[i].remove();
         }
     }
-    
 }
 
 class AssignRestraints

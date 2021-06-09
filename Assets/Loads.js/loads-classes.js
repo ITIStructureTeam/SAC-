@@ -370,6 +370,22 @@ class AppliedLoadInfo{
         return this.#magnitude;
     }
 
+    toJSON()
+    {
+        return{
+            CoordSys:this.CoordSys,
+            Dir:this.Dir,
+            Type:this.Type,
+            Shape:this.Shape,
+            Distance:this.Distance,
+            Magnitude:this.Magnitude 
+        }
+    }
+    Clone()
+    {
+        return new AppliedLoadInfo(this.CoordSys, this.Dir, this.Type, this.Shape, this.Distance, this.Magnitude);
+    }
+
 }
 
 //#region // Loads visualization
@@ -379,12 +395,22 @@ function ArrowOnLine(length, x,y,z, startpoint, endpoint,  direction, rz, scale 
     let endPoint = new THREE.Vector3(...endpoint);
 
     const axis = new THREE.Vector3().subVectors(startPoint, endPoint).normalize(); // 1-local direction
- 
-    let x_axis = crossProduct([axis.x, axis.y, axis.z], [0,0,1]);   //3-local direction
-    if(arrayEquals(x_axis,[0,0,0]))
+    let x_axis;
+    if(axis.x == 0 && axis.y != 0)
     {
-        x_axis = [0,1,0]
+        x_axis = crossProduct([axis.x, axis.y, axis.z], [1*Math.sin((axis.y/Math.abs(axis.y))* -rz), 0, 1*Math.cos(rz)]);   //3-local direction
     }
+    else if(axis.x == 0 && axis.y == 0 && axis.z != 0){
+        x_axis = [1*Math.sin((axis.z/Math.abs(axis.z))* rz) , 1*Math.cos(rz), 0];    
+    }
+    else if((axis.x != 0 && axis.y != 0 && axis.z != 0))
+    {
+        x_axis = crossProduct([axis.x, axis.y, axis.z], [1*Math.sin((axis.y/Math.abs(axis.y))* -rz), 1*Math.sin((axis.x/Math.abs(axis.x))* rz),1*Math.cos(rz)]);   //3-local direction
+    }
+    else{
+        x_axis = crossProduct([axis.x, axis.y, axis.z], [0,1*Math.sin((axis.x/Math.abs(axis.x))* rz),1*Math.cos(rz)]);   //3-local direction
+    }
+    //if(arrayEquals(x_axis,[0,0,0]))
     const y_axis = crossProduct([axis.x, axis.y, axis.z], x_axis);
     const X_axis = new THREE.Vector3(x_axis[0], x_axis[1], x_axis[2]);
     const Y_axis = new THREE.Vector3(y_axis[0], y_axis[1], y_axis[2]);  //2- local direction
@@ -392,12 +418,12 @@ function ArrowOnLine(length, x,y,z, startpoint, endpoint,  direction, rz, scale 
     const material = new THREE.LineBasicMaterial({color:'rgb(0,0,0)'});
  
     let l = length *scale;
-    var geometry = new THREE.BufferGeometry();
-    var geometry_h1 = new THREE.BufferGeometry();
-    var geometry_h2 = new THREE.BufferGeometry();
-    var vertices =[];  
-    var vertices_h1 =[];  
-    var vertices_h2 =[];  
+    let geometry = new THREE.BufferGeometry();
+    let geometry_h1 = new THREE.BufferGeometry();
+    let geometry_h2 = new THREE.BufferGeometry();
+    let vertices =[];  
+    let vertices_h1 =[];  
+    let vertices_h2 =[];  
 
     if(local == false)
     {
@@ -501,7 +527,7 @@ function ArrowOnLine(length, x,y,z, startpoint, endpoint,  direction, rz, scale 
     arrow.position.x = x;
     arrow.position.y = y;
     arrow.position.z = z;
-    arrow.rotateOnAxis(axis, rz);
+    //arrow.rotateOnAxis(axis, -rz);
     
     //scene.add(arrow);
     return [arrow,vertices];
@@ -528,6 +554,7 @@ function PointLoadIndication(length, relDist, startPoint, endPoint,  direction, 
 
     const txt = makeTextSprite( loadText, textPosition[0], textPosition[1], textPosition[2],{fontsize: 100, fontface: "Georgia", textColor:{r:0,g:0,b:0,a:1},
         vAlign:"center", hAlign:"center"});
+    //txt.rotation.z = -rz;
     load.add(txt);
 
     return load;
@@ -551,7 +578,7 @@ function DistributedLoadIndication(length1 ,startPoint, endPoint, direction, rz 
     const geometry = new THREE.BufferGeometry();
     var vertices =[];  
     vertices.push(StartPoint.x, StartPoint.y, StartPoint.z);
-    const dload= length2-length1;
+    const dload = length2-length1;
 
     for (let i = 0; i <= number ; i++)
     {
@@ -596,8 +623,9 @@ function DistributedLoadIndication(length1 ,startPoint, endPoint, direction, rz 
     vertices.push(StartPoint.x, StartPoint.y, StartPoint.z);
     geometry.setAttribute( 'position', new THREE.Float32BufferAttribute( vertices, 3 ) );
     const container = new THREE.Line( geometry, material );
-    container.rotateOnAxis(axis, rz)
-    load.add(container)
+    //container.rotateOnWorldAxis(axis, rz);
+
+    load.add(container);
     return load;
 }
 

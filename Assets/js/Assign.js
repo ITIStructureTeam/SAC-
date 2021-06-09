@@ -55,7 +55,7 @@ function Fix()
 
 function Roller()
 {
-    restraint = [true, false, false, false, false, false];
+    restraint = [false, false, true, false, false, false];
 }
 
 function Free()
@@ -143,7 +143,7 @@ function CopyWindow() {
             Z-direction translation
             <input type="number" id = "Copy-Z" style="width:65px ; margin-left:15px;"><br>
             Repitition
-            <input type="number" id = "Rep" style="width:65px; margin-left:82px;"><br><br>
+            <input type="number" id = "Rep" style="width:65px; margin-left:82px;" value = 1><br><br>
         </div>
         <div style="margin-left:55px">
             <button class="button info" style="width:35px; hight:30px; font-size:12px;" onclick="ApplyCopyButton(); CloseCopyWindow();">OK</button>
