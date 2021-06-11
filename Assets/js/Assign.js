@@ -238,7 +238,7 @@ function CloseRotateWindow() {
 function Rotate()
 {
     const rotation = document.getElementById("RotateAboutAxis-1").value;
-    if(DrawLine.SelectedLines.length > 0 && rotation != 0){
+    if(DrawLine.SelectedLines.length > 0){
         Labels();
         DrawLine.LoadsDisplayed = false;
         DrawLine.HideLoads();
