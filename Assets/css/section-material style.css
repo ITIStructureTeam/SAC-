@@ -124,6 +124,6 @@ button{
     background-image: url('../images/section-shapes/t-large.png');
 }
 
-/*#load-data .node-data{
-    padding-right: 25px;
-}*/
+.window-content{
+    z-index: 3;
+}

@@ -40,13 +40,13 @@ class LoadPattern{
     })();
     constructor(name, type, selfWtMult){
 
-        this.#id = LoadPattern.#loadPattId;
+        this.#id = 'p'+LoadPattern.#loadPattId;
         this.Name = name;
         this.Type = type;
         this.SelfWtMult = selfWtMult;
         this.#inCombos = new Array();
         this.#onElements = new Array();
-        LoadPattern.LoadPatternsList.set(String(this.ID),this);
+        LoadPattern.LoadPatternsList.set(this.ID,this);
         LoadPattern.#loadPattId++;
     }
 
@@ -132,20 +132,21 @@ class LoadCombo {
 
     #name;
     #id;
-    #loadPattsInfo;
+    #loadCasesInfo;
+    #incombos;
     static #loadCombosList = new Map();
     static #loadComboId = 1;
     static #initLoadCombo = (function(){
-        new LoadCombo('combo1',[ { patternId:'1'  , scaleFactor:1}]);
+        new LoadCombo('combo1',[ { caseId:'p1'  , scaleFactor:1}]);
     })();
 
-    constructor(name, loadPattsInfo){
-        this.#id = LoadCombo.#loadComboId;
+    constructor(name, loadCasesInfo){
+        this.#id = 'c' + LoadCombo.#loadComboId;
         this.Name = name;
         this._cpyNo = 0;
-        this.LoadPattsInfo = loadPattsInfo;
-
-        LoadCombo.LoadCombosList.set(String(this.ID), this);
+        this.LoadCasesInfo = loadCasesInfo;
+        this.#incombos = new Array();
+        LoadCombo.LoadCombosList.set(this.ID, this);
         LoadCombo.#loadComboId++;
     }
 
@@ -173,123 +174,148 @@ class LoadCombo {
         }
     }
 
-    set LoadPattsInfo(value){
+    set LoadCasesInfo(value){
         
-        // value = [ { patternId:  , scaleFactor:   }, { patternId:  , scaleFactor:  }, ... ]
+        // value = [ { caseId:  , scaleFactor:   }, { caseId:  , scaleFactor:  }, ... ]
         
         if (!(value instanceof Array))
             throw new TypeError("LoadPattsInfo must be in form of array");
         if(value.length == 0)
             throw new Error("a load pattern at least must exist in a load combination");
-        this.#CheckPatterns(value);
+        this.#CheckCases(value);
         this.#CheckScaleFactors(value);
-        this.#loadPattsInfo = value;
-        this.#PushInPattsInCombos(value);
+        this.#loadCasesInfo = value;
+        this.#PushInCasesInCombos(value);
     }
 
     get Name(){
         return this.#name;
     }
 
-    get LoadPattsInfo(){
-        return this.#loadPattsInfo;
+    get LoadCasesInfo(){
+        return this.#loadCasesInfo;
     }
 
     get ID(){
         return this.#id;
     }
 
+    get InCombos(){
+        return this.#incombos;
+    }
+
     static get LoadCombosList(){
         return LoadCombo.#loadCombosList;
     }
 
-    #CheckPatterns(laodpattsInfos){
-        let pattsIds = []
-        for (const laodpattInfo of laodpattsInfos) {
-            let pattId = laodpattInfo.patternId;
-            if(! LoadPattern.LoadPatternsList.has(pattId) ) 
-                throw new Error ('invalid Load Pattern ');
-            if(pattsIds.includes(pattId))
-                throw new Error('load pattern can not be repeated in the same load combination');
-            pattsIds.push(pattId);
+    #CheckCases(laodCasesInfos){
+        let casesIds = []
+        for (const laodcaseInfo of laodCasesInfos) {
+            let caseId = laodcaseInfo.caseId;
+            if(!GetLoadCase(caseId) ) 
+                throw new Error ('invalid Load Case ');
+            if(casesIds.includes(caseId))
+                throw new Error('load case can not be repeated in the same load combination');
+            casesIds.push(caseId);
         }
     }
 
-    #CheckScaleFactors(laodpattsInfos){
-        for (const laodpattInfo of laodpattsInfos) {
-            let scale = laodpattInfo.scaleFactor;
+    #CheckScaleFactors(laodCasesInfos){
+        for (const laodcaseInfo of laodCasesInfos) {
+            let scale = laodcaseInfo.scaleFactor;
             if(isNaN(scale)) throw TypeError('scale factors must be numbers');
         }
     }
 
-    #PushInPattsInCombos(loadPattsInfo){
-        for (const loadPattInfo of loadPattsInfo) {
-            let pattId = loadPattInfo.patternId;
-            let patt = LoadPattern.LoadPatternsList.get(pattId);
-            if(! (patt.InCombos.includes(this.Name)) ) patt.InCombos.push(this.Name);
+    #PushInCasesInCombos(laodCasesInfos){
+        for (const loadCaseInfo of laodCasesInfos) {
+            let caseId = loadCaseInfo.caseId;
+            GetLoadCase(caseId).InCombos.push(this.Name);       
         }
     }
 
-    AddLoadPattInfo(pattId, scale){
-        let matching = this.LoadPattsInfo.filter( info => info.patternId==pattId);
-        if(matching.length) throw new Error('the load pattern can not be duplicated');
+    AddLoadCaseInfo(caseId, scale){
+        let matching = this.LoadCasesInfo.filter( info => info.caseId==caseId);
+        if(matching.length) throw new Error('the load case can not be duplicated');
 
-        this.LoadPattsInfo.push({patternId:pattId, scaleFactor:scale});
-        LoadPattern.LoadPatternsList.get(pattId).AddCombo(this.Name);
+        this.LoadCasesInfo.push({caseId:caseId, scaleFactor:scale});
+        GetLoadCase(caseId).AddCombo(this.Name);
+        
     }
 
-    ModifyPattInfo(pattId, newPattId, newScale){
-        let modified = this.LoadPattsInfo.filter( info => info.patternId == pattId);
-        if(pattId === newPattId){
-            modified.scaleFactor = newScale;
+    ModifyCaseInfo(caseId, newCaseId, newScale){
+        let modified = this.LoadCasesInfo.filter( info => info.caseId == caseId);
+        if(caseId === newCaseId){
+            modified[0].scaleFactor = newScale;
         }else{
-            let matching = this.LoadPattsInfo.filter( info => info.patternId==newPattId);
+            let matching = this.LoadCasesInfo.filter( info => info.caseId==newCaseId);
             if(matching.length) {
-                throw new Error('the load pattern can not be duplicated');
+                throw new Error('the load case can not be duplicated');
             }
-            let index = this.LoadPattsInfo.indexOf(modified[0]);
-            this.LoadPattsInfo[index] = {patternId: newPattId, scaleFactor: newScale};
-
-            LoadPattern.LoadPatternsList.get(pattId).RemoveCombo(this.Name);
-            LoadPattern.LoadPatternsList.get(newPattId).AddCombo(this.Name);
+            let index = this.LoadCasesInfo.indexOf(modified[0]);
+            this.LoadCasesInfo[index] = {caseId: newCaseId, scaleFactor: newScale};
+            GetLoadCase(caseId).RemoveCombo(this.Name);
+            GetLoadCase(newCaseId).AddCombo(this.Name);
+            
         }       
     }
 
-    DeletePattInfo(pattId){
+    DeleteCaseInfo(caseId){
 
-        if(this.LoadPattsInfo.length == 1) throw new Error('at least one load pattern must exist in a load combination');
+        if(this.LoadCasesInfo.length == 1) throw new Error('at least one load case must exist in a load combination');
 
         // get deleted info
-        let deleted =  this.LoadPattsInfo.filter( info => info.patternId==pattId)[0];
+        let deleted =  this.LoadCasesInfo.filter( info => info.caseId==caseId)[0];
 
         //check existence
-        if(!deleted) throw new Error('this load pattern doesn`t exist in this cload combination');
+        if(!deleted) throw new Error('this load case doesn`t exist in this cload combination');
 
         //deleting procedure
-        let deletedIndex = this.LoadPattsInfo.indexOf(deleted);
-        this.LoadPattsInfo.splice(deletedIndex, 1);
+        let deletedIndex = this.LoadCasesInfo.indexOf(deleted);
+        this.LoadCasesInfo.splice(deletedIndex, 1);
 
         //remove this combo name from pattern deleted from LoadPattsInfo
-        LoadPattern.LoadPatternsList.get(pattId).RemoveCombo(this.Name);
+        GetLoadCase(caseId).RemoveCombo(this.Name);
+       
+    }
+
+    AddCombo(comboName){
+        if(!this.InCombos.includes(comboName)) this.InCombos.push(comboName);
+    }
+
+    RemoveCombo(comboName){
+        let comboIndex = this.InCombos.indexOf(comboName);
+        this.InCombos.splice(comboIndex, 1);
     }
 
     Delete(){
-        LoadCombo.LoadCombosList.delete(String(this.ID));
-        for (const loadPattInfo of this.LoadPattsInfo) {
-            let pattId = loadPattInfo.patternId;
-            let pattern = LoadPattern.LoadPatternsList.get(pattId);
-            let comboIndex = pattern.InCombos.indexOf(this.Name);
-            pattern.InCombos.splice(comboIndex, 1);
+        if(this.InCombos.length)
+            throw new Error('Load Combination is existing in another load combo/s');
+        LoadCombo.LoadCombosList.delete(this.ID);
+        for (const loadCaseInfo of this.LoadCasesInfo) {
+            let caseId = loadCaseInfo.caseId;
+            let loadCase = GetLoadCase(caseId)
+            let comboIndex = loadCase.InCombos.indexOf(this.Name);
+            loadCase.InCombos.splice(comboIndex, 1);
         }
     }
 
     DeepCopyComboData(){
-        return {Name: this.Name, LoadPattsInfo: [...this.LoadPattsInfo], cpyNo: this._cpyNo};
+        return {Name: this.Name, LoadCasesInfo: [...this.LoadCasesInfo], cpyNo: this._cpyNo};
     }
 
     Clone(){
         this._cpyNo++;
-        return new LoadCombo(`${this.Name}- ${this._cpyNo}`,this.LoadPattsInfo);
+        return new LoadCombo(`${this.Name}- ${this._cpyNo}`,this.LoadCasesInfo);
+    }
+}
+
+function GetLoadCase(caseId) {
+    switch (caseId[0]) {
+        case 'p':
+            return LoadPattern.LoadPatternsList.get(caseId)
+        case 'c':
+            return LoadCombo.LoadCombosList.get(caseId)
     }
 }
 

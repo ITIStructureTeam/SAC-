@@ -142,7 +142,7 @@ document.addEventListener('keydown',  function ( event ) {
 document.addEventListener('keydown',  function ( event ) {
     if(event.key == 'p')
     {
-        alert.log(DrawLine.GetDrawnFrames()[0].Section)
+        console.log(DrawLine.GetDrawnFrames()[0].Section)
     }
 })
 document.addEventListener('keydown',  function ( event ) {
@@ -194,7 +194,7 @@ function ClickToDrawLine(event)
     }
 }
 
-
+//keys
 document.addEventListener('keydown', function(event){
 	if(event.key === "Escape"){
 		points = [];
@@ -221,6 +221,10 @@ document.addEventListener('keydown', function(event){
     if(event.key === "Delete"){
         DeleteButton();
     }
+});
+
+renderer.domElement.addEventListener('dblclick',()=>{
+    Unselect();
 });
 
 document.addEventListener("keyup", function(){
@@ -254,7 +258,7 @@ document.addEventListener( 'mouseup', function ( event ) {
 const selection = new THREE.SelectionBox( camera, scene );
 const helper = new THREE.SelectionHelper( selection, renderer, 'selectBox' );
 
-document.addEventListener( 'mousedown', function ( event ) {
+renderer.domElement.addEventListener( 'mousedown', function ( event ) {
         if(event.button === 1 || event.button === 2)
         {
             document.querySelectorAll(".selectBox").forEach(x => x.style.visibility = "hidden");
@@ -264,7 +268,7 @@ document.addEventListener( 'mousedown', function ( event ) {
         }
 });
         
-document.addEventListener( 'mousedown', function ( event ) {
+renderer.domElement.addEventListener( 'mousedown', function ( event ) {
 
             if(event.button === 0 && SelectionModeActive == true)
             {  
@@ -275,7 +279,7 @@ document.addEventListener( 'mousedown', function ( event ) {
             }
 } );
 
-document.addEventListener( 'mousemove', function ( event ) {
+renderer.domElement.addEventListener( 'mousemove', function ( event ) {
             if(event.button === 0 && SelectionModeActive == true)
             {
             if (helper.isDown) {
@@ -287,7 +291,7 @@ document.addEventListener( 'mousemove', function ( event ) {
             }
    } );
 
-document.addEventListener( 'mouseup', function ( event ) {
+renderer.domElement.addEventListener( 'mouseup', function ( event ) {
     if(event.button === 0 && SelectionModeActive == true)
     {
     selection.endPoint.set(

@@ -48,9 +48,8 @@ let loadWindow = `
                             <input type="number" min="0" class="input-small" data-role="input" data-clear-button="false">
                         </div>
                     </div>
-                    <div id="patts-view">
-                        <ul data-role="listview"
-                        >
+                    <div id="patts-view-container">
+                        <ul data-role="listview" id="patts-view">
 
 
 
@@ -78,13 +77,9 @@ document.querySelector('#pattern-btn').addEventListener("click",function(){
         $('body').append(loadWindow);
         LoadDefPatterns();
         if(document.querySelector('#load-data .current-select'))ShowPattData();
-
-        /*document.querySelector('#pattern-window').addEventListener("click",function(){
-            if(document.querySelector('#load-data .current-select'))ShowPattData();
-        })*/
         
         document.querySelector('#mod-pattern').addEventListener("click",function(){
-            let pattId= document.querySelector('#load-data .current-select').value;
+            let pattId= document.querySelector('#load-data .current-select').getAttribute('value');
             ModifyPattern(pattId);
         } );
 
@@ -97,7 +92,7 @@ document.querySelector('#pattern-btn').addEventListener("click",function(){
         })
 
         document.getElementById('delete-pattern').addEventListener("click",function(){
-            let pattId= document.querySelector('#load-data .current-select').value;
+            let pattId= document.querySelector('#load-data .current-select').getAttribute('value');
             DeletePattern(pattId);
         })
     }
@@ -107,16 +102,18 @@ document.querySelector('#pattern-btn').addEventListener("click",function(){
 function AddLoadPattern(){
     
     let name = document.querySelector('#load-data input[type="text"]').value;
-    let type = Number(document.querySelector('#load-data select').value);
+    let type = Number(document.querySelector('#pattern-type').value);
     let wtmult = document.querySelector('#load-data input[type="number"]').valueAsNumber;
     let patt; 
     try {
         patt = new LoadPattern(name, type, wtmult);
-        $('#load-data ul').append(`
-        <li value=${patt.ID} class="node flex-rowm  margin-b-20">
-            <div>${patt.Name}</div>
-            <div>${Object.keys(ELoadPatternType)[patt.Type]}</div>
-            <div>${patt.SelfWtMult}</div>
+        $('#patts-view').append(`
+        <li value=${patt.ID} class="node" style="display:inline-block;">
+            <div class="flex-rowm ">
+                <div style="width:122px;">${patt.Name}</div>
+                <div style="width:122px;">${Object.keys(ELoadPatternType)[patt.Type]}</div>
+                <div style="width:122px;">${patt.SelfWtMult}</div>
+            </div>
         </li>
         `);
     } catch (error) {
@@ -134,10 +131,12 @@ function LoadDefPatterns() {
     document.querySelectorAll('#load-data ul li').forEach(elem => elem.remove());
     LoadPattern.LoadPatternsList.forEach( (value,key) => {
         $('#load-data ul').append(`
-        <li value=${key} class="node flex-rowm  margin-b-20">
-            <div>${value.Name}</div>
-            <div>${Object.keys(ELoadPatternType)[value.Type]}</div>
-            <div>${value.SelfWtMult}</div>
+        <li value="${key}" class="node" style="display:inline-block;">
+            <div class="flex-rowm ">
+                <div style="width:122px;">${value.Name}</div>
+                <div style="width:122px;">${Object.keys(ELoadPatternType)[value.Type]}</div>
+                <div style="width:122px;">${value.SelfWtMult}</div>
+            </div>
         </li>
         `);
 
@@ -146,15 +145,15 @@ function LoadDefPatterns() {
 }
 
 function ShowPattData() {
-    let pattId= document.querySelector('#load-data .current-select').value;
-    let pattern = LoadPattern.LoadPatternsList.get(String(pattId));
+    let pattId= document.querySelector('#load-data .current-select').getAttribute('value');
+    let pattern = LoadPattern.LoadPatternsList.get(pattId);
     document.querySelector('#load-data input[type="text"]').value = pattern.Name;
     document.querySelector('#load-data input[type="number"]').value = pattern.SelfWtMult;
     //console.log(pattern.Type)
 }
 
-function ModifyPattern(pattId){
-    let pattern = LoadPattern.LoadPatternsList.get(String(pattId) );
+function ModifyPattern(pattId){ 
+    let pattern = LoadPattern.LoadPatternsList.get(pattId);
     let selectedElement = $(".current-select")[0];
     try{
         pattern.Name = document.querySelector('#load-data input[type="text"]').value;
@@ -166,21 +165,13 @@ function ModifyPattern(pattId){
         }
     
         $(".current-select").append(`
-                <div>${pattern.Name}</div>
-                <div>${Object.keys(ELoadPatternType)[pattern.Type]}</div>
-                <div>${pattern.SelfWtMult}</div>   
+            <div class="flex-rowm ">
+                <div style="width:122px;">${pattern.Name}</div>
+                <div style="width:122px;">${Object.keys(ELoadPatternType)[pattern.Type]}</div>
+                <div style="width:122px;">${pattern.SelfWtMult}</div> 
+            </div>  
         `);
-        /*let loadAttrbs = document.querySelector(`#load-data ul li[value='${(pattern.ID)}']`).querySelectorAll('div');
-        loadAttrbs[0].innerHTML = pattern.Name;
-        loadAttrbs[1].innerHTML = Object.keys(ELoadPatternType)[pattern.Type];
-        loadAttrbs[2].innerHTML = pattern.SelfWtMult;
-        let data = document.querySelector(`#load-data li[value='${(pattern.ID)}']`);
-   
-        data.querySelector('div[class="caption"]').innerHTML =  data.dataset.caption = pattern.Name;
-        data.querySelector('.item-data-type').innerHTML = data.dataset.type = Object.keys(ELoadPatternType)[pattern.Type]
-        data.querySelector('.item-data-wtmult').innerHTML = data.dataset.wtmult = pattern.SelfWtMult;*/
 
-        //document.querySelector(`#load-data ul li[value='${(pattern.ID)}']`).classList.add('current-select')
     }catch(error){
         Metro.dialog.create({
             title: "Can not modify load pattern",
@@ -193,7 +184,7 @@ function ModifyPattern(pattId){
 }
 
 function DeletePattern(pattId) {
-    let pattern = LoadPattern.LoadPatternsList.get(String(pattId) );
+    let pattern = LoadPattern.LoadPatternsList.get(pattId);
     let selectedElement = $(".current-select")[0];
     try {
         pattern.Delete();
@@ -208,10 +199,10 @@ function DeletePattern(pattId) {
 }
 
 function RefreshPattList() {
-    document.querySelector('#patts-view').children[0].remove();
+    document.querySelector('#patts-view-container').children[0].remove();
     //document.querySelectorAll(`#load-data ul li`).forEach(elem => elem.remove());
     //document.querySelector(`#load-data ul`).remove();
-    $('#patts-view').append(`
+    $('#patts-view-container').append(`
     <ul data-role="listview"
     data-view="table"
     data-select-node="true"

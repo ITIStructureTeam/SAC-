@@ -70,6 +70,7 @@ THREE.SelectionHelper = ( function () {
 
 	SelectionHelper.prototype.onSelectOver = function () {
 
+		if(this.element.parentElement)
 		this.element.parentElement.removeChild( this.element );
 
 	};

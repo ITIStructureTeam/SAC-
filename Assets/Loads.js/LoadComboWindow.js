@@ -193,40 +193,41 @@ document.querySelector('#combo-btn').addEventListener('click',function(){
             let current = document.querySelector('#combo-main-window .current-select');
             
             if(!document.querySelector('.secondary-window') && current){
-
-                let combo = LoadCombo.LoadCombosList.get(String(current.value));
+                let comboId = current.getAttribute('value')
+                let combo = LoadCombo.LoadCombosList.get(comboId);
                 let backup = combo.DeepCopyComboData();
 
                 $('body').append(comboModWindow);
                 LoadDefCases();
-                LoadComboData(current.value);
+                document.querySelector(`option[value=${comboId}]`).remove();
+                LoadComboData(comboId);
 
                 document.querySelector('#add-case').addEventListener("click", function(){
                     
-                    AddComboField(current.value);
+                    AddComboField(comboId);
                 });
 
                 document.querySelector('#mod-case').addEventListener("click", function(){
                     if(document.querySelector('#combo-sec-window .current-select')){                      
-                        ModifyCase(current.value);
+                        ModifyCase(comboId);
                     }
                 });
 
                 document.querySelector('#delete-case').addEventListener("click", function(){
                     if(document.querySelector('#combo-sec-window .current-select')){                      
-                        DeleteComboCase(current.value);
+                        DeleteComboCase(comboId);
                     }
                 });
 
                 document.querySelector('#save-combo-sec').addEventListener("click", function(){
-                    ChangeComboName(current.value);
+                    ChangeComboName(comboId);
                     document.querySelector('#combo-sec-window').parentElement.parentElement.remove();
                     LoadDefCombos();
                 });
 
                 document.querySelector('#cancel-combo-sec').addEventListener("click", function(){
                     combo.Delete();
-                    let combo2 = new LoadCombo(backup.Name, backup.LoadPattsInfo);
+                    let combo2 = new LoadCombo(backup.Name, backup.LoadCasesInfo);
                     combo2._cpyNo = backup.cpyNo;
                     document.querySelector('#combo-sec-window').parentElement.parentElement.remove();
                     LoadDefCombos();
@@ -238,27 +239,27 @@ document.querySelector('#combo-btn').addEventListener('click',function(){
             if(!document.querySelector('.secondary-window')){
                 $('body').append(comboAddWindow);
                 LoadDefCases();
-                let loadPattInfo = [];
+                let loadCaseInfo = [];
 
                 document.querySelector('#add-add-case').addEventListener("click", function(){
-                    AddNewComboField(loadPattInfo);
+                    AddNewComboField(loadCaseInfo);
                 });
                 document.querySelector('#add-mod-case').addEventListener("click", function(){
                     if(document.querySelector('#combo-add-window .current-select')){
-                        ModifyNewCase(loadPattInfo);
+                        ModifyNewCase(loadCaseInfo);
                     }
                 });
 
                 document.querySelector('#add-delete-case').addEventListener("click", function(){
                     if(document.querySelector('#combo-add-window .current-select')){
-                        DeleteNewComboCase(loadPattInfo);
+                        DeleteNewComboCase(loadCaseInfo);
                     }
                 });
 
                 document.querySelector('#add-save-combo-sec').addEventListener("click", function(){
                     let name = document.querySelector('#combo-add-window input[type="text"]').value;
                     try{
-                        new LoadCombo(name, loadPattInfo);
+                        new LoadCombo(name, loadCaseInfo);
                         document.querySelector('#combo-add-window').parentElement.parentElement.remove();
                         LoadDefCombos();
                     }catch(error){
@@ -280,7 +281,7 @@ document.querySelector('#combo-btn').addEventListener('click',function(){
 
         document.querySelector('#copy-combo-btn').addEventListener("click", function(){
             if(document.querySelector('#combo-main-window .current-select')){
-                let comboId = document.querySelector('#combo-main-window .current-select').value;
+                let comboId = document.querySelector('#combo-main-window .current-select').getAttribute('value');
                 let combo = LoadCombo.LoadCombosList.get(String(comboId));
                 combo.Clone();
                 LoadDefCombos();
@@ -289,13 +290,14 @@ document.querySelector('#combo-btn').addEventListener('click',function(){
 
         document.querySelector('#delete-combo-btn').addEventListener("click", function(){
             if(document.querySelector('#combo-main-window .current-select')){
-                let comboId = document.querySelector('#combo-main-window .current-select').value;
-                let combo = LoadCombo.LoadCombosList.get(String(comboId));
-                combo.Delete();
-                LoadDefCombos();
+                let comboId = document.querySelector('#combo-main-window .current-select').getAttribute('value')
+                DeleteCombo(comboId)
             }
         });
         
+        document.querySelector('#close-combo-main').addEventListener("click", function(){
+            document.querySelector('.main-window').parentElement.parentElement.remove();
+        })
     }
 });
 
@@ -330,11 +332,11 @@ function LoadDefCases() {
             <option value=${key}>${value.Name}</option>
         `)
     });
-    /*LoadCombo.LoadCombosList.forEach((value,key) => {
+    LoadCombo.LoadCombosList.forEach((value,key) => {
         $('#load-case').append(`
-            <option value=${'c'+key}>${value.Name}</option>
+            <option value=${key}>${value.Name}</option>
         `)
-    });*/
+    });
 }
 
 function LoadComboData(comboId) {
@@ -343,41 +345,42 @@ function LoadComboData(comboId) {
     for (let i = length-1; i >= 0 ; i--) {
         $('#combo-info').children()[i].remove();      
     } 
-    let combo = LoadCombo.LoadCombosList.get(String(comboId));
-    let infoArr = combo.LoadPattsInfo;
+    let combo = LoadCombo.LoadCombosList.get(comboId);
+    let infoArr = combo.LoadCasesInfo;
     document.querySelector('#combo-sec-window input[type="text"]').value = combo.Name;
     for (const info of infoArr) {
-        let pattId = info.patternId;
+        let caseId = info.caseId;
         let scale = info.scaleFactor;
-        let pat = LoadPattern.LoadPatternsList.get(pattId);
+        let loadCase = GetLoadCase(caseId);
+        
         $('#combo-info').append(`
-        <li style="display:inline-block;" value=${''+pattId}>
+        <li style="display:inline-block;" value="${caseId}">
             <div class="flex-rowm justify-start">
-                <div class="width-160">${pat.Name}</div>
+                <div class="width-160">${loadCase.Name}</div>
                 <div>${scale}</div>
             </div>
         </li>
         `);
     }
-    $('#load-case')[0].value = infoArr[0].patternId;
+    $('#load-case')[0].value = infoArr[0].caseId;
     $('#scale-case input')[0].value = infoArr[0].scaleFactor;
 }
 
 function AddComboField(comboId) {
 
-    let patId = $('#load-case')[0].value;
-    let pat = LoadPattern.LoadPatternsList.get(String(patId));
+    let caseId = $('#load-case')[0].value;
+    let loadCase = GetLoadCase(caseId);
     let scale = $('#scale-case input')[0].value;
 
     try {
         
-        let combo = LoadCombo.LoadCombosList.get(String(comboId));
-        combo.AddLoadPattInfo(String(patId), Number(scale));
+        let combo = LoadCombo.LoadCombosList.get(comboId);
+        combo.AddLoadCaseInfo(caseId, Number(scale));
 
         $('#combo-info').append(`
-        <li class="node" style="display:inline-block;" value=${patId}>
+        <li class="node" style="display:inline-block;" value=${caseId}>
             <div class="flex-rowm justify-start">
-                <div class="width-160">${pat.Name}</div>
+                <div class="width-160">${loadCase.Name}</div>
                 <div>${scale}</div>
             </div>
         </li>
@@ -394,22 +397,22 @@ function AddComboField(comboId) {
 }
 
 function ModifyCase(comboId) {
-    let combo = LoadCombo.LoadCombosList.get(String(comboId));
+    let combo = LoadCombo.LoadCombosList.get(comboId);
 
     //old data
-    let oldPatId = $('#combo-sec-window .current-select')[0].value;
+    let oldCaseId = document.querySelector('#combo-sec-window .current-select').getAttribute('value');
 
     //new data
-    let patId = $('#load-case')[0].value;
+    let newCaseId = $('#load-case')[0].value;
     let scale = $('#scale-case input')[0].value;
-    let patt = LoadPattern.LoadPatternsList.get(String(patId));
+    let loadCase = GetLoadCase(newCaseId);
 
     try {
-        combo.ModifyPattInfo(String(oldPatId), String(patId), Number(scale));
-        let li = document.querySelector(`#combo-info li[value='${oldPatId}']`);
-        li.value = patId;
+        combo.ModifyCaseInfo(oldCaseId, newCaseId, Number(scale));
+        let li = document.querySelector(`#combo-info li[value='${oldCaseId}']`);
+        li.setAttribute('value',newCaseId);
         let divs = li.querySelector('div').querySelectorAll('div')
-        divs[0].innerHTML = patt.Name;
+        divs[0].innerHTML = loadCase.Name;
         divs[1].innerHTML = Number(scale);   
     } catch (error) {
         Metro.dialog.create({
@@ -421,12 +424,12 @@ function ModifyCase(comboId) {
 }
 
 function DeleteComboCase(comboId) {
-    let combo = LoadCombo.LoadCombosList.get(String(comboId));
-    let pattId = $('#combo-sec-window .current-select')[0].value;
+    let combo = LoadCombo.LoadCombosList.get(comboId);
+    let caseId = $('#combo-sec-window .current-select')[0].value;
 
     try {
-        combo.DeletePattInfo(String(pattId));
-        document.querySelector(`#combo-info li[value='${pattId}']`).remove();
+        combo.DeleteCaseInfo(caseId);
+        document.querySelector(`#combo-info li[value='${caseId}']`).remove();
     } catch (error) {
         Metro.dialog.create({
             title: "Error",
@@ -439,7 +442,7 @@ function DeleteComboCase(comboId) {
 function ChangeComboName(comboId){
     let name = document.querySelector('#combo-sec-window input[type="text"]').value;
     try {
-        LoadCombo.LoadCombosList.get(String(comboId)).Name = name
+        LoadCombo.LoadCombosList.get(comboId).Name = name
     } catch (error) {
         Metro.dialog.create({
             title: "Error",
@@ -449,13 +452,13 @@ function ChangeComboName(comboId){
     }
 }
 
-function AddNewComboField(loadpattsArray) {
+function AddNewComboField(loadcasesArray) {
     
-    let patId = $('#load-case')[0].value;
-    let pat = LoadPattern.LoadPatternsList.get(String(patId));
+    let caseId = $('#load-case')[0].value;
+    let loadCase = GetLoadCase(caseId)
     let scale = $('#scale-case input')[0].value;
 
-    let matching = loadpattsArray.filter( info => info.patternId == String(patId));
+    let matching = loadcasesArray.filter( info => info.caseId == caseId);
     if(matching.length){
         Metro.dialog.create({
             title: "Error",
@@ -469,11 +472,11 @@ function AddNewComboField(loadpattsArray) {
             closeButton: true
         });
     }else{
-        loadpattsArray.push({patternId: String(patId), scaleFactor: Number(scale)});
+        loadcasesArray.push({caseId: caseId, scaleFactor: Number(scale)});
         $('#combo-info').append(`
-        <li class="node" style="display:inline-block;" value=${patId}>
+        <li class="node" style="display:inline-block;" value=${caseId}>
             <div class="flex-rowm justify-start">
-                <div class="width-160">${pat.Name}</div>
+                <div class="width-160">${loadCase.Name}</div>
                 <div>${scale}</div>
             </div>
         </li>
@@ -481,13 +484,13 @@ function AddNewComboField(loadpattsArray) {
     }
 }
 
-function ModifyNewCase(loadpattsArray) {
-    let oldPatId = String($('#combo-add-window .current-select')[0].value);
+function ModifyNewCase(loadcasesArray) {
+    let oldCaseId = document.querySelector('#combo-add-window .current-select').getAttribute('value');
 
     //new data
-    let patId = $('#load-case')[0].value;
+    let caseId = $('#load-case')[0].value;
     let scale = $('#scale-case input')[0].value;
-    let patt = LoadPattern.LoadPatternsList.get(String(patId));
+    let loadCase = GetLoadCase(caseId);
     if(Number(scale) == 0){
         Metro.dialog.create({
             title: "Error",
@@ -497,9 +500,9 @@ function ModifyNewCase(loadpattsArray) {
         return;
     }
 
-    let matching = loadpattsArray.filter(info => info.patternId == String(patId));
+    let matching = loadcasesArray.filter(info => info.caseId == caseId);
 
-    if(oldPatId == patId){
+    if(oldCaseId == caseId){
         matching[0].scaleFactor = Number(scale);
         
     }else if(matching.length){
@@ -510,22 +513,37 @@ function ModifyNewCase(loadpattsArray) {
         });
         return;
     }else{
-        let modified = loadpattsArray.filter(info => info.patternId==oldPatId)[0];
-        let index = loadpattsArray.indexOf(modified);
-        loadpattsArray[index]={patternId: String(patId), scaleFactor: Number(scale)};
+        let modified = loadcasesArray.filter(info => info.caseId==oldCaseId)[0];
+        let index = loadcasesArray.indexOf(modified);
+        loadcasesArray[index]={caseId: caseId, scaleFactor: Number(scale)};
     }
-    let li = document.querySelector(`#combo-info li[value='${oldPatId}']`);
-    li.value = patId;
+    let li = document.querySelector(`#combo-info li[value='${oldCaseId}']`);
+    li.value = caseId;
     let divs = li.querySelector('div').querySelectorAll('div')
-    divs[0].innerHTML = patt.Name;
+    divs[0].innerHTML = loadCase.Name;
     divs[1].innerHTML = Number(scale);     
 
 }
 
-function DeleteNewComboCase(loadpattsArray) {
-    let patId = $('#combo-add-window .current-select')[0].value;
-    let deleted = loadpattsArray.filter(info => info.patternId==String(patId))[0];
-    let index = loadpattsArray.indexOf(deleted);
-    loadpattsArray.splice(index, 1);
-    document.querySelector(`#combo-info li[value='${patId}']`).remove();
+function DeleteNewComboCase(loadcasesArray) {
+    let caseId = $('#combo-add-window .current-select')[0].value;
+    let deleted = loadcasesArray.filter(info => info.caseId==caseId)[0];
+    let index = loadcasesArray.indexOf(deleted);
+    loadcasesArray.splice(index, 1);
+    document.querySelector(`#combo-info li[value='${caseId}']`).remove();
+}
+
+function DeleteCombo(comboId) {
+    let combo = LoadCombo.LoadCombosList.get(String(comboId));
+    try {
+        combo.Delete();
+        LoadDefCombos();
+    } catch (error) {
+        Metro.dialog.create({
+            title: "Error",
+            content: `<div>${error.message}</div>`,
+            closeButton: true
+        });
+    }
+    
 }
