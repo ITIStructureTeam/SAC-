@@ -190,7 +190,7 @@ class Section {
     {
         return{
         Name : this.Name,
-        Material : this.Material,
+        Material : this.Material.Name,
         SecType:this.SecType ,
         Dimensions:this.Dimensions,
         PropModifiers:this.PropModifiers};
