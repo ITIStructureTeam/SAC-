@@ -126,6 +126,15 @@ class LoadPattern{
         if(this.InCombos.length)   throw new Error('This pattern is used in a load combination');
         LoadPattern.LoadPatternsList.delete(String(this.ID));
     }
+
+    toJSON()
+    {
+        return{
+            Name:this.Name,
+            Type:this.Type,
+            SelfWtMult:this.SelfWtMult
+        }
+    }
 }
 
 class LoadCombo {
@@ -396,6 +405,18 @@ class AppliedLoadInfo{
         return this.#magnitude;
     }
 
+    toArray(object)
+    {
+        let array = [];
+        if(Array.isArray(object))
+        {
+            array = [...object]
+        }
+        else{
+            array.push(object) 
+        }
+        return array;
+    }
     toJSON()
     {
         return{
@@ -403,8 +424,8 @@ class AppliedLoadInfo{
             Dir:this.Dir,
             Type:this.Type,
             Shape:this.Shape,
-            Distance:this.Distance,
-            Magnitude:this.Magnitude 
+            Distance:this.toArray(this.Distance),
+            Magnitude:this.toArray(this.Magnitude)
         }
     }
     Clone()

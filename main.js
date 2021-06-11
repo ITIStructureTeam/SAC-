@@ -984,6 +984,10 @@ function AddPointsToFrame()
 
 
 
+
+
+
+
 //#region // Results visualization
 function ResultLines(length, x,y,z, startPoint, endPoint,  direction, rz, scale = 1) // , local = false)
 {
@@ -1113,15 +1117,13 @@ function ResultsDiagram(results ,startPoint, endPoint, direction, rz, scale = 1,
 }
 //#endregion
 
-
-
-
 class RootData
 {
     constructor()
     {
         this.Materials = [...Material.MaterialsList.values()];
         this.Sections = [...Section.SectionList.values()];
+        this.Patterns = Array.from(LoadPattern.LoadPatternsList, ([PatternID, Details]) => ({ PatternID, Details }));
         this.Points = [...Point.PointsArray];
         this.Frames = DrawLine.GetDrawnFrames();
     }
@@ -1151,7 +1153,8 @@ function Run()
     //     }
     // });
 
-
+    const newOutput = JSON.parse(OutPut)
+    console.log(newOutput);
 // var fs = require('fs');
 // fs.writeFile("OutPut.json", OutPut, function(err) {
 //     if (err) {
@@ -1159,3 +1162,18 @@ function Run()
 //     }
 // });
 }
+
+//     const geometry = new THREE.BufferGeometry();
+//     const material = new THREE.LineBasicMaterial();
+//     const vertices2 =[];  
+//     vertices2.push(12,8,9);
+//     vertices2.push(6,4,3);
+//     geometry.setAttribute( 'position', new THREE.Float32BufferAttribute( vertices2, 3 ) );
+//     const arrow2 = new THREE.Line( geometry, material );
+//     const res = [-1,-0.72,-0.5,-0.2,0.2, 0.5,0.7,0.5,0.2, -0.2, -0.5]
+//     const startPoint2 = [12,8,9];
+//     const endPoint2 = [6,4,3]
+//     // ArrowOnLine(-1,0,0,9, startPoint, endPoint, 2, 1, true)
+//     //DistributedLoadIndication(-1,startPoint2, endPoint2, 3, 0,1, 2, true)
+//     ResultsDiagram(res, startPoint2, endPoint2, 2, 0,1, true)
+//     scene.add(arrow2)

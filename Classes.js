@@ -194,7 +194,7 @@ class FrameElement
             StartPoint:this.StartPoint.Label,
             EndPoint:this.EndPoint.Label,
             Rotation:this.Rotation * 180/Math.PI,
-            Loads:Object.fromEntries(this.LoadsAssigned)
+            Loads:Array.from(this.LoadsAssigned, ([Pattern, LoadDetails]) => ({ name, LoadDetails }))
         }
     }
 }
@@ -578,12 +578,14 @@ class DrawLine
     static StandardView(){
         DrawLine.DrawLinesArray.forEach(drawLine => drawLine.Extrude.visible=false);
         DrawLine.DrawLinesArray.forEach(drawLine => drawLine.line.visible=true);
+        DrawLine.DrawLinesArray.forEach(drawLine => drawLine.InView());
     }
 
     static ExtrudeView(){
 
         DrawLine.DrawLinesArray.forEach(drawLine => drawLine.Extrude.visible=true);
         DrawLine.DrawLinesArray.forEach(drawLine => drawLine.line.visible=false);
+        DrawLine.DrawLinesArray.forEach(drawLine => drawLine.InView());
     }
 
     static GetDrawnFrames(){
@@ -601,8 +603,8 @@ class DrawLine
     static HideLoads(){
         DrawLine.DrawLinesArray.forEach( line => {
             line.#dispLoads.forEach(load =>{
-                load.clear()
                 scene.remove(load);
+                load.clear();
             });
         });
     }
@@ -622,6 +624,7 @@ class DrawLine
         }
         this.InView();
         this.updateColors();
+        this.InView()
     }
 
     ReSetSecName(){
@@ -767,8 +770,8 @@ class DrawLine
         scene.remove(this.label);
         scene.remove(this.name);
         this.#dispLoads.forEach(load =>{
-            load.clear()
             scene.remove(load);
+            load.clear()
         });
     }
 
