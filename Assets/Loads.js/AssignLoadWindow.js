@@ -85,6 +85,11 @@ let pointLoadWin = `
             <div class="padding-all-0" data-role="panel">
                 <div class="flex-col">
 
+                    <div class="input-width">
+                        <input type="checkbox" id="delete-load" >
+                        <label for="fill">Fill Diagram</label>
+                    </div>
+
                     <div class="flex-rowm margin-b-20" id="app-load-dist">
                         <div class="input-width">
                             <label>Relative Distance</label>
@@ -345,6 +350,13 @@ function GetPtLoadWin() {
             <div class="padding-all-0" data-role="panel">
                 <div class="flex-col">
 
+                    <div class="flex-rowm justify-center margin-b-20">
+                        <div>
+                            <input type="checkbox" id="delete-load" >
+                            <label for="delete-load">Delete Existing Load</label>
+                        </div>
+                    </div>
+
                     <div class="flex-rowm margin-b-20" id="app-load-dist">
                         <div class="input-width">
                             <label>Relative Distance</label>
@@ -481,6 +493,13 @@ function GetDistLoadWin() {
 
             <div class="padding-all-0" data-role="panel">
                 <div class="flex-col">
+
+                    <div class="flex-rowm justify-center margin-b-20">
+                        <div>
+                            <input type="checkbox" id="delete-load" >
+                            <label for="delete-load">Delete Existing Load</label>
+                        </div>
+                    </div>
 
                     <div class="flex-rowm margin-b-20" id="app-load-dist">
                         <div class="input-width">
@@ -629,3 +648,107 @@ function GetDistLoadInfo() {
 function GetAppLoadPatternId() {
     return $('#app-load-pattern')[0].value;
 }
+
+
+document.querySelector('#point-load-btn').addEventListener("click", function(){
+    if(!document.querySelector('.main-window')){
+        $('body').append(GetPtLoadWin());
+        AppliedLoadPatts();
+        let delLoadOption = document.getElementById('delete-load');
+        
+        document.querySelector('#coord-sys').addEventListener("change",FillLoadsDirs);
+
+        delLoadOption.addEventListener("input", function(e){
+            let distInputs = document.querySelectorAll('#app-load-dist input');
+            let magsInputs = document.querySelectorAll('#app-load-mag input');
+            if(e.target.checked){               
+                distInputs.forEach(input => input.disabled=true);
+                magsInputs.forEach(input=> input.disabled=true);
+            }else{
+                distInputs.forEach(input => input.disabled=false);
+                magsInputs.forEach(input=> input.disabled=false);
+            }
+        });
+
+        document.querySelector('#ok-ptload-btn').addEventListener('click', function(){
+            let appliedLoads =  GetPtLoadInfo();
+            let patternId = GetAppLoadPatternId();
+            DrawLine.DisplayedPattern = patternId;
+            
+            if(DrawLine.SelectedLines.length){
+                if(delLoadOption.checked){
+                    commands.excuteCommand(new DeleteFrameLoad(DrawLine.SelectedLines, patternId, ELoadShape.Point));
+                }else if(appliedLoads.length){
+                    commands.excuteCommand(new AssignFrameLoad(DrawLine.SelectedLines, patternId, appliedLoads));
+                }
+           
+            }
+            document.querySelector('.main-window').parentElement.parentElement.remove();
+        });
+
+        document.querySelector('#close-ptload-btn').addEventListener('click', function(){
+            document.querySelector('.main-window').parentElement.parentElement.remove();
+        });
+    }
+});
+
+document.querySelector('#distributed-load-btn').addEventListener("click", function(){
+    if(!document.querySelector('.main-window')){
+        $('body').append(GetDistLoadWin());
+        AppliedLoadPatts();
+        let delLoadOption = document.getElementById('delete-load');
+        document.querySelector('#coord-sys').addEventListener("change",FillLoadsDirs);
+        
+        delLoadOption.addEventListener("input", function(e){
+            let distInputs = document.querySelectorAll('#app-load-dist input');
+            let magsInputs = document.querySelectorAll('#app-load-mag input');
+            if(e.target.checked){               
+                distInputs.forEach(input => input.disabled=true);
+                magsInputs.forEach(input=> input.disabled=true);
+            }else{
+                distInputs.forEach(input => input.disabled=false);
+                magsInputs.forEach(input=> input.disabled=false);
+            }
+        });
+
+        document.querySelector('#ok-disload-btn').addEventListener('click', function(){
+            let appliedLoads =  GetDistLoadInfo();
+            let patternId = GetAppLoadPatternId();
+            DrawLine.DisplayedPattern = patternId;
+            if(DrawLine.SelectedLines.length){
+                if(delLoadOption.checked){
+                    commands.excuteCommand(new DeleteFrameLoad(DrawLine.SelectedLines, patternId, ELoadShape.Distributed));
+                }else if(appliedLoads.length){
+                    commands.excuteCommand(new AssignFrameLoad(DrawLine.SelectedLines, patternId, appliedLoads));
+                }
+            }
+            document.querySelector('.main-window').parentElement.parentElement.remove();
+        });
+
+        document.querySelector('#close-disload-btn').addEventListener('click', function(){
+            document.querySelector('.main-window').parentElement.parentElement.remove();
+        })
+    }
+});
+
+document.querySelector('#disp-load-btn').addEventListener("click", function(){
+    if(!document.querySelector('.main-window')){
+        $('body').append(dispLoadsWindow);
+        DispLoadPatts();
+        document.querySelector('#ok-disp-load-btn').addEventListener("click", function(){
+            // go in show load mode
+            let patId = GetDispLoadPatternId();
+            DrawLine.LoadsDisplayed = true;
+            DrawLine.DisplayedPattern = patId;
+            Standard();
+            DrawLine.DrawLinesArray.forEach(line => {                
+                line.DisplayLoad(patId);
+                line.InView();
+            });
+            document.querySelector('.main-window').parentElement.parentElement.remove();
+        });
+        document.querySelector('#close-disp-load-btn').addEventListener("click", function(){
+            document.querySelector('.main-window').parentElement.parentElement.remove();
+        });
+    }
+});

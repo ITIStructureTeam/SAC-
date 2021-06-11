@@ -42,11 +42,11 @@ class Commands
         {
             this.redoHistory[i].remove();
         }
-        if(this.History.length > 20)
+        /*if(this.History.length > 20)
         {
             this.History[0].remove();
             this.History.shift();
-        }
+        }*/
         this.redoHistory = [];
     }
     undoCommand()
@@ -57,7 +57,7 @@ class Commands
             this.History[this.History.length-1].undo();
             this.History.pop();
         }
-        if(this.redoHistory.length > 4)
+        if(this.redoHistory.length > 40)
         {
             this.redoHistory[0].remove();
             this.redoHistory.shift();
@@ -76,7 +76,6 @@ class Commands
 
 // create an instance of command object 
 var commands = new Commands()
-
 
 // Frame Element class
 class FrameElement
@@ -623,6 +622,7 @@ class DrawLine
             this.#extrude.visible = true;
             this.line.visible = false;
         }
+        this.InView();
         this.updateColors();
         this.InView()
     }
@@ -1015,16 +1015,22 @@ class AssignFrameLoad{
         Standard();
         Labels();        
         DrawLine.LoadsDisplayed = true;
-        DrawLine.DrawLinesArray.forEach(line => line.DisplayLoad(this.Pattern));
+        DrawLine.DrawLinesArray.forEach(line => {
+            line.DisplayLoad(this.Pattern);
+            line.InView();
+        });
     }
 
     undo(){
         
         this.#PopFromFrameLoadsAssigned();
         Standard();
-        Labels();     
-        DrawLine.LoadsDisplayed = true;    
-        this.Lines.forEach(line => line.DisplayLoad(this.Pattern));
+        Labels();        
+        DrawLine.LoadsDisplayed = true;
+        DrawLine.DrawLinesArray.forEach(line => {
+            line.DisplayLoad(this.Pattern);
+            line.InView();
+        });
 
     }
 
@@ -1035,7 +1041,7 @@ class AssignFrameLoad{
 
     remove(){
         this.Lines.length = 0;
-        this.Pattern = null;
+        //this.Pattern = null;
     }
 
     #PushInFrameLoadsAssigned(){
@@ -1098,6 +1104,102 @@ class AssignFrameLoad{
     
 }
 
+class DeleteFrameLoad {
+
+    constructor(lines, patternId, loadShape){
+        this.Lines = [...lines];
+        this.PatternId = patternId;
+        this.LoadShape = loadShape;
+        this.DeletedLoads = this.#GetLoadsToDelete();
+    }
+
+    excute(){
+
+        
+        this.#DeleteFromLoadsAssigned();
+        this.#DeleteFromOnElements();
+        Standard();
+        Labels();        
+        DrawLine.LoadsDisplayed = true;
+        DrawLine.DrawLinesArray.forEach(line => {
+            line.DisplayLoad(this.Pattern);
+            line.InView();
+        });
+
+    }
+
+    undo(){
+
+        this.#AddToLoadsAssigned();
+        this.#AddToOnElements();
+        Standard();
+        Labels();        
+        DrawLine.LoadsDisplayed = true;
+        DrawLine.DrawLinesArray.forEach(line => {
+            line.DisplayLoad(this.Pattern);
+            line.InView();
+        });
+    }
+
+    remove(){
+        this.Lines.length=0;
+        this.PatternId = null;
+        this.LoadShape = null;
+        this.DeletedLoads.length = 0;
+    }
+
+    redo(){
+        this.excute();
+    }
+
+    
+
+    #GetLoadsToDelete(){
+        let loadsToDelete = []
+        this.Lines.forEach( line => {
+            let loads = line.Frame.LoadsAssigned.get(this.PatternId);
+            let deletedLoads = loads.filter(appload => appload.Shape == this.LoadShape);
+            loadsToDelete.push(deletedLoads);
+        });
+        return loadsToDelete;
+    }
+
+    #DeleteFromOnElements(){
+        let pattern = LoadPattern.LoadPatternsList.get(this.PatternId);
+        this.Lines.forEach(line => {
+            let index = pattern.OnElements.indexOf(line.Frame.Label);
+            pattern.OnElements.splice(index, 1);
+        });
+    }
+
+    #DeleteFromLoadsAssigned(){
+        for (let i = 0; i < this.Lines.length; i++) {
+            let appLoads = this.Lines[i].Frame.LoadsAssigned.get(this.PatternId);
+            let deletedLoads = this.DeletedLoads[i];
+            deletedLoads.forEach( delLoad => {
+                let index = appLoads.indexOf(delLoad);
+                appLoads.splice(index, 1);
+            });
+        }
+    }
+
+    #AddToLoadsAssigned(){
+        for (let i = 0; i < this.Lines.length; i++) {
+            let appLoads = this.Lines[i].Frame.LoadsAssigned.get(this.PatternId);
+            let deletedLoads = this.DeletedLoads[i];
+            deletedLoads.forEach( delLoad => {
+                appLoads.push(delLoad);
+            });
+        }
+    }
+
+    #AddToOnElements(){
+        let pattern = LoadPattern.LoadPatternsList.get(this.PatternId);
+        this.Lines.forEach(line => {
+            pattern.OnElements.push(line.Frame.Label);
+        });
+    }
+}
 
 
 class Delete
@@ -1134,10 +1236,10 @@ class Delete
 
     remove()
     {
-        for(let i = 0; i<this.DeletedList.length ; i++)
+        /*for(let i = 0; i<this.DeletedList.length ; i++)
         {
             this.DeletedList[i].remove();
-        }
+        }*/
     }
 }
 
@@ -1173,70 +1275,6 @@ class AssignFrameSection{
     }  
 }
 
-document.querySelector('#point-load-btn').addEventListener("click", function(){
-    if(!document.querySelector('.main-window')){
-        $('body').append(GetPtLoadWin());
-        AppliedLoadPatts();
-        document.querySelector('#coord-sys').addEventListener("change",FillLoadsDirs);
-        document.querySelector('#ok-ptload-btn').addEventListener('click', function(){
-            let appliedLoads =  GetPtLoadInfo();
-            let patternId = GetAppLoadPatternId();
-            DrawLine.DisplayedPattern = patternId
-            if(DrawLine.SelectedLines.length && appliedLoads.length){
-
-                commands.excuteCommand(new AssignFrameLoad(DrawLine.SelectedLines, patternId, appliedLoads));
-            }
-            //console.log(appliedLoads, patternId);
-            document.querySelector('.main-window').parentElement.parentElement.remove();
-        });
-        document.querySelector('#close-ptload-btn').addEventListener('click', function(){
-            document.querySelector('.main-window').parentElement.parentElement.remove();
-        });
-    }
-});
-
-document.querySelector('#distributed-load-btn').addEventListener("click", function(){
-    if(!document.querySelector('.main-window')){
-        $('body').append(GetDistLoadWin());
-        AppliedLoadPatts();
-        document.querySelector('#coord-sys').addEventListener("change",FillLoadsDirs);
-        document.querySelector('#ok-disload-btn').addEventListener('click', function(){
-            let appliedLoads =  GetDistLoadInfo();
-            let patternId = GetAppLoadPatternId();
-            DrawLine.DisplayedPattern = patternId;
-            if(DrawLine.SelectedLines.length && appliedLoads.length){
-
-                commands.excuteCommand(new AssignFrameLoad(DrawLine.SelectedLines, patternId, appliedLoads));
-            }
-            document.querySelector('.main-window').parentElement.parentElement.remove();
-        });
-        document.querySelector('#close-disload-btn').addEventListener('click', function(){
-            document.querySelector('.main-window').parentElement.parentElement.remove();
-        })
-    }
-});
-
-document.querySelector('#disp-load-btn').addEventListener("click", function(){
-    if(!document.querySelector('.main-window')){
-        $('body').append(dispLoadsWindow);
-        DispLoadPatts();
-        document.querySelector('#ok-disp-load-btn').addEventListener("click", function(){
-            // go in show load mode
-            let patId = GetDispLoadPatternId();
-            DrawLine.LoadsDisplayed = true;
-            DrawLine.DisplayedPattern = patId;
-            Standard();
-            DrawLine.DrawLinesArray.forEach(line => {                
-                line.DisplayLoad(patId);
-                line.InView()
-            });
-            document.querySelector('.main-window').parentElement.parentElement.remove();
-        });
-        document.querySelector('#close-disp-load-btn').addEventListener("click", function(){
-            document.querySelector('.main-window').parentElement.parentElement.remove();
-        });
-    }
-});
 
 class Copy
 {
@@ -1543,10 +1581,6 @@ function DrawingMode()
     SelectionModeActive = false;
     Unselect();
 }
-
-document.addEventListener('dblclick',()=>{
-    Unselect();
-});
 
 function Unselect()
 {
