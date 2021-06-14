@@ -12,7 +12,7 @@
     <!-- Provide a short description of the page. -->
     <meta name="Structural Analysis Software" content="Software as a Service for Structural Analysis">
     <!-- This meta tag tells Google not to show the sitelinks search box. -->
-    <meta name="KIWE" content="nositelinkssearchbox" />
+    <meta name="SAC" content="nositelinkssearchbox" />
     <!-- Control the behavior of search engine crawling and indexing. 
  The robots meta tag applies to all search engines, while the "googlebot" meta tag is specific to Google. -->
     <meta name="robots" content="..., ..." />
@@ -51,6 +51,7 @@
 
 <body>
     <div id="webgl">
+        
         <!-- SideBar -->
         <!-- <aside class="sidebar pos-absolute z-1" data-role="sidebar" data-toggle="#sidebar-toggle-4" id="sb4" data-static-shift=".shifted-content-2" data-static="md">
             <div class="sidetitlebar">Information bar</div>
@@ -78,7 +79,7 @@
                 <div class="avatar">
                     <img src="Assets/images/kiwi-icon-27.png" data-email="islam_eng2010@yahoo.com">
                 </div>
-                <div class="title bold fg-white">KIWE Structural Analysis</div>
+                <div class="title bold fg-white">SAC Solutionslysis</div>
                 <div class="subtitle fg-white"> 2021 © ITI CEI IN_41</div>
             </div>
             <ul class="sidebar-menu icon">
@@ -297,7 +298,7 @@
                             </span>
                             <span class="caption">Edit Points</span>
                         </button>
-
+                       
 
                         <div>
                             <button class="ribbon-button dropdown-toggle">
@@ -698,6 +699,8 @@
                             </span>
                             <span class="caption">Units & Dimensions</span>
                         </button>
+
+                       
                         <button class="ribbon-button">
                             <span class="icon">
                                 <img alt="Colors" src="Assets/images/ColorsIcon.png">
@@ -715,13 +718,16 @@
                 data-hint-position="left">
                 &#8597;
             </button>
+           
         </nav>
 
         <!-- Status Bar -->
-        <div style="background-color: rgb(235,235,235); z-index: 3; position: absolute;" id="Status_bar">
+        <div class="text-bold" style="background-color: rgb(235,235,235); z-index: 3; position: absolute;" id="Status_bar">
             <img style="width: 20px; margin-left: 10px; margin-bottom: 5px; margin-top: 5px; "
                 src="Assets/images/KiweIcon.png" alt="KiweIcon" />
-            <span id="StatusBar">Welcome to KIEW Structural Analysis - Status Bar - </span>
+            <span id="StatusBar">Welcome to SAC Solutions - Status Bar - </span>
+            <button style=" position: absolute;left: 94%;top:0px;background-color: inherit;" id="UnitsBTN" class="button light text-bold" onclick="document.getElementById('units-btn').click();">kN,m</button>
+
         </div>
 
 
@@ -729,7 +735,7 @@
         <div class="dialog" data-role="dialog" id="closebtn" data-close-button="true">
             <div class="dialog-title text-bold">
                 <img style="width: 60px; margin-left: 10px; margin-bottom: 5px; margin-top: 5px; "
-                    src="Assets/images/KiweIcon.png" alt="KiweIcon" /> KIWE Structural Analysis
+                    src="Assets/images/KiweIcon.png" alt="KiweIcon" /> SAC Solutions
 
             </div>
             <div class="dialog-content text-medium">
@@ -743,9 +749,12 @@
                 <button class="button js-dialog-close">Disagree</button>
             </div>
         </div>
+       
     </div>
 
-    <title>KIWE STRUCTURES</title>
+
+
+    <title>SAC Solutions</title>
     <script src="./Assets/metro4-dist/js/metro.min.js"></script>
     <!-- <script src="./Assets//node_modules/three/build/three.js"></script> -->
     <!-- <script src="./Assets//node_modules/three/examples/js/controls/OrbitControls.js"></script> -->
@@ -780,17 +789,17 @@
     <script src="./Assets/grids.js/Grids.js"></script>
     <!--<script src="./Assets/js/BelalLoads.js"></script>-->
 
-    <script src="./Assets/Loads.js/LoadPatternWindow.js"></script>
-    <script src="./Assets/Loads.js/LoadComboWindow.js"></script>
-    <script src="./Assets/Units.js/UnitsWindow.js"></script>
-    <script src="./Assets/Loads.js/AssignLoadWindow.js"></script>
-    <script src="./Assets/Loads.js/DisplayLoadsWindow.js"></script>
-    <script src="./Assets/material and section/MaterialMetroForm.js"></script>
-    <script src="./Assets/material and section/SectionMetroForm.js"></script>
-    <script src="./Assets/material and section/Drawingwindow.js"></script>
-    <script src="./Assets/material and section/AssignFrameSectionForm.js"></script>
-    <script src="./Assets/ResultsWindows/InForcesWin.js"></script>
-    <script src="./Assets/ResultsWindows/DeformWin.js"></script>
+    <script type="text/javascript" src="./Assets/Loads.js/LoadPatternWindow.js"></script>
+    <script type="text/javascript" src="./Assets/Loads.js/LoadComboWindow.js"></script>
+    <script type="text/javascript" src="./Assets/Units.js/UnitsWindow.js"></script>
+    <script type="text/javascript" src="./Assets/Loads.js/AssignLoadWindow.js"></script>
+    <script type="text/javascript" src="./Assets/Loads.js/DisplayLoadsWindow.js"></script>
+    <script type="text/javascript" src="./Assets/material and section/MaterialMetroForm.js"></script>
+    <script type="text/javascript" src="./Assets/material and section/SectionMetroForm.js"></script>
+    <script type="text/javascript" src="./Assets/material and section/Drawingwindow.js"></script>
+    <script type="text/javascript" src="./Assets/material and section/AssignFrameSectionForm.js"></script>
+    <script type="text/javascript" src="./Assets/ResultsWindows/InForcesWin.js"></script>
+    <script type="text/javascript" src="./Assets/ResultsWindows/DeformWin.js"></script>
 </body>
 
 </html>
