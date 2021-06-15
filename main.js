@@ -1,6 +1,7 @@
 import {MapControls} from './Assets/Three.js files/OrbitControls.js'
 import { DoubleSide } from './Assets/Three.js files/three.module.js';
 
+let PreProcessor = true;
 
 init();
 
@@ -206,20 +207,28 @@ document.addEventListener('keydown', function(event){
 		points = [];
 	}
     if(event.key === "z" && event.ctrlKey){
-		Undo();
+        if(PreProcessor == true){
+            Undo();
+        }
 	}
     if(event.key === "y" && event.ctrlKey){
-		Redo();
+        if(PreProcessor == true){
+		    Redo();
+        }
 	}
     if( event.key === "Z" && event.shiftKey && event.ctrlKey){
-		Redo();
+        if(PreProcessor == true){
+		    Redo();
+        }
 	}
     if(event.shiftKey || event.ctrlKey){
         SelectionModeActive = false;
 	 document.querySelector("body").style = "cursor:alias"
     }
     if(event.key === "Delete"){
-        DeleteButton();
+        if(PreProcessor == true){
+            DeleteButton();
+        }
     }
 });
 
@@ -355,7 +364,9 @@ function ClickToSelectElement(event){
                 else{
                     filterselected[i].object.DrawLine.Selected = false;
                     filterselected[i].object.DrawLine.updateColors();
-                    DrawLine.SelectedLines.pop(filterselected[i].object.DrawLine);
+                    //DrawLine.SelectedLines.pop(filterselected[i].object.DrawLine);
+                    let frameIndex = DrawLine.SelectedLines.indexOf(filterselected[i].object.DrawLine);
+                    DrawLine.SelectedLines.splice(frameIndex,1); 
                 }
             }    
         }
@@ -373,7 +384,9 @@ function ClickToSelectElement(event){
                         else{
                             Point.PointsArray[j].Selected = false;
                             Point.PointsArray[j].Highlight();
-                            Point.SelectedPoints.pop(Point.PointsArray[j]); 
+                            //Point.SelectedPoints.pop(Point.PointsArray[j]);
+                            let pointIndex = Point.SelectedPoints.indexOf(Point.PointsArray[j]);
+                            Point.SelectedPoints.splice(pointIndex,1); 
                         }
                     }
                 }
@@ -663,6 +676,14 @@ function XYView(XYindex)
     {
         Point.PointsArray[j].InView();
     }
+    for (let j = 0; j < Results.ResultsList.length; j++)
+    {
+        if(Results.ResultsList[i].Draw != null)
+        {
+            Results.ResultsList[i].InView();
+        }
+    }
+
     camera.position.x = distanceX/2;
     camera.position.y = distanceY/2;
     camera.position.z = Math.max(distanceX, distanceY)*1.5 + ViewPosition;
@@ -733,6 +754,14 @@ function XZView(XZindex){
     {
         Point.PointsArray[j].InView();
     }
+    for (let j = 0; j < Results.ResultsList.length; j++)
+    {
+        if(Results.ResultsList[j].Draw != null)
+        {
+            Results.ResultsList[j].InView();
+        }
+    }
+    
     camera.up.set( 0, 0.5, 0.5 );
     camera.position.x = distanceX/2;
     camera.position.y = Math.max(distanceX,distanceZ)*1.5 + ViewPosition;
@@ -804,6 +833,13 @@ function YZView(YZindex){
     for (let j = 0; j < Point.PointsArray.length; j++)
     {
         Point.PointsArray[j].InView();
+    }
+    for (let j = 0; j < Results.ResultsList.length; j++)
+    {
+        if(Results.ResultsList[j].Draw != null)
+        {
+            Results.ResultsList[j].InView();
+        }
     }
 
     camera.position.x = Math.max(distanceY, distanceZ)*1.7 + ViewPosition;
@@ -937,6 +973,13 @@ function resetScene()
     {
         Point.PointsArray[i].InView();
     }
+    for (let i = 0; i < Results.ResultsList.length; i++)
+    {
+        if(Results.ResultsList[i].Draw != null)
+        {
+            Results.ResultsList[i].InView();
+        }
+    }
 
 }
 
@@ -969,153 +1012,12 @@ function removeArrows()
 
 
 
-document.getElementById("AddPoints").onclick=function(){AddPointsToFrame()};
-function AddPointsToFrame()
-{
-    var number = prompt("Add points at equal intervals of frame element", "Number of points");
-    if(!isNaN(number)){
-        const selected = DrawLine.GetSelectedFrames();
-        for (let i =0; i<selected.length; i++)
-        {
-            selected[i].AddPointsAtEqualDistances(number);
-        }
-    }
-}
 
-
-
-
-
-
-
-//#region // Results visualization
-function ResultLines(length, x,y,z, startPoint, endPoint,  direction, rz, scale = 1) // , local = false)
-{
-    startPoint = new THREE.Vector3(startPoint[0], startPoint[1], startPoint[2]);
-    endPoint = new THREE.Vector3(endPoint[0], endPoint[1], endPoint[2]);
-
-    const axis = new THREE.Vector3().subVectors(startPoint, endPoint).normalize(); // Z-local direction
- 
-    let x_axis = crossProduct([axis.x, axis.y, axis.z], [0,0,1]);
-    if(arrayEquals(x_axis,[0,0,0]))
-    {
-        x_axis = [0,1,0]
-    }
-    const y_axis = crossProduct([axis.x, axis.y, axis.z], x_axis);
-    const X_axis = new THREE.Vector3(x_axis[0], x_axis[1], x_axis[2]);
-    const Y_axis = new THREE.Vector3(y_axis[0], y_axis[1], y_axis[2]);
-
-    const material = new THREE.LineBasicMaterial();
-    if(length > 0)
-    {
-        material.color = {r:0,g:0,b:180}
-    }
-    else{
-        material.color = {r:180,g:0,b:0}
-    }
- 
-    const l = length *scale;
-    var geometry = new THREE.BufferGeometry();
-    var vertices =[];  
-
-    // if(local == false)
-    // {
-    //     if(direction == 1 || direction )
-    //     vertices.push(0, 0, 0);
-    //     vertices.push(0, 0, l);
-    //     geometry.setAttribute( 'position', new THREE.Float32BufferAttribute( vertices, 3 ) );
-    // }
-    // else
-    // {
-    if(direction == 2 || direction == 1)
-    {
-        vertices.push(0, 0, 0);
-        vertices.push(l*Y_axis.x, l*Y_axis.y, l*Y_axis.z);
-        geometry.setAttribute( 'position', new THREE.Float32BufferAttribute( vertices, 3 ) );
-    }
-    else if(direction == 3){
-        vertices.push(0, 0, 0);
-        vertices.push(l*X_axis.x, l*X_axis.y, l*X_axis.z);
-        geometry.setAttribute( 'position', new THREE.Float32BufferAttribute( vertices, 3 ) );
-    }
-    //}
-    var line = new THREE.Line( geometry, material );
-
-    line.position.x = x;
-    line.position.y = y;
-    line.position.z = z;
-    line.rotateOnAxis(axis, rz)
-    scene.add(line);
-    return vertices;
-}
-
-// This function assumes results are from points distributed equally along the frame
-function ResultsDiagram(results ,startPoint, endPoint, direction, rz, scale = 1, local = false)
-{
-    const StartPoint = new THREE.Vector3( startPoint[0], startPoint[1], startPoint[2]);
-    const EndPoint = new THREE.Vector3(endPoint[0], endPoint[1], endPoint[2]);
-
-    const load = new THREE.Group();
-    const distance = new THREE.Vector3().subVectors(StartPoint, EndPoint).length();
- 
-    const dX = (EndPoint.x - StartPoint.x );
-    const dY = (EndPoint.y - StartPoint.y );
-    const dZ = (EndPoint.z - StartPoint.z );
-
-    const max = Math.max(...results);
-    const min = Math.min(...results);
-    const material = new THREE.LineBasicMaterial({color:'rgb(0,0,0)'});
-    const number = results.length -1;
-    const geometry = new THREE.BufferGeometry();
-    var vertices =[];  
-    vertices.push(StartPoint.x, StartPoint.y, StartPoint.z);
-
-    for (let i = 0; i <= number ; i++)
-    {
-        const x = StartPoint.x + (dX*i/number); 
-        const y = StartPoint.y + (dY*i/number);
-        const z = StartPoint.z + (dZ*i/number);
         
-        const line = ResultLines(results[i], x, y, z, startPoint, endPoint,direction, rz, 1, local);
- 
-        vertices.push(line[3]+ x, line[4]+ y, line[5]+ z);
-        let position = 0;
-        var color;
-        if(results[i]>=0){
-            position -= 0.1;
-            color = {r:0,g:0,b:180,a:1}
-        }
-        else{
-            position += 0.1;
-            color = {r:180,g:0,b:0,a:1}
-        }
-        if(i == 0 || i == number || results[i] == max || results[i] == min)
-        {
-            if(direction ==1 || direction ==2 || results[i] == max || results[i] == min)
-            {
-                const textPosition = [line[3]+ x, line[4]+ y, line[5]+ z+ position];
-                const txt = makeTextSprite( results[i], textPosition[0], textPosition[1], textPosition[2],{fontsize: 80, fontface: "Georgia", textColor:color,
-                    vAlign:"center", hAlign:"center"});
-                    load.add(txt);
-            }
-            else{
-                const textPosition = [line[3]+ x + + position, line[4]+ y + position, line[5]+ z];
-                const txt = makeTextSprite( results[i], textPosition[0], textPosition[1], textPosition[2],{fontsize: 80, fontface: "Georgia", textColor:color,
-                    vAlign:"center", hAlign:"center"});
-                    load.add(txt);
-            }
-        }
-        //load.add(arrow);
-    }
 
-    vertices.push(EndPoint.x, EndPoint.y, EndPoint.z);
-    
-    geometry.setAttribute( 'position', new THREE.Float32BufferAttribute( vertices, 3 ) );
-    const container = new THREE.Line( geometry, material );
-    load.add(container)
-    scene.add(load)
-}
-//#endregion
+
+
+
 
 class RootData
 {
@@ -1124,56 +1026,212 @@ class RootData
         this.Materials = [...Material.MaterialsList.values()];
         this.Sections = [...Section.SectionList.values()];
         this.Patterns = Array.from(LoadPattern.LoadPatternsList, ([PatternID, Details]) => ({ PatternID, Details }));
+        this.Combinations = Array.from(LoadCombo.LoadCombosList, ([CombinationID, Details]) => ({ CombinationID, Details }));
         this.Points = [...Point.PointsArray];
         this.Frames = DrawLine.GetDrawnFrames();
     }
 }
 
 
+function DisaplePreProcessorButtons()
+{
+    Unselect();
+    DrawingModeActive = false;
+    PreProcessor = false;
+    document.getElementById("Move").disabled = true;
+    document.getElementById("Copy").disabled = true;
+    document.getElementById("Delete").disabled = true;
+    document.getElementById("Undo").disabled = true;
+    document.getElementById("Redo").disabled = true;
+    document.getElementById("Rotate").disabled = true;
+    document.getElementById("point-load-btn").disabled = true;
+    document.getElementById("distributed-load-btn").disabled = true;
+    document.getElementById("JointRestraints").disabled = true;
+    document.getElementById("assign-framesec-btn").disabled = true;
+    document.getElementById("Draw").disabled = true;
+    document.getElementById("AddPointsOnFrame").disabled = true;
+    document.getElementById("grids-btn").disabled = true;
+    document.getElementById("materialsBtn").disabled = true;
+    document.getElementById("DefineSections").disabled = true;
+    document.getElementById("pattern-btn").disabled = true;
+    document.getElementById("combo-btn").disabled = true;
+    document.getElementById("Run").disabled = true;
+    document.getElementById("Unlock").disabled = false;
+}
 
+function EnaplePreProcessorButtons()
+{
+    PreProcessor = true;
+    document.getElementById("Move").disabled = false;
+    document.getElementById("Copy").disabled = false;
+    document.getElementById("Delete").disabled = false;
+    document.getElementById("Undo").disabled = false;
+    document.getElementById("Redo").disabled = false;
+    document.getElementById("Rotate").disabled = false;
+    document.getElementById("point-load-btn").disabled = false;
+    document.getElementById("distributed-load-btn").disabled = false;
+    document.getElementById("JointRestraints").disabled = false;
+    document.getElementById("assign-framesec-btn").disabled = false;
+    document.getElementById("disp-load-btn").disabled = false;
+    document.getElementById("Draw").disabled = false;
+    document.getElementById("AddPointsOnFrame").disabled = false;
+    document.getElementById("grids-btn").disabled = false;
+    document.getElementById("materialsBtn").disabled = false;
+    document.getElementById("DefineSections").disabled = false;
+    document.getElementById("pattern-btn").disabled = false;
+    document.getElementById("combo-btn").disabled = false;
+    document.getElementById("Run").disabled = false;
+    document.getElementById("Unlock").disabled = true;
+}
 
-document.getElementById("Run").onclick=function(){Run()};
-function Run()
+document.getElementById("Unlock").onclick=function(){Unlock()};
+function Unlock()
 { 
-    //const Frames = [...DrawLine.GetDrawnFrames()];
-    let OutPut = JSON.stringify(new RootData());
-    console.log(OutPut);
-    // $.ajax({
-    //     type: "POST",
-    //     url: "http://192.168.1.10:8080/Main.html",                   ///// URL must be specified
-    //     contentType: "application/json; charset=utf-8",
-    //     dataType: "json",
-    //     data: "{Frames: " + OutPut + "}",
-    //     cache: false,
-    //     success: function (result) {
-    
-    //     },
-    //     error: function (ex) {
-    //         WriteToConsole(ex.responseText);
-    //     }
-    // });
+    EnaplePreProcessorButtons();
+    Results.ResultsList.forEach(res => res.Hide());
+    Results.ResultsList = [];
+}
 
-    const newOutput = JSON.parse(OutPut)
-    console.log(newOutput);
+
+
+
+    
+    $("#Run").click(function()
+    {
+        DisaplePreProcessorButtons()
+
+        let OutPut = JSON.stringify(new RootData());
+        console.log(OutPut);
+        $.ajax({
+            type: "POST",
+            url: "/api/RunAnalysis/LoadFramesData",                 
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            data: OutPut,
+            cache: false,
+            success: function (result) {
+                console.log(result);
+                let InputResults = [...result.strainingActions];
+                for(let i = 0 ; i < InputResults.length; i++)
+                {
+                    let patternID  = InputResults[i].patternID ;
+                    let frameID    = InputResults[i].frameID   ;
+                    let startPoint = InputResults[i].startPoint;
+                    let endPoint   = InputResults[i].endPoint  ;
+                    let stations   = InputResults[i].stations  ;
+                    let momentX    = InputResults[i].momentX   ;
+                    let momentY    = InputResults[i].momentY   ;
+                    let torsion    = InputResults[i].torsion   ;
+                    let normal     = InputResults[i].normal    ;
+                    let shearX     = InputResults[i].shearX    ;
+                    let shearY     = InputResults[i].shearY    ;
+                    let rotation   = InputResults[i].rotation  ;
+                    new Results(patternID, frameID, startPoint,endPoint,stations,momentX,momentY,torsion,normal,shearX,shearY,rotation) 
+                }
+
+                console.log(Results.ResultsList)
+            },
+            error: function (ex) {
+                console.log(ex.responseText);
+            }
+        });
+    });
+
+// let resultsFromJson = JSON.parse(testerForResults);
+// console.log(resultsFromJson)
 // var fs = require('fs');
 // fs.writeFile("OutPut.json", OutPut, function(err) {
 //     if (err) {
 //         console.log(err);
 //     }
 // });
-}
 
-//     const geometry = new THREE.BufferGeometry();
-//     const material = new THREE.LineBasicMaterial();
-//     const vertices2 =[];  
-//     vertices2.push(12,8,9);
-//     vertices2.push(6,4,3);
-//     geometry.setAttribute( 'position', new THREE.Float32BufferAttribute( vertices2, 3 ) );
-//     const arrow2 = new THREE.Line( geometry, material );
-//     const res = [-1,-0.72,-0.5,-0.2,0.2, 0.5,0.7,0.5,0.2, -0.2, -0.5]
-//     const startPoint2 = [12,8,9];
-//     const endPoint2 = [6,4,3]
-//     // ArrowOnLine(-1,0,0,9, startPoint, endPoint, 2, 1, true)
-//     //DistributedLoadIndication(-1,startPoint2, endPoint2, 3, 0,1, 2, true)
-//     ResultsDiagram(res, startPoint2, endPoint2, 2, 0,1, true)
-//     scene.add(arrow2)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// let pos1 =   [0,0.5,0.5,1]
+// let arrMx1 = [-0.5,1,1,-0.6]
+// let arrMy1 = [0,0.7,0.7,0]
+// let arrN1 =  [0.5,0.5,0.5,0.5]
+// let arrVx1 = [-1,0,0,1]
+// let arrvy1 = [-0.5,0.5,-0.6,0.4]
+// let attT1 =  [0.2,0.2,0.23,0.23]
+// let r1 = 0;
+// let startPoint1 = [0,0,5]
+// let endPoint1 = [0,5,5]
+// let pattern1 = "p1";
+
+// new Results(pattern1, 1, startPoint1,endPoint1,pos1,arrMx1,arrMy1,attT1,arrN1,arrVx1,arrvy1,r1)
+
+// let Mpos1 =   [0,0.5,0.5,1]
+// let MarrMx1 = [-0.5,1,1,-0.6]
+// let MarrMy1 = [0,0.7,0.7,0]
+// let MarrN1 =  [0.5,0.5,0.5,0.5]
+// let MarrVx1 = [-1,0,0,1]
+// let Marrvy1 = [-0.5,0.5,-0.6,0.4]
+// let MattT1 =  [0.2,0.2,0.23,0.23]
+// let Mr1 = 45;
+// let MstartPoint1 = [0,0,5]
+// let MendPoint1 = [5,0,5]
+// let Mpattern1 = "p2";
+
+// new Results(Mpattern1, 2, MstartPoint1,MendPoint1,Mpos1,MarrMx1,MarrMy1,MattT1,MarrN1,MarrVx1,Marrvy1,Mr1)
+
+// let Spos1 =   [0,0.5,0.5,1]
+// let SarrMx1 = [-0.5,1,1,-0.6]
+// let SarrMy1 = [0,0.7,0.7,0]
+// let SarrN1 =  [0.5,0.5,0.5,0.5]
+// let SarrVx1 = [-1,0,0,1]
+// let Sarrvy1 = [-0.5,0.5,-0.6,0.4]
+// let SattT1 =  [0.2,0.2,0.23,0.23]
+// let Sr1 = 0;
+// let SstartPoint1 = [0,3,5]
+// let SendPoint1 = [0,8,5]
+// let Spattern1 = "p2";
+
+// new Results(Spattern1, 3, SstartPoint1,SendPoint1,Spos1,SarrMx1,SarrMy1,SattT1,Sarrvy1,SarrN1,SarrVx1,Sr1)
+
+// let kpos1 =   [0,0.5,0.5,1]
+// let karrMx1 = [-0.5,1,1,-0.6]
+// let karrMy1 = [0,0.7,0.7,0]
+// let karrN1 =  [0.5,0.5,0.5,0.5]
+// let karrVx1 = [-1,0,0,1]
+// let karrvy1 = [-0.5,0.5,-0.6,0.4]
+// let kattT1 =  [0.2,0.2,0.23,0.23]
+// let kr1 = 0;
+// let kstartPoint1 = [5,7,5]
+// let kendPoint1 = [9,12,5]
+// let kpattern1 = "p1";
+
+// new Results(kpattern1, 4, kstartPoint1,kendPoint1,kpos1,karrMx1,karrMy1,kattT1,karrvy1,karrN1,karrVx1,kr1)
+
+// let Npos1 =   [0,0.5,0.5,1]
+// let NarrMx1 = [-0.5,1,1,-0.6]
+// let NarrMy1 = [0,0.7,0.7,0]
+// let NarrN1 =  [0.5,0.5,0.5,0.5]
+// let NarrVx1 = [-1,0,0,1]
+// let Narrvy1 = [-0.5,0.5,-0.6,0.4]
+// let NattT1 =  [0.2,0.2,0.23,0.23]
+// let Nr1 = 0;
+// let NstartPoint1 = [6,12,5]
+// let NendPoint1 = [2,10,5]
+// let Npattern1 = "p1";
+
+// new Results(Npattern1, 5, NstartPoint1,NendPoint1,Npos1,NarrMx1,NarrMy1,NattT1,Narrvy1,NarrN1,NarrVx1,Nr1)

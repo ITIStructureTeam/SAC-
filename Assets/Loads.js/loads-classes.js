@@ -317,6 +317,15 @@ class LoadCombo {
         this._cpyNo++;
         return new LoadCombo(`${this.Name}- ${this._cpyNo}`,this.LoadCasesInfo);
     }
+
+    toJSON()
+    {
+        return{
+            Name : this.Name,
+            Info : this.LoadCasesInfo
+        } 
+    }
+
 }
 
 function GetLoadCase(caseId) {
@@ -448,7 +457,7 @@ function ArrowOnLine(length, x,y,z, startpoint, endpoint,  direction, rz, scale 
         x_axis = crossProduct([axis.x, axis.y, axis.z], [1*Math.sin((axis.y/Math.abs(axis.y))* -rz), 0, 1*Math.cos(rz)]);   //3-local direction
     }
     else if(axis.x == 0 && axis.y == 0 && axis.z != 0){
-        x_axis = [1*Math.sin((axis.z/Math.abs(axis.z))* rz) , 1*Math.cos(rz), 0];    
+        x_axis = crossProduct([axis.x, axis.y, axis.z],[1*Math.cos(rz), 1*Math.sin((axis.z/Math.abs(axis.z))* rz) , 0]);    
     }
     else if((axis.x != 0 && axis.y != 0 && axis.z != 0))
     {
