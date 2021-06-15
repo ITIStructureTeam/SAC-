@@ -133,6 +133,17 @@ class Section {
         return Section.#secList;
     }
 
+    static GetSectionByName(name){
+        let sec;
+        for(let section of Section.SectionList.values()){
+            if(section.Name == name ){
+                sec = section
+                break;
+            } 
+        }
+        return sec;
+    }
+
     Clone(){
         this.#cpyNo++;
         return new Section(this.Name+" - "+this.#cpyNo,this.Material,this.SecType,this.Dimensions,this.PropModifiers);
