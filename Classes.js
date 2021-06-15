@@ -194,7 +194,7 @@ class FrameElement
             StartPoint:this.StartPoint.Label,
             EndPoint:this.EndPoint.Label,
             Rotation:this.Rotation * 180/Math.PI,
-            Loads:Array.from(this.LoadsAssigned, ([Pattern, LoadDetails]) => ({ name, LoadDetails }))
+            Loads:Array.from(this.LoadsAssigned, ([Pattern, LoadDetails]) => ({ Pattern, LoadDetails }))
         }
     }
 }

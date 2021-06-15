@@ -25,10 +25,10 @@ class Material {
     static #_materialsList=new Map();
     //#endregion
 
-    static #InitiateMaterialList = (function(){
+   /*  static #InitiateMaterialList = (function(){
         new Material("Concrete",25,4400,0.2,5e-9,EmaterialType.Concrete,[30]);
         new Material("Steel",78.5,2100,0.3,5e-9,EmaterialType.Steel,[240,360]);
-    })();
+    })(); */
 
     constructor(
         name="mat", weight=25, elasticModulus=4400 , poisson=0.2 , thermalExpansion=5e-9 , materialType=0 , strength=[25] ){
@@ -160,6 +160,16 @@ class Material {
     }
     //#endregion
 
+    static GetMaterialByName(name){
+        let mat;
+        for(let material of Material.MaterialsList.values()){
+            if(material.Name == name ){
+                mat = material
+                break;
+            } 
+        }
+        return mat;
+    }
 
     Delete() {
         if (this.#_assignedToSections.length != 0)

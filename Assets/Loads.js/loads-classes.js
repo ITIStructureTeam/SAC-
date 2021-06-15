@@ -30,17 +30,17 @@ class LoadPattern{
     #type;
     #selfWtMult
     #inCombos;
-    #id;
+    _id;
     #onElements;
-    static #loadPatternsList = new Map();
+    static _loadPatternsList = new Map();
     static #loadPattId = 1;
-    static #initPattern = (function(){
+    /* static #initPattern = (function(){
         new LoadPattern('DEAD',ELoadPatternType.Dead,1);
         new LoadPattern('LIVE',ELoadPatternType.Live,0);
-    })();
+    })(); */
     constructor(name, type, selfWtMult){
 
-        this.#id = 'p'+LoadPattern.#loadPattId;
+        this._id = 'p'+LoadPattern.#loadPattId;
         this.Name = name;
         this.Type = type;
         this.SelfWtMult = selfWtMult;
@@ -57,7 +57,7 @@ class LoadPattern{
 
 
         let matching;
-        for (const pattern of LoadPattern.#loadPatternsList.values()) {
+        for (const pattern of LoadPattern._loadPatternsList.values()) {
             if(pattern.Name == value){
                 matching = pattern;
                 break;
@@ -66,7 +66,7 @@ class LoadPattern{
         if(!matching) 
             this.#name=value;
         else{
-            if(matching.#id != this.#id)
+            if(matching._id != this._id)
                 throw new Error("There is another load pattern having the same name");
             this.#name=value;
         }
@@ -104,14 +104,14 @@ class LoadPattern{
     }
 
     get ID(){
-        return this.#id;
+        return this._id;
     }
 
     set OnElements(value){
         this.#onElements = value;
     }
     static get LoadPatternsList(){
-        return LoadPattern.#loadPatternsList;
+        return LoadPattern._loadPatternsList;
     }
 
     AddCombo(comboName){
@@ -145,9 +145,9 @@ class LoadCombo {
     #incombos;
     static #loadCombosList = new Map();
     static #loadComboId = 1;
-    static #initLoadCombo = (function(){
+    /* static #initLoadCombo = (function(){
         new LoadCombo('combo1',[ { caseId:'p1'  , scaleFactor:1}]);
-    })();
+    })(); */
 
     constructor(name, loadCasesInfo){
         this.#id = 'c' + LoadCombo.#loadComboId;

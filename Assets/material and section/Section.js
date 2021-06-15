@@ -24,10 +24,10 @@ class Section {
     static #sectionId=1;
     static #secList = new Map();
 
-    static #DefaultSections = (function(){
+    /* static #DefaultSections = (function(){
         new Section('Fsec1',Material.MaterialsList.get('1'),ESectionShape.Rectangular,[0.5,0.5],[0.7,0.5,0.01,1,1,1,1,1] );
         new Section('Fsec2',Material.MaterialsList.get('2'),ESectionShape.ISec,[0.360,0.170,0.0127,0.008,0.170,0.0127]);
-    })();
+    })(); */
 
     constructor(name, material, secType, dimensions, modifiers=[1,1,1,1,1,1,1,1]) {
         this.#id=Section.#sectionId;
@@ -131,6 +131,17 @@ class Section {
 
     static get SectionList(){
         return Section.#secList;
+    }
+
+    static GetSectionByName(name){
+        let sec;
+        for(let section of Section.SectionList.values()){
+            if(section.Name == name ){
+                sec = section
+                break;
+            } 
+        }
+        return sec;
     }
 
     Clone(){

@@ -1,0 +1,457 @@
+{
+    "Materials": [
+        {
+            "Name": "Concrete",
+            "Weight": 25,
+            "ElasticModulus": 4400,
+            "Poisson": 0.2,
+            "ThermalExpansion": 5e-9,
+            "MaterialType": 0,
+            "Strength": [
+                30
+            ]
+        },
+        {
+            "Name": "Steel",
+            "Weight": 78.5,
+            "ElasticModulus": 2100,
+            "Poisson": 0.3,
+            "ThermalExpansion": 5e-9,
+            "MaterialType": 1,
+            "Strength": [
+                240,
+                360
+            ]
+        }
+    ],
+    "Sections": [
+        {
+            "Name": "Fsec1",
+            "Material": "Concrete",
+            "SecType": 0,
+            "Dimensions": [
+                0.5,
+                0.5
+            ],
+            "PropModifiers": [
+                0.7,
+                0.5,
+                0.01,
+                1,
+                1,
+                1,
+                1,
+                1
+            ]
+        },
+        {
+            "Name": "Fsec2",
+            "Material": "Steel",
+            "SecType": 2,
+            "Dimensions": [
+                0.36,
+                0.17,
+                0.0127,
+                0.008,
+                0.17,
+                0.0127
+            ],
+            "PropModifiers": [
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1
+            ]
+        }
+    ],
+    "Patterns": [
+        {
+            "PatternID": "p1",
+            "Details": {
+                "Name": "DL",
+                "Type": 0,
+                "SelfWtMult": 1
+            }
+        },
+        {
+            "PatternID": "p2",
+            "Details": {
+                "Name": "WL",
+                "Type": 2,
+                "SelfWtMult": 0
+            }
+        }
+    ],
+    "Points": [
+        {
+            "label": 1,
+            "position": [
+                0,
+                0,
+                9
+            ],
+            "Restraints": [
+                false,
+                false,
+                false,
+                false,
+                false,
+                false
+            ]
+        },
+        {
+            "label": 2,
+            "position": [
+                0,
+                12,
+                9
+            ],
+            "Restraints": [
+                false,
+                false,
+                false,
+                false,
+                false,
+                false
+            ]
+        },
+        {
+            "label": 3,
+            "position": [
+                18,
+                12,
+                9
+            ],
+            "Restraints": [
+                false,
+                false,
+                false,
+                false,
+                false,
+                false
+            ]
+        },
+        {
+            "label": 4,
+            "position": [
+                18,
+                0,
+                9
+            ],
+            "Restraints": [
+                false,
+                false,
+                false,
+                false,
+                false,
+                false
+            ]
+        },
+        {
+            "label": 5,
+            "position": [
+                18,
+                12,
+                0
+            ],
+            "Restraints": [
+                false,
+                false,
+                false,
+                false,
+                false,
+                false
+            ]
+        },
+        {
+            "label": 6,
+            "position": [
+                18,
+                0,
+                0
+            ],
+            "Restraints": [
+                false,
+                false,
+                false,
+                false,
+                false,
+                false
+            ]
+        },
+        {
+            "label": 7,
+            "position": [
+                0,
+                12,
+                0
+            ],
+            "Restraints": [
+                false,
+                false,
+                false,
+                false,
+                false,
+                false
+            ]
+        },
+        {
+            "label": 8,
+            "position": [
+                0,
+                0,
+                0
+            ],
+            "Restraints": [
+                false,
+                false,
+                false,
+                false,
+                false,
+                false
+            ]
+        }
+    ],
+    "Frames": [
+        {
+            "Label": 1,
+            "Section": "Fsec1",
+            "StartPoint": 1,
+            "EndPoint": 2,
+            "Rotation": 0,
+            "Loads": [
+                {
+                    "Pattern": "p1",
+                    "LoadDetails": [
+                        {
+                            "CoordSys": false,
+                            "Dir": 2,
+                            "Type": 0,
+                            "Shape": 0,
+                            "Distance": [
+                                0.5
+                            ],
+                            "Magnitude": [
+                                -50
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "Label": 2,
+            "Section": "Fsec2",
+            "StartPoint": 2,
+            "EndPoint": 3,
+            "Rotation": 0,
+            "Loads": [
+                {
+                    "Pattern": "p1",
+                    "LoadDetails": [
+                        {
+                            "CoordSys": false,
+                            "Dir": 2,
+                            "Type": 0,
+                            "Shape": 1,
+                            "Distance": [
+                                0,
+                                1
+                            ],
+                            "Magnitude": [
+                                -10,
+                                -10
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "Label": 3,
+            "Section": "Fsec2",
+            "StartPoint": 1,
+            "EndPoint": 4,
+            "Rotation": 0,
+            "Loads": [
+                {
+                    "Pattern": "p1",
+                    "LoadDetails": [
+                        {
+                            "CoordSys": false,
+                            "Dir": 2,
+                            "Type": 0,
+                            "Shape": 1,
+                            "Distance": [
+                                0,
+                                1
+                            ],
+                            "Magnitude": [
+                                -10,
+                                -10
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "Label": 4,
+            "Section": "Fsec1",
+            "StartPoint": 4,
+            "EndPoint": 3,
+            "Rotation": 0,
+            "Loads": [
+                {
+                    "Pattern": "p1",
+                    "LoadDetails": [
+                        {
+                            "CoordSys": false,
+                            "Dir": 2,
+                            "Type": 0,
+                            "Shape": 0,
+                            "Distance": [
+                                0.5
+                            ],
+                            "Magnitude": [
+                                -50
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "Label": 5,
+            "Section": "Fsec1",
+            "StartPoint": 3,
+            "EndPoint": 5,
+            "Rotation": 0,
+            "Loads": [
+                {
+                    "Pattern": "p2",
+                    "LoadDetails": [
+                        {
+                            "CoordSys": false,
+                            "Dir": 1,
+                            "Type": 0,
+                            "Shape": 1,
+                            "Distance": [
+                                0,
+                                1
+                            ],
+                            "Magnitude": [
+                                10,
+                                10
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "Pattern": "p1",
+                    "LoadDetails": []
+                }
+            ]
+        },
+        {
+            "Label": 6,
+            "Section": "Fsec1",
+            "StartPoint": 4,
+            "EndPoint": 6,
+            "Rotation": 0,
+            "Loads": [
+                {
+                    "Pattern": "p1",
+                    "LoadDetails": []
+                },
+                {
+                    "Pattern": "p2",
+                    "LoadDetails": [
+                        {
+                            "CoordSys": false,
+                            "Dir": 1,
+                            "Type": 0,
+                            "Shape": 1,
+                            "Distance": [
+                                0,
+                                1
+                            ],
+                            "Magnitude": [
+                                10,
+                                10
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "Label": 7,
+            "Section": "Fsec1",
+            "StartPoint": 2,
+            "EndPoint": 7,
+            "Rotation": 0,
+            "Loads": [
+                {
+                    "Pattern": "p2",
+                    "LoadDetails": [
+                        {
+                            "CoordSys": false,
+                            "Dir": 1,
+                            "Type": 0,
+                            "Shape": 1,
+                            "Distance": [
+                                0,
+                                1
+                            ],
+                            "Magnitude": [
+                                10,
+                                10
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "Pattern": "p1",
+                    "LoadDetails": []
+                }
+            ]
+        },
+        {
+            "Label": 8,
+            "Section": "Fsec1",
+            "StartPoint": 1,
+            "EndPoint": 8,
+            "Rotation": 0,
+            "Loads": [
+                {
+                    "Pattern": "p1",
+                    "LoadDetails": []
+                },
+                {
+                    "Pattern": "p2",
+                    "LoadDetails": [
+                        {
+                            "CoordSys": false,
+                            "Dir": 1,
+                            "Type": 0,
+                            "Shape": 1,
+                            "Distance": [
+                                0,
+                                1
+                            ],
+                            "Magnitude": [
+                                10,
+                                10
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
