@@ -193,8 +193,8 @@ class FrameElement
             Section:this.Section.Name,
             StartPoint:this.StartPoint.Label,
             EndPoint:this.EndPoint.Label,
-            Rotation:this.Rotation * 180/Math.PI,
-            Loads:Array.from(this.LoadsAssigned, ([Pattern, LoadDetails]) => ({ name, LoadDetails }))
+            Rotation:(this.Rotation * 180/Math.PI).toFixed(3),
+            Loads:Array.from(this.LoadsAssigned, ([Pattern, LoadDetails]) => ({ Pattern, LoadDetails }))
         }
     }
 }
@@ -600,11 +600,12 @@ class DrawLine
         return selectedFrames;
     }
 
-    static HideLoads(){
+    static HideLoads()
+    {
         DrawLine.DrawLinesArray.forEach( line => {
             line.#dispLoads.forEach(load =>{
-                scene.remove(load);
-                load.clear();
+            load.clear();
+            scene.remove(load);
             });
         });
     }
@@ -622,7 +623,6 @@ class DrawLine
             this.#extrude.visible = true;
             this.line.visible = false;
         }
-        this.InView();
         this.updateColors();
         this.InView()
     }
@@ -1428,24 +1428,24 @@ class AssignRestraints
 {
     constructor(restraint)
     {
-        this.SelectedPoints = [];
-        for(let i = 0; i < Point.SelectedPoints.length; i++)
-        {
-            this.SelectedPoints.push(Point.SelectedPoints[i]);
-        }
+        this.SelectedPoints = [...Point.SelectedPoints];
+        // for(let i = 0; i < Point.SelectedPoints.length; i++)
+        // {
+        //     this.SelectedPoints.push(Point.SelectedPoints[i]);
+        // }
         this.TempRestraints = [];   
         this.Restraint = [...restraint];
     }
 
     excute()
     {
-        Unselect();
         for(let i = 0; i < this.SelectedPoints.length; i++)
         {
             this.TempRestraints[i] = this.SelectedPoints[i].Restraint;
             this.SelectedPoints[i].Restraint = [...this.Restraint];
             this.SelectedPoints[i].ViewIndication();
         }
+        Unselect();
     }
 
     undo()
@@ -1536,6 +1536,7 @@ function Extrude()
     state = false;
     DrawLine.LoadsDisplayed = false;
     DrawLine.HideLoads();
+    Results.ResultsList.forEach(res => res.Hide());
     DrawLine.ExtrudeView();
     document.getElementById("Labels").checked = false;                     
     document.getElementById("Sections").checked = false;

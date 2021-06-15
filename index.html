@@ -278,14 +278,6 @@
                             <span class="caption">Standard</span>
                         </button>
 
-                        <button id="Move" class="ribbon-button" data-role="hint" data-hint-position="bottom"
-                        data-hint-text="Move Element">
-                            <span class="icon">
-                                <img alt="Move" src="Assets/images/MoveIcon.png">
-                            </span>
-                            <span class="caption">Move</span>
-                        </button>
-
                         <span class="title">Geometry</span>
                     </div>
                     <!-- Elements Group (Pannel)    Tab Edit -->
@@ -444,7 +436,7 @@
                     </div>
                     <!-- Section Properities Group (Pannel)    Tab Define -->
                     <div class="group">
-                        <button class="ribbon-button dropdown-toggle">
+                        <button id = "DefineSections" class="ribbon-button dropdown-toggle">
                             <span class="icon">
                                 <img alt="Section" src="Assets/images/SectionProperitiesIcon.png">
                             </span>
@@ -489,7 +481,7 @@
                 <div class="section" id="Draw-Section">
                     <!-- Draw Group (Pannel)    Tab Draw -->
                     <div class="group">
-                        <button id="AddPoints" class="ribbon-button">
+                        <button id="AddPointsOnFrame" class="ribbon-button" onclick="AddPointOnFrameWindow()">
                             <span class="icon">
                                 <img alt="Point" src="Assets/images/PointIcon.png">
                             </span>
@@ -553,7 +545,7 @@
                 <div class="section" id="Assign-Section">
                     <!-- Case Properities Group (Pannel)    Tab Assign -->
                     <div class="group">
-                        <button class="ribbon-button" onclick="JointRestraint()" data-role="hint"
+                        <button id ="JointRestraints" class="ribbon-button" onclick="JointRestraint()" data-role="hint"
                             data-hint-position="bottom" data-hint-text="Add Joint Restraint">
                             <span class="icon">
                                 <img alt="Restraint" src="Assets/images/HingedIcon.JPG">
@@ -622,6 +614,14 @@
                                 <img alt="Run" src="Assets/images/RunIcon.png">
                             </span>
                             <span class="caption">Run Analysis</span>
+                        </button>
+
+                        <button id="Unlock" class="ribbon-button" data-role="hint" data-hint-position="bottom"
+                        data-hint-text="Unlock model" disabled = "true">
+                            <span class="icon">
+                                <img alt="Unlock" src="Assets/images/unlock.png">
+                            </span>
+                            <span class="caption">Unlock</span>
                         </button>
 
                         <span class="title">Analysis</span>
@@ -747,6 +747,7 @@
 
     <title>KIWE STRUCTURES</title>
     <script src="./Assets/metro4-dist/js/metro.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <!-- <script src="./Assets//node_modules/three/build/three.js"></script> -->
     <!-- <script src="./Assets//node_modules/three/examples/js/controls/OrbitControls.js"></script> -->
 
@@ -778,6 +779,8 @@
     <script src="./Assets/js/Assign.js"></script>
     <script src="./Assets/Units.js/Units.js"></script>
     <script src="./Assets/grids.js/Grids.js"></script>
+    <script src="./Assets/Results/Results.js"></script>
+
     <!--<script src="./Assets/js/BelalLoads.js"></script>-->
 
     <script src="./Assets/Loads.js/LoadPatternWindow.js"></script>

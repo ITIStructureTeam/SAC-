@@ -1,4 +1,4 @@
-var restraint;
+let restraint;
 
 function CloseRestraint() {
     Metro.window.close('#JointRestraint');
@@ -212,6 +212,7 @@ function DeleteButton()
 
 
 
+
 function RotateWindow() {
     $('body').append(`<div id="RotateElement" data-top="150" style="z-index: 3;  " data-left="150" data-role="window"
     data-width="350" data-height="165" data-resizable="false" data-title="Rotate Frame Element"
@@ -247,3 +248,40 @@ function Rotate()
 }
 
 
+
+
+function AddPointOnFrameWindow() {
+    $('body').append(`<div id="AddPointOnFrameElement" data-top="150" style="z-index: 3;  " data-left="150" data-role="window"
+    data-width="350" data-height="165" data-resizable="false" data-title="Rotate Frame Element"
+
+    <div>
+        <div style="margin-top: 10px; margin-left:10px; width: 95%; font-size:12px;">
+            Add points at equal intervals along a selected frame element
+            number of intervals:
+            <input type="number" id = "AddPoints" style="width:65px; margin-top:10px;"> <br><br>
+        
+        </div>
+        <div style="margin-left:55px">
+            <button class="button info" style="width:35px; hight:30px; font-size:12px;" onclick="AddPointsOnFrame(); CloseAddPointsOnFrameWindow();">OK</button>
+            <button class="button default" style="width:65px; hight:30px; font-size:12px;" onclick="AddPointsOnFrame()">Apply</button>
+            <button class="button default" style="width:65px; hight:30px; font-size:12px;" onclick="CloseAddPointsOnFrameWindow()">Cancel</button>
+        </div>
+    
+</div>`)
+}
+
+function CloseAddPointsOnFrameWindow() {
+    Metro.window.close('#AddPointOnFrameElement');
+}
+
+function AddPointsOnFrame()
+{
+    var number = Math.floor(document.getElementById("AddPoints").value);
+    if(!isNaN(number)){
+        const selected = DrawLine.GetSelectedFrames();
+        for (let i =0; i<selected.length; i++)
+        {
+            selected[i].AddPointsAtEqualDistances(number);
+        }
+    }
+}
