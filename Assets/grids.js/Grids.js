@@ -106,7 +106,7 @@ let gridsWind = `
     </div>
 `
 
-/* document.querySelector('#grids-btn').addEventListener("click",function(){
+document.querySelector('#grids-btn').addEventListener("click",function(){
     if(!document.querySelector('.main-window')){
         $('body').append(GetGridsWin());
         LoadGridsData('grids-x',listx,xGridsNames);
@@ -150,9 +150,32 @@ let gridsWind = `
                     closeButton: true
                 });
             }else{
-                gridLines = [];
+                ThreeD();
+                if(group != null)
+                {
+                    scene.remove(group);
+                    gridLines.forEach(element => {
+                        element.material.dispose()
+                        element.geometry.dispose()
+                        scene.remove(element);
+                    });
+                    gridLines = [];
+                    for (var i = group.children.length - 1; i >= 0; i--) {
+                        group.children[i].material.dispose();
+                        group.children[i].geometry.dispose();
+                        group.remove(group.children[i]);
+                    }
+                    removeSelectionGrids();
+                }
+                
+                GridSelections();
                 group = GridPoints(listx,listy,listz,listx.length,listy.length,listz.length);
                 gridLines = GridLine(listx,listy,listz,listx.length,listy.length,listz.length);
+                scene.add(group);
+                gridLines.forEach(element => {
+                    scene.add(element);
+                });
+                
                 document.querySelector('#grids-window').parentElement.parentElement.remove();
                 gridsUpdated=true;
             }
@@ -160,9 +183,11 @@ let gridsWind = `
 
         document.querySelector('#grids-close').addEventListener("click",function(){
             document.querySelector('#grids-window').parentElement.parentElement.remove();
-        })
+        });
+        
+        
     }
-}); */
+});
 
 function GetGridsWin(){
     return `

@@ -117,6 +117,6 @@ function LoadPrevFForcesOptions() {
         document.querySelector(`input[value="${prevDefOptions[2]}"]`).checked = true;       
     }else{
         document.querySelector('input[value="auto"]').checked=true
-        document.querySelector('input[value="cubic"]').checked = true;
+        //document.querySelector('input[value="cubic"]').checked = true;
     }
 }
