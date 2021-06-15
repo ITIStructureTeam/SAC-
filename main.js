@@ -441,21 +441,21 @@ function update(renderer, scene, camera, controls)
 
     if(DrawingModeActive == true)
     {
-        window.addEventListener( 'click', ClickToDrawLine, false );
+        renderer.domElement.addEventListener( 'click', ClickToDrawLine, false );
         hover();
         SelectionModeActive == false;
     }
     else{
-        window.removeEventListener( 'click', ClickToDrawLine, false );
+        renderer.domElement.removeEventListener( 'click', ClickToDrawLine, false );
         SelectionModeActive == true;
     }
     
     if(SelectionModeActive == true){    
-        window.addEventListener('click',ClickToSelectElement,false);
+        renderer.domElement.addEventListener('click',ClickToSelectElement,false);
     } 
     else{
         document.querySelectorAll(".selectBox").forEach(x => x.style.visibility = "hidden");
-        window.removeEventListener('click',ClickToSelectElement,false);
+        renderer.domElement.removeEventListener('click',ClickToSelectElement,false);
     }
 
 
@@ -1004,16 +1004,10 @@ function removeArrows()
 
 
 
-
-
-
-
-
-
-
-
-
         
+
+
+
 
 
 
@@ -1096,6 +1090,7 @@ function Unlock()
 
 
     
+
     $("#Run").click(function()
     {
         DisaplePreProcessorButtons()
@@ -1137,101 +1132,4 @@ function Unlock()
         });
     });
 
-// let resultsFromJson = JSON.parse(testerForResults);
-// console.log(resultsFromJson)
-// var fs = require('fs');
-// fs.writeFile("OutPut.json", OutPut, function(err) {
-//     if (err) {
-//         console.log(err);
-//     }
-// });
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// let pos1 =   [0,0.5,0.5,1]
-// let arrMx1 = [-0.5,1,1,-0.6]
-// let arrMy1 = [0,0.7,0.7,0]
-// let arrN1 =  [0.5,0.5,0.5,0.5]
-// let arrVx1 = [-1,0,0,1]
-// let arrvy1 = [-0.5,0.5,-0.6,0.4]
-// let attT1 =  [0.2,0.2,0.23,0.23]
-// let r1 = 0;
-// let startPoint1 = [0,0,5]
-// let endPoint1 = [0,5,5]
-// let pattern1 = "p1";
-
-// new Results(pattern1, 1, startPoint1,endPoint1,pos1,arrMx1,arrMy1,attT1,arrN1,arrVx1,arrvy1,r1)
-
-// let Mpos1 =   [0,0.5,0.5,1]
-// let MarrMx1 = [-0.5,1,1,-0.6]
-// let MarrMy1 = [0,0.7,0.7,0]
-// let MarrN1 =  [0.5,0.5,0.5,0.5]
-// let MarrVx1 = [-1,0,0,1]
-// let Marrvy1 = [-0.5,0.5,-0.6,0.4]
-// let MattT1 =  [0.2,0.2,0.23,0.23]
-// let Mr1 = 45;
-// let MstartPoint1 = [0,0,5]
-// let MendPoint1 = [5,0,5]
-// let Mpattern1 = "p2";
-
-// new Results(Mpattern1, 2, MstartPoint1,MendPoint1,Mpos1,MarrMx1,MarrMy1,MattT1,MarrN1,MarrVx1,Marrvy1,Mr1)
-
-// let Spos1 =   [0,0.5,0.5,1]
-// let SarrMx1 = [-0.5,1,1,-0.6]
-// let SarrMy1 = [0,0.7,0.7,0]
-// let SarrN1 =  [0.5,0.5,0.5,0.5]
-// let SarrVx1 = [-1,0,0,1]
-// let Sarrvy1 = [-0.5,0.5,-0.6,0.4]
-// let SattT1 =  [0.2,0.2,0.23,0.23]
-// let Sr1 = 0;
-// let SstartPoint1 = [0,3,5]
-// let SendPoint1 = [0,8,5]
-// let Spattern1 = "p2";
-
-// new Results(Spattern1, 3, SstartPoint1,SendPoint1,Spos1,SarrMx1,SarrMy1,SattT1,Sarrvy1,SarrN1,SarrVx1,Sr1)
-
-// let kpos1 =   [0,0.5,0.5,1]
-// let karrMx1 = [-0.5,1,1,-0.6]
-// let karrMy1 = [0,0.7,0.7,0]
-// let karrN1 =  [0.5,0.5,0.5,0.5]
-// let karrVx1 = [-1,0,0,1]
-// let karrvy1 = [-0.5,0.5,-0.6,0.4]
-// let kattT1 =  [0.2,0.2,0.23,0.23]
-// let kr1 = 0;
-// let kstartPoint1 = [5,7,5]
-// let kendPoint1 = [9,12,5]
-// let kpattern1 = "p1";
-
-// new Results(kpattern1, 4, kstartPoint1,kendPoint1,kpos1,karrMx1,karrMy1,kattT1,karrvy1,karrN1,karrVx1,kr1)
-
-// let Npos1 =   [0,0.5,0.5,1]
-// let NarrMx1 = [-0.5,1,1,-0.6]
-// let NarrMy1 = [0,0.7,0.7,0]
-// let NarrN1 =  [0.5,0.5,0.5,0.5]
-// let NarrVx1 = [-1,0,0,1]
-// let Narrvy1 = [-0.5,0.5,-0.6,0.4]
-// let NattT1 =  [0.2,0.2,0.23,0.23]
-// let Nr1 = 0;
-// let NstartPoint1 = [6,12,5]
-// let NendPoint1 = [2,10,5]
-// let Npattern1 = "p1";
-
-// new Results(Npattern1, 5, NstartPoint1,NendPoint1,Npos1,NarrMx1,NarrMy1,NattT1,Narrvy1,NarrN1,NarrVx1,Nr1)
