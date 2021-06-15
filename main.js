@@ -1,5 +1,5 @@
 import {MapControls} from './Assets/Three.js files/OrbitControls.js'
-import { DoubleSide } from './Assets/Three.js files/three.module.js';
+import {DoubleSide } from './Assets/Three.js files/three.module.js';
 
 let PreProcessor = true;
 
