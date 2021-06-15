@@ -9,18 +9,57 @@ function LoadJsonFile(){
             let jsonObj = _xhr.responseText;
             let model = JSON.parse(jsonObj);
             console.log(model)
-            //read materials
+
+            //reset default defines
+            Section.SectionList.clear();
+            Material.MaterialsList.clear();
+            LoadCombo.LoadCombosList.clear();
+            LoadPattern.LoadPatternsList.clear();
+
+            //#region read grids
+            listx = model.Grids.Listx;
+            listy = model.Grids.Listy;
+            listz = model.Grids.Listz;
+            if(group != null)
+                {
+                    scene.remove(group);
+                    gridLines.forEach(element => {
+                        element.material.dispose()
+                        element.geometry.dispose()
+                        scene.remove(element);
+                    });
+                    gridLines = [];
+                    for (var i = group.children.length - 1; i >= 0; i--) {
+                        group.children[i].material.dispose();
+                        group.children[i].geometry.dispose();
+                        group.remove(group.children[i]);
+                    }
+                    removeSelectionGrids();
+                }
+                
+            GridSelections();
+            group = GridPoints(listx,listy,listz,listx.length,listy.length,listz.length);
+            gridLines = GridLine(listx,listy,listz,listx.length,listy.length,listz.length);
+            scene.add(group);
+            gridLines.forEach(element => {
+                scene.add(element);
+            });
+        //#endregion
+            
+            //#region read materials
             model.Materials.forEach( material => {
                 new Material(material.Name, material.Weight, material.ElasticModulus, material.Poisson, material.ThermalExpansion,material.MaterialType, material.Strength)
             });
+            //#endregion
 
-            //read sections
+            //#region read sections
             model.Sections.forEach(section => {
                 let mat = Material.GetMaterialByName(section.Material);
                 new Section(section.Name, mat, section.SecType, section.Dimensions, section.PropModifiers);
             });
-             
-            //read patterns
+            //#endregion
+
+            //#region read patterns
             let patterns = [];
             model.Patterns.forEach(pattern => {
                 let pat = new LoadPattern(pattern.Details.Name, pattern.Details.Type, pattern.Details.SelfWtMult);
@@ -29,16 +68,18 @@ function LoadJsonFile(){
             });
             LoadPattern.LoadPatternsList.clear();
             patterns.forEach( pattern => LoadPattern.LoadPatternsList.set(pattern.ID,pattern));
+            //#endregion
 
-            //read points
+            //#region read points
             model.Points.forEach( point => {
                 let pt = new Point(point.position);
                 pt.Label = point.label;
                 pt.Restraint = point.Restraints;
+                pt.ViewIndication();
             });
-            console.log(Point.PointsArray);
+            //#endregion
 
-            //read frames
+            //#region read frames
             let frames = []
             model.Frames.forEach( frame => {
                 //get start and end points and section
@@ -59,10 +100,11 @@ function LoadJsonFile(){
                         appliedloads.push(appliedload);
                     });
                     newframe.LoadsAssigned.set(load.Pattern, appliedloads);
+                    LoadPattern.LoadPatternsList.get(load.Pattern).OnElements.push(newframe.Label)
                 });
                 frames.push(newframe);
             });
-            
+            //#endregion
             
             //display frames
             frames.forEach(frame => {

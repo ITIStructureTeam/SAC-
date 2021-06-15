@@ -782,7 +782,7 @@ class DrawLine
         scene.add(this.refline);
         scene.add(this.label);
         scene.add(this.name);
-        if(DrawLine.DisplayedPattern) this.DisplayLoad(DrawLine.DisplayedPattern);
+        if(DrawLine.LoadsDisplayed) this.DisplayLoad(DrawLine.DisplayedPattern);
     }
 
     InView()

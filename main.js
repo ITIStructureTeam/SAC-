@@ -556,7 +556,7 @@ if(gridLines == null){
 
 
  
-function GridSelections()
+/* function GridSelections()
 {
     let position = 0;
     for (let i = 0; i <= listz.length; i++)
@@ -591,9 +591,9 @@ function GridSelections()
     //     yz.add(option, yz[i]);
     //     position += listx[i];
     // }
-}
+} */
 
-function removeSelectionGrids()
+/* function removeSelectionGrids()
 {
     const xy = $('#XY').children().length;
     for (let i = xy - 1; i >= 0; i--) {
@@ -609,7 +609,7 @@ function removeSelectionGrids()
     for (let i = yz - 1; i >= 0; i--) {
         $('#YZ').children()[i].remove(); 
     }
-}
+} */
 
  
 
@@ -1126,6 +1126,11 @@ class RootData
         this.Patterns = Array.from(LoadPattern.LoadPatternsList, ([PatternID, Details]) => ({ PatternID, Details }));
         this.Points = [...Point.PointsArray];
         this.Frames = DrawLine.GetDrawnFrames();
+        this.Grids = {
+            Listx: listx,
+            Listy : listy,
+            Listz: listz
+        }
     }
 }
 

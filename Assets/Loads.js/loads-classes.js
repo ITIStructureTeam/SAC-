@@ -34,10 +34,10 @@ class LoadPattern{
     #onElements;
     static _loadPatternsList = new Map();
     static #loadPattId = 1;
-    /* static #initPattern = (function(){
+    static #initPattern = (function(){
         new LoadPattern('DEAD',ELoadPatternType.Dead,1);
         new LoadPattern('LIVE',ELoadPatternType.Live,0);
-    })(); */
+    })();
     constructor(name, type, selfWtMult){
 
         this._id = 'p'+LoadPattern.#loadPattId;
@@ -145,9 +145,9 @@ class LoadCombo {
     #incombos;
     static #loadCombosList = new Map();
     static #loadComboId = 1;
-    /* static #initLoadCombo = (function(){
+    static #initLoadCombo = (function(){
         new LoadCombo('combo1',[ { caseId:'p1'  , scaleFactor:1}]);
-    })(); */
+    })();
 
     constructor(name, loadCasesInfo){
         this.#id = 'c' + LoadCombo.#loadComboId;
