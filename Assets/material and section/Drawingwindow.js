@@ -1,4 +1,4 @@
- let drawWin = `
+let drawWin = `
  <div
  id = "DrawingWindow"
  class="main-window"
@@ -38,46 +38,52 @@
 </div>
 `
 
-document.querySelector('#Draw').addEventListener("click",function(){
-
-    if(!document.querySelector('.main-window')) $('body').append(drawWin);
+document.querySelector('#Draw').addEventListener("click", function () {
+    if (!document.querySelector('.main-window')) {
+      
+      $('body').append(drawWin);
+      StatusBar = document.getElementById('StatusBar');
+      StatusBar.innerHTML = 'Select First Point';
+    }
 })
 
 
-function InitFramePropWindow(){
+function InitFramePropWindow() {
     FillSectionList();
-    document.querySelector('#frameprop-sec-list').addEventListener("change",GetSelectedSection);
+    document.querySelector('#frameprop-sec-list').addEventListener("change", GetSelectedSection);
 }
 
-function FillSectionList(){
+function FillSectionList() {
     let length = $('#frameprop-sec-list').children().length;
-    for (let i = length-1; i >= 0 ; i--) {
-        $('#frameprop-sec-list').children()[i].remove();      
+    for (let i = length - 1; i >= 0; i--) {
+        $('#frameprop-sec-list').children()[i].remove();
     }
-    Section.SectionList.forEach((value,key) => {
-        $("#frameprop-sec-list").append(`<option value=${key} >${value.Name}</option>`); 
-    });   
-    
+    Section.SectionList.forEach((value, key) => {
+        $("#frameprop-sec-list").append(`<option value=${key} >${value.Name}</option>`);
+    });
+
 }
 
 //this function is also called in main.js when line is drawing
-function GetSelectedSection(){
+function GetSelectedSection() {
     let selectedId = document.querySelector('#frameprop-sec-list').value;
-    return Section.SectionList.get(selectedId);  
+    return Section.SectionList.get(selectedId);
 }
 
-function ExitDrawingMode(){
+function ExitDrawingMode() {
     DrawingModeActive = false;
     SelectionModeActive = true;
 }
 
 function CloseDraw() {
+    document.querySelector("body").style = "cursor:default"
+    StatusBar.innerHTML = 'Welcome to SAC Solutions - Status Bar -';
     Metro.window.close('#DrawingWindow');
 }
 
-document.addEventListener('keydown', function(event){
-	if(event.key === "Escape"){
+document.addEventListener('keydown', function (event) {
+    if (event.key === "Escape") {
         DrawingModeActive = false;
         CloseDraw();
     }
-}); 
+});
