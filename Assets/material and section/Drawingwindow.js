@@ -1,4 +1,4 @@
- let drawWin = `
+let drawWin = `
  <div
  id = "DrawingWindow"
  class="main-window"
@@ -7,45 +7,56 @@
  data-title="Frame Properties"
  data-btn-min="false"
  data-btn-max="false"
- data-btn-close="false"
+ data-btn-close="true"
  data-resizable="false"
+ data-on-close-click = "ExitDrawingMode()"
  data-place="left"
  data-width="200">
-    <table class="table compact" >
-        <tbody style="height:100px" >
-        <tr>
-            <td>
+    
+
+    <div class="padding-all-0" data-role="panel">
+        <div class="flex-rowm align-start" style="height:130px;">
+            <div class="input-width">
                 <label>Section</label>
-            </td>
-            <td class="label" >
-                <select
+            </div>
+            <div class="input-width">
+                <select 
                 id="frameprop-sec-list"
                 class="input-small"
                 data-role="select"
                 data-filter="false"
-                data-drop-height=90>
-                    <option>xyz</option>
-                    <option>xyz</option>
+                data-drop-height="85">
                     <option>xyz</option>
                 </select>
-            </td>
-        </tr>
-        </tbody>
-    </table>
-     <div>
-        <button onclick="CloseDraw(); ExitDrawingMode()" style="left:100px; width:50;">close</button>
+            </div>
+        </div>
     </div>
+
 </div>
 `
 
 document.querySelector('#Draw').addEventListener("click",function(){
 
-    if(!document.querySelector('.main-window')) $('body').append(drawWin);
+    if(!document.querySelector('.main-window')) {
+        $('body').append(drawWin);      
+    }
+    document.addEventListener('keydown', function(event){
+        if(event.key === "Escape"){
+            if(document.querySelector('#DrawingWindow')){
+
+                ExitDrawingMode();
+                document.querySelector('.main-window').parentElement.parentElement.remove();
+            }
+        }
+    }); 
 })
 
 
 function InitFramePropWindow(){
     FillSectionList();
+    DrawingModeActive = true;
+    SelectionModeActive = false;
+    Unselect();
     document.querySelector('#frameprop-sec-list').addEventListener("change",GetSelectedSection);
 }
 
@@ -70,14 +81,3 @@ function ExitDrawingMode(){
     DrawingModeActive = false;
     SelectionModeActive = true;
 }
-
-function CloseDraw() {
-    Metro.window.close('#DrawingWindow');
-}
-
-document.addEventListener('keydown', function(event){
-	if(event.key === "Escape"){
-        DrawingModeActive = false;
-        CloseDraw();
-    }
-}); 

@@ -9,6 +9,7 @@ var matMainWindow = `
         data-title="Define Material"
         data-btn-min="false"
         data-btn-max="false"
+        data-btn-close="false"
         data-resizable="false"
         data-place="center"
         data-width="350px">
@@ -42,123 +43,118 @@ var matMainWindow = `
 
 var materialWindowHtml = `
 
-            <div
-            class="secondary-window"
-            id="mat-define-window"
-            data-role="window"
-            data-title="Material properties"
-            data-btn-min="false"
-            data-btn-max="false"
-            data-resizable="false"
-            data-place="center"
-            data-width="375">
-            
-               <table class="table compact" id="mat-form">
-               <tbody style="height:370px;">
-                <tr>
-                
-                    <td>
-                        <label>Material Type</label>
-                    </td>
-                    <td>
-                        <select 
-                        id="mat-type"
-                        class="input-small"
-                        data-role="select"
-                        data-filter="false"
-                        data-drop-height=80
-                        >
-                        </select>
-                    </td>        
-                </tr>
-
-                   <tr>
-                       <td>
-                           <label for="">Name</label>
-                       </td>
-                       <td>
-                           <input id="mat-name" class="input-small" type="text" data-role="input" data-clear-button="false">
-                       </td>
-                   </tr>
-               
-                   <tr >
-                       <td>
-                           <label for="">Elastic Modulus</label>
-                       </td>
-                       <td>
-                           <input id="mat-elastic" class="input-small" type="number" data-role="input" data-clear-button="false" data-append=${projUnits.StrenUnit}>
-                       </td>
-                   </tr>
-               
-                   <tr>
-                       <td>
-                           <label for="">Density</label>
-                       </td>
-                       <td>
-                           <input id="mat-density" class="input-small" type="number" data-role="input" data-clear-button="false" data-append=${projUnits.DensUnit}>
-                       </td>               
-                   </tr>
-               
-                   <tr>
-                       <td>
-                           <label class="" for="">Poisson Ratio</label>
-                       </td>
-                      <td>
-                            <input id="mat-poisson" class="input-small" type="number" data-role="input" data-clear-button="false" data-append='%'>
-                      </td>
-
-                   </tr>
-
-                   <tr>
-                       <td>
-                           <label class="" for="">Thermal Expansion</label>
-                       </td>
-                      <td>
-                       <input id="mat-thermal" class="input-small" type="number" data-role="input" data-clear-button="false" data-append=${projUnits.TempUnit}>
-                      </td>
-
-                   </tr>
-               
-                   <tr>
-                       <td>
-                           <label for="">Yield Strength</label>
-                       </td>
-                       <td>
-                           <input id="mat-yield" class="input-small" type="number" data-role="input" data-clear-button="false" data-append=${projUnits.StrenUnit}>
-                       </td>           
-                   </tr>
-               
-                   <tr>
-                       <td>
-                           <label for="">Ultimate Strength</label>
-                       </td>
-                       <td>
-                           <input id="mat-ultimate" class="input-small" type="number" data-role="input" data-clear-button="false" data-append=${projUnits.StrenUnit}>
-                       </td>           
-                   </tr>
-                   <!--tr>
-                        <td>
-                            <button id="new-mat-save">Save Changes</button>
-                        </td>
-                    </tr-->
-               </tbody>
-               </table>
-
-               <div style="text-align: center;">
-                    <button id="new-mat-save"  class="button info">Save Changes</button>
-                    <button id="new-mat-close"  class="button info">Close</button>
-                </div>
-            </div>
+    <div
+    class="secondary-window"
+    id="mat-define-window"
+    data-role="window"
+    data-title="Material properties"
+    data-btn-min="false"
+    data-btn-max="false"
+    data-resizable="false"
+    data-place="center"
+    data-width="375">
+    
+       <table class="table compact" id="mat-form">
+       <tbody style="height:370px;">
+        <tr>
+        
+            <td>
+                <label>Material Type</label>
+            </td>
+            <td>
+                <select 
+                id="mat-type"
+                class="input-small"
+                data-role="select"
+                data-filter="false"
+                data-drop-height=80
+                >
+                </select>
+            </td>        
+        </tr
+           <tr>
+               <td>
+                   <label for="">Name</label>
+               </td>
+               <td>
+                   <input id="mat-name" class="input-small" type="text" data-role="input" data-clear-button="false">
+               </td>
+           </tr>
+       
+           <tr >
+               <td>
+                   <label for="">Elastic Modulus</label>
+               </td>
+               <td>
+                   <input id="mat-elastic" class="input-small" type="number" data-role="input" data-clear-button="false" data-append=${projUnits.StrenUnit}>
+               </td>
+           </tr>
+       
+           <tr>
+               <td>
+                   <label for="">Density</label>
+               </td>
+               <td>
+                   <input id="mat-density" class="input-small" type="number" data-role="input" data-clear-button="false" data-append=${projUnits.DensUnit}>
+               </td>               
+           </tr>
+       
+           <tr>
+               <td>
+                   <label class="" for="">Poisson Ratio</label>
+               </td>
+              <td>
+                    <input id="mat-poisson" class="input-small" type="number" data-role="input" data-clear-button="false" data-append='%'>
+              </td
+           </tr
+           <tr>
+               <td>
+                   <label class="" for="">Thermal Expansion</label>
+               </td>
+              <td>
+               <input id="mat-thermal" class="input-small" type="number" data-role="input" data-clear-button="false" data-append=${projUnits.TempUnit}>
+              </td
+           </tr>
+       
+           <tr>
+               <td>
+                   <label for="">Yield Strength</label>
+               </td>
+               <td>
+                   <input id="mat-yield" class="input-small" type="number" data-role="input" data-clear-button="false" data-append=${projUnits.StrenUnit}>
+               </td>           
+           </tr>
+       
+           <tr>
+               <td>
+                   <label for="">Ultimate Strength</label>
+               </td>
+               <td>
+                   <input id="mat-ultimate" class="input-small" type="number" data-role="input" data-clear-button="false" data-append=${projUnits.StrenUnit}>
+               </td>           
+           </tr>
+           <!--tr>
+                <td>
+                    <button id="new-mat-save">Save Changes</button>
+                </td>
+            </tr-->
+       </tbody>
+       </table
+       <div style="text-align: center;">
+            <button id="new-mat-save"  class="button info">Save Changes</button>
+            <button id="new-mat-close"  class="button info">Close</button>
+        </div>
+    </div>
 
 `
 
 document.getElementById("materialsBtn").addEventListener("click",
         
-        function(){
-            if(!document.querySelector(".main-window")){
-                InitMatMainWindow();
-            } 
-        }          
+    function(){
+        if(!document.querySelector(".main-window")){
+            InitMatMainWindow();
+        } 
+    }          
 );
 
 function GetMaterialWin() {
@@ -299,20 +295,26 @@ function InitMatMainWindow(){
         {
             InitAddMaterialWindow();
             LoadMaterialData();
-            document.querySelector('#new-mat-save').addEventListener("click",ModifyMaterial);
+            document.querySelector('#new-mat-save').addEventListener("click",function(){
+                if($('.current-select')[0]) ModifyMaterial;
+            } );
             document.querySelector('#new-mat-close').addEventListener("click",function(){
                 CloseWindow('mat-define-window');
             });
         }
     });
 
-    document.querySelector('#delete-mat-btn').addEventListener("click",DeleteMaterial);
+    document.querySelector('#delete-mat-btn').addEventListener("click",function(){
+        if($(".current-select")[0] && ! $('.secondary-window')[0]) DeleteMaterial();
+    });
 
-    document.querySelector('#copy-mat-btn').addEventListener("click",CopyMaterial);
+    document.querySelector('#copy-mat-btn').addEventListener("click", function(){
+        if($(".current-select")[0] && ! $('.secondary-window')[0]) CopyMaterial();
+    });
 
     document.querySelector('#close-mat-btn').addEventListener("click",function () {
-        CloseWindow('mat-main-window');
-    })
+        if(! $('.secondary-window')[0]) CloseWindow('mat-main-window');
+    });
 
 }
 
@@ -372,20 +374,22 @@ function AddNewMaterial(){
     let yield = projUnits.StrenConvert(document.querySelector('#mat-yield').valueAsNumber) ;
     let ultimate = projUnits.StrenConvert(document.querySelector('#mat-ultimate').valueAsNumber) ;
     try{
-        if($('#mat-define-window')[0].querySelector('p')) $('#mat-define-window')[0].querySelector('p').remove();
-        var mat = new Material(name,density,elastic,poisson,thermal,type,[yield,ultimate]);
+        new Material(name,density,elastic,poisson,thermal,type,[yield,ultimate]);
         ReloadMaterialWindow();
         $('#mat-define-window')[0].parentElement.parentElement.remove();
 
     }catch(error){               
-        $('#mat-define-window').append(`<p style="color:#CE352C;">${error.message}</p>`);
+        Metro.dialog.create({
+            title: "Error in material data",
+            content: `<div>${error.message}</div>`,
+            closeButton: true,
+        });
     }
 }
     
 function ModifyMaterial(){
     let selectedKey =  $(".current-select")[0].value;
     let selectedMaterial = Material.MaterialsList.get(String(selectedKey));
-    if($('#mat-define-window')[0].querySelector('p')) $('#mat-define-window')[0].querySelector('p').remove();
     try{    
         selectedMaterial.Name = document.querySelector('#mat-name').value;
         selectedMaterial.Weight = projUnits.DensConvert(document.querySelector('#mat-density').valueAsNumber) ;
@@ -399,26 +403,32 @@ function ModifyMaterial(){
         ReloadMaterialWindow();
         $('#mat-define-window')[0].parentElement.parentElement.remove();
     }catch(error){               
-        $('#mat-define-window').append(`<p style="color:#CE352C;">${error.message}</p>`);
+        Metro.dialog.create({
+            title: "Error in modifying material data",
+            content: `<div>${error.message}</div>`,
+            closeButton: true,
+        });
     }          
 }
 
 function DeleteMaterial(){
     let selectedKey =  $(".current-select")[0].value;
     let selectedMaterial = Material.MaterialsList.get(String(selectedKey));
-    if($('#mat-main-window')[0].querySelector('p')) $('#mat-main-window')[0].querySelector('p').remove();
     try {
         selectedMaterial.Delete();
         ReloadMaterialWindow();
     } catch (error) {
-        $('#mat-main-window').append(`<p style="color:#CE352C;">${error.message}</p>`);
+        Metro.dialog.create({
+            title: "Error in deleting material",
+            content: `<div>${error.message}</div>`,
+            closeButton: true,
+        });
     }
 }
 
 function CopyMaterial(){
     let selectedKey =  $(".current-select")[0].value;
     let selectedMaterial = Material.MaterialsList.get(String(selectedKey));
-    if($('#mat-main-window')[0].querySelector('p')) $('#mat-main-window')[0].querySelector('p').remove();
     selectedMaterial.Clone();
     ReloadMaterialWindow();
 }

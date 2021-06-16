@@ -10,6 +10,7 @@ data-role="window"
 data-title="Sections"
 data-btn-min="false"
 data-btn-max="false"
+data-btn-close="false"
 data-resizable="false"
 data-place="center"
 data-width="350">
@@ -74,6 +75,7 @@ data-role="window"
 data-title="Sections"
 data-btn-min="false"
 data-btn-max="false"
+data-btn-close="false"
 data-resizable="false"
 data-place="center"
 data-width="500">
@@ -393,28 +395,34 @@ function initSecMainWindow() {
     document.querySelector('#sec-main-window').addEventListener("click",ActivateSectionCtrls);
 
     document.querySelector('#mod-sec-btn').addEventListener("click",function(){
+        if(!document.querySelector('.secondary-window')){
             let secId = GetSecId();
             secType=GetSecType(secId);
             InitSecPropWindow(secType,secId);               
             LoadSectionData(secId);
-        });
+        }
+    });
 
     document.querySelector('#delete-sec-btn').addEventListener("click",function(){
-        DeleteSection(GetSecId());
+        if(!document.querySelector('.secondary-window') && $(".current-select")[0]){
+            DeleteSection(GetSecId());
+        }
     });
 
     document.querySelector('#copy-sec-btn').addEventListener("click",function(){
-        CopySection(GetSecId());
+        if(!document.querySelector('.secondary-window') && $(".current-select")[0]){
+            CopySection(GetSecId());
+        }
     });
 
     document.querySelector('#close-sec-main').addEventListener("click",function(){
-        document.querySelector('#sec-main-window').parentElement.parentElement.remove();
+        if(!document.querySelector('.secondary-window')){
+            document.querySelector('#sec-main-window').parentElement.parentElement.remove();
+        }
     })
 }
 
 function ReloadSecMainWindow() {
-    //document.querySelector('#sec-main-window').parentElement.parentElement.remove();
-    //initSecMainWindow();
     document.querySelector('#sec-list').remove();
     $('#sec-list-container ').append(`
         <ul data-role="listview" id="sec-list">
@@ -436,7 +444,9 @@ function InitSecPropWindow(secType,secId=null) {
             
         });
         document.querySelector('#secprop-cancel-btn').addEventListener("click", function(){
-            document.querySelector('#sec-prop-window').parentElement.parentElement.remove();
+            if(!document.querySelector('.ter-window')){
+                document.querySelector('#sec-prop-window').parentElement.parentElement.remove();
+            }
         })
     }
 }
@@ -469,7 +479,11 @@ function InitSecModifiersWindow(secId=null) {
                             Section.SectionList.get(String(secId)).PropModifiers = secModifiers;
                             document.querySelector('#sec-modifier-window').parentElement.parentElement.remove();
                         } catch (error) {
-                            $('#sec-modifier-window').append(`<p style="color:#CE352C;">${error.message}</p>`);
+                            Metro.dialog.create({
+                                title: "Error in section modifiers",
+                                content: `<div>${error.message}</div>`,
+                                closeButton: true,
+                            });
                         }                               
                     }else{
                         document.querySelector('#sec-modifier-window').parentElement.parentElement.remove();
@@ -497,9 +511,6 @@ function ModifySection(secId){
     let secDims = [];
     let secMatId =  document.querySelector('#sec-mat').querySelector('select').value;
     try {
-
-        if(document.querySelector('#sec-prop-window').querySelector('p'))document.querySelector('#sec-prop-window').querySelector('p').remove();
-        
         section.Name = document.querySelector('#sec-name').querySelector('input').value;               
     
         document.querySelector('#sec-dim').querySelectorAll('input').forEach(input=> secDims.push( projUnits.SecDimConvert(input.valueAsNumber) ));      
@@ -511,7 +522,11 @@ function ModifySection(secId){
         secUpdated = true;
         document.querySelector('#sec-prop-window').parentElement.parentElement.remove();
     } catch (error) {
-        $('#sec-prop-window').append(`<p style="color:#CE352C;">${error.message}</p>`);
+        Metro.dialog.create({
+            title: "Error in modifying section data",
+            content: `<div>${error.message}</div>`,
+            closeButton: true,
+        });
     }
     
     
@@ -525,7 +540,6 @@ function AddSection(secType) {
     let matId= document.querySelector('#sec-mat').querySelector('select').value;
     let material = Material.MaterialsList.get(String(matId));
     try {
-        if(document.querySelector('#sec-prop-window').querySelector('p'))document.querySelector('#sec-prop-window').querySelector('p').remove();
         if(secModifiers){
             new Section (name, material, secType, dims, secModifiers);
             secModifiers=null;
@@ -535,7 +549,11 @@ function AddSection(secType) {
         ReloadSecMainWindow();
         document.querySelector('#sec-prop-window').parentElement.parentElement.remove();
     } catch (error) {
-        $('#sec-prop-window').append(`<p style="color:#CE352C;">${error.message}</p>`);
+        Metro.dialog.create({
+            title: "Error in section data",
+            content: `<div>${error.message}</div>`,
+            closeButton: true,
+        });
     }
 }
 
@@ -545,7 +563,11 @@ function DeleteSection(secId) {
         Section.SectionList.get(String(secId)).Delete();
         ReloadSecMainWindow();
     } catch (error) {
-        $('#sec-main-window').append(`<p style="color:#CE352C;">${error.message}</p>`);
+        Metro.dialog.create({
+            title: "Error in deleting section",
+            content: `<div>${error.message}</div>`,
+            closeButton: true,
+        });
     }
 }
 

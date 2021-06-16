@@ -1575,13 +1575,13 @@ function Labels()
     } 
 }
 
-document.getElementById("Draw").onclick=function(){DrawingMode()};
+/*document.getElementById("Draw").onclick=function(){DrawingMode()};
 function DrawingMode()
 {
     DrawingModeActive = true;
     SelectionModeActive = false;
     Unselect();
-}
+}*/
 
 function Unselect()
 {
