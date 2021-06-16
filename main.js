@@ -153,6 +153,7 @@ document.addEventListener('keydown',  function ( event ) {
     }
 })
 
+
 function ClickToDrawLine(event)  
 {
     // hide loads if shown
@@ -173,6 +174,7 @@ function ClickToDrawLine(event)
 	        if(intersects.length > 0) {
                 if(points.length <6)
                 {
+                    StatusBar.innerHTML='Select Next Point'
                     pos_x = intersects[0].object.position.x;
                     pos_y = intersects[0].object.position.y;
                     pos_z = intersects[0].object.position.z;
@@ -187,6 +189,7 @@ function ClickToDrawLine(event)
                 }
                 else if(points.length == 6)
                 {
+                    StatusBar.innerHTML='Select First Point'
                     commands.excuteCommand(new DrawLine(new FrameElement(points,GetSelectedSection())));
                     points = [];
                 }
