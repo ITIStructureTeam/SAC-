@@ -1,38 +1,38 @@
-var DESCENDER_ADJUST = 1;        // Constant relating to text boarder box height for lables
+let DESCENDER_ADJUST = 1;        // Constant relating to text boarder box height for lables
 
 function makeTextSprite( message, x, y, z, parameters ) 
 { 
     if ( parameters === undefined ) parameters = {}; 
      
-    var fontface = parameters.hasOwnProperty("fontface") ?  
+    let fontface = parameters.hasOwnProperty("fontface") ?  
         parameters["fontface"] : "Arial"; 
      
-    var fontsize = parameters.hasOwnProperty("fontsize") ?  
+    let fontsize = parameters.hasOwnProperty("fontsize") ?  
         parameters["fontsize"] : 28; 
      
-    var borderThickness = parameters.hasOwnProperty("borderThickness") ?  
+    let borderThickness = parameters.hasOwnProperty("borderThickness") ?  
         parameters["borderThickness"] : undefined; //4; 
      
-    var borderColor = parameters.hasOwnProperty("borderColor") ? 
+    let borderColor = parameters.hasOwnProperty("borderColor") ? 
         parameters["borderColor"] : undefined; //{ r:0, g:0, b:0, a:0.0 }; 
      
-    var fillColor = parameters.hasOwnProperty("fillColor") ? 
+    let fillColor = parameters.hasOwnProperty("fillColor") ? 
         parameters["fillColor"] : undefined; 
  
-    var textColor = parameters.hasOwnProperty("textColor") ? 
+    let textColor = parameters.hasOwnProperty("textColor") ? 
         parameters["textColor"] : { r:25, g:25, b:25, a:1.0 }; 
  
-    var radius = parameters.hasOwnProperty("radius") ? 
+    let radius = parameters.hasOwnProperty("radius") ? 
                 parameters["radius"] : undefined; // 6; 
  
-    var vAlign = parameters.hasOwnProperty("vAlign") ? 
+    let vAlign = parameters.hasOwnProperty("vAlign") ? 
                         parameters["vAlign"] : "center"; 
  
-    var hAlign = parameters.hasOwnProperty("hAlign") ? 
+    let hAlign = parameters.hasOwnProperty("hAlign") ? 
                         parameters["hAlign"] : "center"; 
  
-    var canvas = document.createElement('canvas'); 
-    var context = canvas.getContext('2d'); 
+    let canvas = document.createElement('canvas'); 
+    let context = canvas.getContext('2d'); 
      
     // set a large-enough fixed-size canvas  
     canvas.width = 1800; 
@@ -43,8 +43,8 @@ function makeTextSprite( message, x, y, z, parameters )
     context.textAlign = "left"; 
      
     // get size data (height depends only on font size) 
-    var metrics = context.measureText( message ); 
-    var textWidth = metrics.width; 
+    let metrics = context.measureText( message ); 
+    let textWidth = metrics.width; 
      
     /* 
     // need to ensure that our canvas is always large enough 
@@ -70,10 +70,10 @@ function makeTextSprite( message, x, y, z, parameters )
      
     // find the center of the canvas and the half of the font width and height 
     // we do it this way because the sprite's position is the CENTER of the sprite 
-    var cx = canvas.width / 2; 
-    var cy = canvas.height / 2; 
-    var tx = textWidth/ 2.0; 
-    var ty = fontsize / 2.0; 
+    let cx = canvas.width / 2; 
+    let cy = canvas.height / 2; 
+    let tx = textWidth/ 2.0; 
+    let ty = fontsize / 2.0; 
  
     // then adjust for the justification 
     if ( vAlign == "bottom") 
@@ -101,11 +101,11 @@ function makeTextSprite( message, x, y, z, parameters )
     //addSphere(x,y,z); 
     
     // canvas contents will be used for a texture 
-    var texture = new THREE.Texture(canvas) 
+    let texture = new THREE.Texture(canvas) 
     texture.needsUpdate = true; 
  
-    var spriteMaterial = new THREE.SpriteMaterial( { map: texture } ); 
-    var sprite = new THREE.Sprite( spriteMaterial ); 
+    let spriteMaterial = new THREE.SpriteMaterial( { map: texture } ); 
+    let sprite = new THREE.Sprite( spriteMaterial ); 
      
     // we MUST set the scale to 2:1.  The canvas is already at a 2:1 scale, 
     // but the sprite itself is square: 1.0 by 1.0 

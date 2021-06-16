@@ -9,10 +9,10 @@ let frameForceWin = `
     data-resizable="false"
     data-place="center">
 
-        <p class="panel-head">Case/Combo</p>
+        <p class="panel-head">Case/Combination</p>
         <div class="flex-col justify-center padding-all-0" data-role="panel">
             <div class="flex-rowm justify-start">
-                <div class="input-width"> <label> Case/Combo Name </label> </div>
+                <div class="input-width"> <label> Case/Combination Name </label> </div>
                 <div class="input-width">
                     <select 
                     id="case-combo-select"
@@ -33,7 +33,7 @@ let frameForceWin = `
         <div class="flex-col justify-center padding-all-0" data-role="panel">
             <div class="flex-rowm justify-start">
                 <div class="input-width">
-                    <input type="radio" id="axial" name="force" value="axial">
+                    <input type="radio" id="axial" name="force" value="axial" checked="checked">
                     <label for="axial">Axial Force</label>
                 </div>
                 <div class="input-width">
@@ -122,12 +122,15 @@ document.querySelector('#frame-forces').addEventListener("click", function(){
             document.querySelector('input[type="number"]').disabled = true;
         });
         document.querySelector('#ok-fforce-btn').addEventListener("click", function(){
-            let forcDiagOpt = prevFForcedOptions = GetForcesDiagData();
-            console.log(forcDiagOpt)
+            DrawLine.LoadsDisplayed = false;
+            DrawLine.HideLoads();
+            GetForcesDiagData();
             document.querySelector('.main-window').parentElement.parentElement.remove();
         });
         document.querySelector('#app-fforce-btn').addEventListener("click", function(){
-            let forcDiagOpt = prevFForcedOptions =  GetForcesDiagData();
+            DrawLine.LoadsDisplayed = false;
+            DrawLine.HideLoads();
+            GetForcesDiagData();
         });
         document.querySelector('#close-fforce-btn').addEventListener("click", function(){
             document.querySelector('.main-window').parentElement.parentElement.remove();
@@ -145,15 +148,65 @@ function FillFForcesCases() {
             <option value=${key}>${value.Name}</option>
         `);
     });
+    LoadCombo.LoadCombosList.forEach((value,key) => {
+        $('#case-combo-select').append(`
+            <option value=${key}>${value.Name}</option>
+        `);
+    });
+
 }
 
 function GetForcesDiagData() {
     let caseId = $('#case-combo-select')[0].value;
     let force =  document.querySelector('input[name="force"]:checked').value;
-    let scale = (document.querySelector('input[value="user"]').checked)? document.querySelector('input[type="number"]').value: null;
-    let digOption = document.querySelector('input[name="diagram"]:checked').value;
-    return[caseId, force, scale, digOption]
+    //let scale = (document.querySelector('input[value="user"]').checked)? document.querySelector('input[type="number"]').value: null;
+    //let digOption = document.querySelector('input[name="diagram"]:checked').value;
+    let results = Results.ResultsList.filter(res=> res.PatternID == caseId)
+    for(let i = 0; i<Results.ResultsList.length; i++)
+    {
+        Results.ResultsList[i].Hide();
+    }
+    switch(force)
+    {
+        case 'axial':
+            for(let i = 0; i<results.length; i++)
+            {
+                results[i].Draw_N(caseId);
+            }
+            break;
+        case 'moment3':
+            for(let i = 0; i<results.length; i++)
+            {
+                results[i].Draw_Mx(caseId);
+            }
+            break;
+        case 'moment2':
+            for(let i = 0; i<results.length; i++)
+            {
+                results[i].Draw_My(caseId);
+            }
+            break;
+        case 'shear2':
+            for(let i = 0; i<results.length; i++)
+            {
+                results[i].Draw_Vx(caseId);
+            }
+            break;
+        case 'shear3':
+            for(let i = 0; i<results.length; i++)
+            {
+                results[i].Draw_Vy(caseId);
+            }
+            break;
+        case 'torsion':
+            for(let i = 0; i<results.length; i++)
+            {
+                results[i].Draw_Tz(caseId);
+            }
+            break;
+        }
 }
+
 
 function LoadPrevFForcesOptions() {
     if(prevFForcedOptions.length){
