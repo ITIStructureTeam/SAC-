@@ -52,7 +52,7 @@ data-width="250">
 
         <div class="flex-rowm justify-between margin-b-20"> 
             <div>
-                <label>Dimensions</label>
+                <label>Sections</label>
             </div>
             <div class="width-80">
                 <select 
