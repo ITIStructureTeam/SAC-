@@ -736,6 +736,13 @@ document.querySelector('#disp-load-btn').addEventListener("click", function(){
         $('body').append(dispLoadsWindow);
         DispLoadPatts();
         document.querySelector('#ok-disp-load-btn').addEventListener("click", function(){
+
+            // if in deformation mode go out
+            if(DeformedShape.deformationMode){
+                DeformedShape.deformationMode = false;
+                DeformedShape.DeformShapesList.forEach(defshape => defshape.Hide());
+            }
+            
             // go in show load mode
             let patId = GetDispLoadPatternId();
             DrawLine.LoadsDisplayed = true;

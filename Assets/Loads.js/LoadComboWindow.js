@@ -7,6 +7,7 @@ data-role="window"
 data-title="Define Load Combinations"
 data-btn-min="false"
 data-btn-max="false"
+data-btn-close="false"
 data-resizable="false"
 data-place="center"
 data-width="350">
@@ -188,6 +189,16 @@ document.querySelector('#combo-btn').addEventListener('click',function(){
         $('body').append(comboMainWindow);
         LoadDefCombos();
 
+        //#region  check if locked
+        if (locked) {
+            console.log('load combo main')
+            let bts = document.querySelectorAll('#combo-main-window button');
+            bts.forEach(bt => bt.disabled = true);
+            $('#mod-combo-btn')[0].disabled = false;
+            $('#close-combo-main')[0].disabled = false;
+        }
+        //#endregion
+
         document.querySelector('#mod-combo-btn').addEventListener("click", function(){
 
             let current = document.querySelector('#combo-main-window .current-select');
@@ -201,6 +212,16 @@ document.querySelector('#combo-btn').addEventListener('click',function(){
                 LoadDefCases();
                 document.querySelector(`option[value=${comboId}]`).remove();
                 LoadComboData(comboId);
+
+                //#region check if locked
+                if (locked) {
+                    let bts = document.querySelectorAll('#combo-sec-window button');
+                    let inputs = document.querySelectorAll('#combo-sec-window input');
+                    bts.forEach(bt => bt.disabled = true);
+                    inputs.forEach(bt => bt.disabled = true);
+                    $('#load-case')[0].disabled = true;
+                }
+                //#endregion
 
                 document.querySelector('#add-case').addEventListener("click", function(){
                     
@@ -280,7 +301,7 @@ document.querySelector('#combo-btn').addEventListener('click',function(){
         }); 
 
         document.querySelector('#copy-combo-btn').addEventListener("click", function(){
-            if(document.querySelector('#combo-main-window .current-select')){
+            if(document.querySelector('#combo-main-window .current-select') && !$('.secondary-window')[0]){
                 let comboId = document.querySelector('#combo-main-window .current-select').getAttribute('value');
                 let combo = LoadCombo.LoadCombosList.get(String(comboId));
                 combo.Clone();
@@ -289,13 +310,14 @@ document.querySelector('#combo-btn').addEventListener('click',function(){
         });
 
         document.querySelector('#delete-combo-btn').addEventListener("click", function(){
-            if(document.querySelector('#combo-main-window .current-select')){
+            if(document.querySelector('#combo-main-window .current-select') && !$('.secondary-window')[0]){
                 let comboId = document.querySelector('#combo-main-window .current-select').getAttribute('value')
                 DeleteCombo(comboId)
             }
         });
         
         document.querySelector('#close-combo-main').addEventListener("click", function(){
+            if(!$('.secondary-window')[0])
             document.querySelector('.main-window').parentElement.parentElement.remove();
         })
     }

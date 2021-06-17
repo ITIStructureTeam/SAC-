@@ -4,7 +4,8 @@ var
  mouse,
  stats,
  renderer,
- ViewPosition;  
+ ViewPosition,
+ Project_Name;  
 
  var HiddenGrids = [];
  var HiddenSnapping = []; 
@@ -1534,8 +1535,19 @@ document.getElementById("Extrude").onclick=function(){Extrude()};
 function Extrude()
 {   
     state = false;
-    DrawLine.LoadsDisplayed = false;
-    DrawLine.HideLoads();
+
+    // if loads displayed hide
+    if(DrawLine.LoadsDisplayed){
+        DrawLine.LoadsDisplayed = false;
+        DrawLine.HideLoads();
+    }
+
+    // if deformations displayed hide
+    if (DeformedShape.deformationMode) {
+        DeformedShape.deformationMode = false;
+        DeformedShape.DeformShapesList.forEach(defshape => defshape.Hide());
+    }
+
     Results.ResultsList.forEach(res => res.Hide());
     DrawLine.ExtrudeView();
     document.getElementById("Labels").checked = false;                     
@@ -1575,13 +1587,6 @@ function Labels()
     } 
 }
 
-/*document.getElementById("Draw").onclick=function(){DrawingMode()};
-function DrawingMode()
-{
-    DrawingModeActive = true;
-    SelectionModeActive = false;
-    Unselect();
-}*/
 
 function Unselect()
 {

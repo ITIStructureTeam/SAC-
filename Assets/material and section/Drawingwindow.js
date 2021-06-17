@@ -35,49 +35,49 @@ let drawWin = `
 </div>
 `
 
-document.querySelector('#Draw').addEventListener("click",function(){
+document.querySelector('#Draw').addEventListener("click", function () {
 
-    if(!document.querySelector('.main-window')) {
-        $('body').append(drawWin);      
+    if (!document.querySelector('.main-window')) {
+        $('body').append(drawWin);
     }
-    document.addEventListener('keydown', function(event){
-        if(event.key === "Escape"){
-            if(document.querySelector('#DrawingWindow')){
+    document.addEventListener('keydown', function (event) {
+        if (event.key === "Escape") {
+            if (document.querySelector('#DrawingWindow')) {
 
                 ExitDrawingMode();
                 document.querySelector('.main-window').parentElement.parentElement.remove();
             }
         }
-    }); 
+    });
 })
 
 
-function InitFramePropWindow(){
+function InitFramePropWindow() {
     FillSectionList();
     DrawingModeActive = true;
     SelectionModeActive = false;
     Unselect();
-    document.querySelector('#frameprop-sec-list').addEventListener("change",GetSelectedSection);
+    document.querySelector('#frameprop-sec-list').addEventListener("change", GetSelectedSection);
 }
 
-function FillSectionList(){
+function FillSectionList() {
     let length = $('#frameprop-sec-list').children().length;
-    for (let i = length-1; i >= 0 ; i--) {
-        $('#frameprop-sec-list').children()[i].remove();      
+    for (let i = length - 1; i >= 0; i--) {
+        $('#frameprop-sec-list').children()[i].remove();
     }
-    Section.SectionList.forEach((value,key) => {
-        $("#frameprop-sec-list").append(`<option value=${key} >${value.Name}</option>`); 
-    });   
-    
+    Section.SectionList.forEach((value, key) => {
+        $("#frameprop-sec-list").append(`<option value=${key} >${value.Name}</option>`);
+    });
+
 }
 
 //this function is also called in main.js when line is drawing
-function GetSelectedSection(){
+function GetSelectedSection() {
     let selectedId = document.querySelector('#frameprop-sec-list').value;
-    return Section.SectionList.get(selectedId);  
+    return Section.SectionList.get(selectedId);
 }
 
-function ExitDrawingMode(){
+function ExitDrawingMode() {
     DrawingModeActive = false;
     SelectionModeActive = true;
 }

@@ -248,15 +248,12 @@ document.addEventListener( 'mousedown', function ( event ) {
     if(event.button === 2)
     {
         document.querySelector("body").style = "cursor:grabbing"
-    }
-});
-
+    }});
 document.addEventListener( 'mouseup', function ( event ) {
     if(event.button === 2)
     {
         document.querySelector("body").style = "cursor:default"
-    }
-});
+    }});
 
 
 
@@ -271,37 +268,37 @@ const selection = new THREE.SelectionBox( camera, scene );
 const helper = new THREE.SelectionHelper( selection, renderer, 'selectBox' );
 
 renderer.domElement.addEventListener( 'mousedown', function ( event ) {
-    if(event.button === 1 || event.button === 2)
-    {
-        document.querySelectorAll(".selectBox").forEach(x => x.style.visibility = "hidden");
-    }
-    else{
-        document.querySelectorAll(".selectBox").forEach(x => x.style.visibility = "visible");
-    }
+        if(event.button === 1 || event.button === 2)
+        {
+            document.querySelectorAll(".selectBox").forEach(x => x.style.visibility = "hidden");
+        }
+        else{
+            document.querySelectorAll(".selectBox").forEach(x => x.style.visibility = "visible");
+        }
 });
         
 renderer.domElement.addEventListener( 'mousedown', function ( event ) {
 
-    if(event.button === 0 && SelectionModeActive == true)
-    {  
-    selection.startPoint.set(
-        ( event.clientX / window.innerWidth ) * 2 - 1,
-        - ( event.clientY / window.innerHeight ) * 2 + 1,
-        0.5 );
-    }
-});
+            if(event.button === 0 && SelectionModeActive == true)
+            {  
+            selection.startPoint.set(
+                ( event.clientX / window.innerWidth ) * 2 - 1,
+                - ( event.clientY / window.innerHeight ) * 2 + 1,
+                0.5 );
+            }
+} );
 
 renderer.domElement.addEventListener( 'mousemove', function ( event ) {
-    if(event.button === 0 && SelectionModeActive == true)
-    {
-    if (helper.isDown) {
-        selection.endPoint.set(
-            ( event.clientX / window.innerWidth ) * 2 - 1,
-            - ( event.clientY / window.innerHeight ) * 2 + 1,
-            0.5 );
-        }
-    }
-});
+            if(event.button === 0 && SelectionModeActive == true)
+            {
+            if (helper.isDown) {
+                selection.endPoint.set(
+                    ( event.clientX / window.innerWidth ) * 2 - 1,
+                    - ( event.clientY / window.innerHeight ) * 2 + 1,
+                    0.5 );
+                }
+            }
+   } );
 
 renderer.domElement.addEventListener( 'mouseup', function ( event ) {
     if(event.button === 0 && SelectionModeActive == true)
@@ -341,7 +338,7 @@ renderer.domElement.addEventListener( 'mouseup', function ( event ) {
         }
     }
     }
-});
+} );
 
 
 function ClickToSelectElement(event){
@@ -461,6 +458,10 @@ function update(renderer, scene, camera, controls)
         renderer.domElement.removeEventListener('click',ClickToSelectElement,false);
     }
 
+    if(DeformedShape.deformationMode){
+        HideDefLineCircles();
+        ShowDefLineCircles();
+    }
 
     requestAnimationFrame(function(){
         update(renderer, scene, camera, controls);
@@ -470,91 +471,6 @@ function update(renderer, scene, camera, controls)
 
 
 
-// for grids
-
-
-/* document.querySelector('#grids-btn').addEventListener("click",function(){
-    if(!document.querySelector('.main-window')){
-        $('body').append(GetGridsWin());
-        LoadGridsData('grids-x',listx,xGridsNames);
-        LoadGridsData('grids-y',listy,yGridsNames);
-        LoadGridsData('grids-z',listz,zGridsNames);
-        document.querySelector(`#grids-x-part .info`).addEventListener("click",function(){AddGrid('grids-x',listx, xGridsNames)});
-        document.querySelector(`#grids-y-part .info`).addEventListener("click",function(){AddGrid('grids-y',listy,yGridsNames)});
-        document.querySelector(`#grids-z-part .info`).addEventListener("click",function(){AddGrid('grids-z',listz,zGridsNames)});
-
-        document.querySelector('#grids-window').addEventListener("click",function(){
-
-            if(GetActiveGrid('grids-x')){
-                let activeGrid = GetActiveGrid('grids-x');
-                document.querySelector(`#grids-x-part .default`).addEventListener("click", function(){
-                    if(activeGrid) activeGrid.remove();
-                });
-            }
-            if(GetActiveGrid('grids-y')){
-                let activeGrid = GetActiveGrid('grids-y');
-                document.querySelector(`#grids-y-part .default`).addEventListener("click", function(){
-                    if(activeGrid) activeGrid.remove();
-                });
-            }
-            if(GetActiveGrid('grids-z')){
-                let activeGrid = GetActiveGrid('grids-z');
-                document.querySelector(`#grids-z-part .default`).addEventListener("click", function(){
-                    if(activeGrid) activeGrid.remove();
-                });
-            }
-        })
-        
-        
-        document.querySelector('#grids-ok').addEventListener("click", function(){
-            ReadGrids('grids-x',listx, xGridsNames);
-            ReadGrids('grids-y',listy,yGridsNames);
-            ReadGrids('grids-z',listz,zGridsNames);
-            if(!listx.length || !listy.length || !listz.length){
-                Metro.dialog.create({
-                    title: "Invalid Grids Data",
-                    content: "<div>You must input at least one spacing as positive number in each direction</div>",
-                    closeButton: true
-                });
-            }else{
-                ThreeD();
-                if(group != null)
-                {
-                    scene.remove(group);
-                    gridLines.forEach(element => {
-                        element.material.dispose()
-                        element.geometry.dispose()
-                        scene.remove(element);
-                    });
-                    gridLines = [];
-                    for (var i = group.children.length - 1; i >= 0; i--) {
-                        group.children[i].material.dispose();
-                        group.children[i].geometry.dispose();
-                        group.remove(group.children[i]);
-                    }
-                    removeSelectionGrids();
-                }
-                
-                GridSelections();
-                group = GridPoints(listx,listy,listz,listx.length,listy.length,listz.length);
-                gridLines = GridLine(listx,listy,listz,listx.length,listy.length,listz.length);
-                scene.add(group);
-                gridLines.forEach(element => {
-                    scene.add(element);
-                });
-                
-                document.querySelector('#grids-window').parentElement.parentElement.remove();
-                gridsUpdated=true;
-            }
-        });
-
-        document.querySelector('#grids-close').addEventListener("click",function(){
-            document.querySelector('#grids-window').parentElement.parentElement.remove();
-        });
-        
-        
-    }
-}); */
 
 if(gridLines == null){
     listx = [6,6,6]
@@ -570,6 +486,11 @@ if(gridLines == null){
     });
 }
 
+
+ 
+
+
+ 
 
 document.getElementById("XYSection").onclick=function(){XYSection()};
 function XYSection()
@@ -623,10 +544,14 @@ function XYView(XYindex)
     }
     for (let j = 0; j < Results.ResultsList.length; j++)
     {
-        if(Results.ResultsList[i].Draw != null)
+        if(Results.ResultsList[j].Draw != null)
         {
-            Results.ResultsList[i].InView();
+            Results.ResultsList[j].InView();
         }
+    }
+
+    if(DeformedShape.deformationMode){
+        DeformedShape.DeformShapesList.forEach(defsape => defsape.InView());
     }
 
     camera.position.x = distanceX/2;
@@ -705,6 +630,10 @@ function XZView(XZindex){
         {
             Results.ResultsList[j].InView();
         }
+    }
+
+    if(DeformedShape.deformationMode){
+        DeformedShape.DeformShapesList.forEach(defsape => defsape.InView());
     }
     
     camera.up.set( 0, 0.5, 0.5 );
@@ -785,6 +714,9 @@ function YZView(YZindex){
         {
             Results.ResultsList[j].InView();
         }
+    }
+    if(DeformedShape.deformationMode){
+        DeformedShape.DeformShapesList.forEach(defsape => defsape.InView());
     }
 
     camera.position.x = Math.max(distanceY, distanceZ)*1.7 + ViewPosition;
@@ -939,7 +871,7 @@ function removeArrows()
 }
 
 
-
+DisablePostProcessBts();
 
 
 
@@ -955,27 +887,35 @@ function removeArrows()
 
 
 
-
+Project_Name = "New Example file"
 
 
 class RootData
 {
     constructor()
     {
+        this.ProjectName = Project_Name;
         this.Materials = [...Material.MaterialsList.values()];
         this.Sections = [...Section.SectionList.values()];
         this.Patterns = Array.from(LoadPattern.LoadPatternsList, ([PatternID, Details]) => ({ PatternID, Details }));
         this.Combinations = Array.from(LoadCombo.LoadCombosList, ([CombinationID, Details]) => ({ CombinationID, Details }));
         this.Points = [...Point.PointsArray];
         this.Frames = DrawLine.GetDrawnFrames();
-        this.Grids = {
-            Listx: listx,
-            Listy : listy,
-            Listz: listz
-        }
+        this.GridData = [listx, listy, listz];
     }
 }
 
+function DisablePostProcessBts() {
+    $('#deformed-btn')[0].disabled = true;
+    $('#reactions')[0].disabled = true;
+    $('#frame-forces')[0].disabled = true;
+}
+
+function EnablePostProcessBts() {
+    $('#deformed-btn')[0].disabled = false;
+    $('#reactions')[0].disabled = false;
+    $('#frame-forces')[0].disabled = false;
+}
 
 function DisaplePreProcessorButtons()
 {
@@ -995,10 +935,10 @@ function DisaplePreProcessorButtons()
     document.getElementById("Draw").disabled = true;
     document.getElementById("AddPointsOnFrame").disabled = true;
     document.getElementById("grids-btn").disabled = true;
-    document.getElementById("materialsBtn").disabled = true;
-    document.getElementById("DefineSections").disabled = true;
-    document.getElementById("pattern-btn").disabled = true;
-    document.getElementById("combo-btn").disabled = true;
+    //document.getElementById("materialsBtn").disabled = true;
+    //document.getElementById("DefineSections").disabled = true;
+    //document.getElementById("pattern-btn").disabled = true;
+    //document.getElementById("combo-btn").disabled = true;
     document.getElementById("Run").disabled = true;
     document.getElementById("Unlock").disabled = false;
 }
@@ -1029,53 +969,166 @@ function EnaplePreProcessorButtons()
 }
 
 document.getElementById("Unlock").onclick=function(){Unlock()};
-function Unlock()
-{ 
+function Unlock(){
+
+    locked = false
+    DisablePostProcessBts();
     EnaplePreProcessorButtons();
+    document.getElementById("StatusBar").innerHTML = ""; 
+
+    // reset Results class
     Results.ResultsList.forEach(res => res.Hide());
     Results.ResultsList = [];
+
+    // reset JointReactions class
+    JointReactions.ReactionsList.forEach(reaction => reaction.Hide());
+    JointReactions.ReactionsList = [];
+
+    //reset DeformedShape class
+    if(DeformedShape.deformationMode){
+        DeformedShape.deformationMode = false;
+        DeformedShape.DeformShapesList.forEach(defshape => defshape.Hide());
+    }
+    DeformedShape.DeformShapesList = [];
 }
 
 
 
+function Run()
+    {
+        document.getElementById("StatusBar").innerHTML = "Running Model"; 
+        let inPut = JSON.stringify(Project_Name);
+        console.log(inPut)
+        $.ajax({
+            type: "POST",
+            url: "/api/RunAnalysis/LoadFramesData",                 
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            data: inPut,
+            cache: false,
+            success: function (result) {
+                locked = true;
+                EnablePostProcessBts();
+                console.log(result);
+                let InputResults = [...result.strainingActions];
+                for(let i = 0 ; i < InputResults.length; i++)
+                {
+                    let patternID  = InputResults[i].patternID ;
+                    let frameID    = InputResults[i].frameID   ;
+                    let startPoint = InputResults[i].startPoint;
+                    let endPoint   = InputResults[i].endPoint  ;
+                    let stations   = InputResults[i].stations  ;
+                    let momentX    = InputResults[i].momentX   ;
+                    let momentY    = InputResults[i].momentY   ;
+                    let torsion    = InputResults[i].torsion   ;
+                    let normal     = InputResults[i].normal    ;
+                    let shearX     = InputResults[i].shearX    ;
+                    let shearY     = InputResults[i].shearY    ;
+                    let rotation   = InputResults[i].rotation  ;
+                    new Results(patternID, frameID, startPoint,endPoint,stations,momentX,momentY,torsion,normal,shearX,shearY,rotation) 
+                }
 
-    
+                let InputRactions = [...result.reactions];
+                for(let i = 0 ; i < InputRactions.length; i++)
+                {
+                    let jointID   = InputRactions[i].InputRactions;
+                    let patternID = InputRactions[i].patternID;
+                    let position  = InputRactions[i].position;
+                    let rx        = InputRactions[i].rx;
+                    let ry        = InputRactions[i].ry;
+                    let rz        = InputRactions[i].rz;
+                    let mx        = InputRactions[i].mx;
+                    let my        = InputRactions[i].my;
+                    let mz        = InputRactions[i].mz;
+                    new JointReactions(patternID, jointID, position, rx, ry, rz, mx, my, mz)
+                } 
+                
+                DeformedShape.scaleMap = GetDefScaleMap(result.deformations);
+                DeformedShape.displayedLoadCase = DeformedShape.scaleMap.keys().next().value;
+                for (const framedeform of result.deformations) {
+                    new DeformedShape(framedeform.frameID, framedeform.deformationDetails);
+                }
 
-$("#Run").click(function(){
-
-    DisaplePreProcessorButtons()
-    let OutPut = JSON.stringify(new RootData());
-    console.log(OutPut);
-    $.ajax({
-        type: "POST",
-        url: "/api/RunAnalysis/LoadFramesData",                 
-        contentType: "application/json; charset=utf-8",
-        dataType: "json",
-        data: OutPut,
-        cache: false,
-        success: function (result) {
-            console.log(result);
-            let InputResults = [...result.strainingActions];
-            for(let i = 0 ; i < InputResults.length; i++)
-            {
-                let patternID  = InputResults[i].patternID ;
-                let frameID    = InputResults[i].frameID   ;
-                let startPoint = InputResults[i].startPoint;
-                let endPoint   = InputResults[i].endPoint  ;
-                let stations   = InputResults[i].stations  ;
-                let momentX    = InputResults[i].momentX   ;
-                let momentY    = InputResults[i].momentY   ;
-                let torsion    = InputResults[i].torsion   ;
-                let normal     = InputResults[i].normal    ;
-                let shearX     = InputResults[i].shearX    ;
-                let shearY     = InputResults[i].shearY    ;
-                let rotation   = InputResults[i].rotation  ;
-                new Results(patternID, frameID, startPoint,endPoint,stations,momentX,momentY,torsion,normal,shearX,shearY,rotation) 
+                document.getElementById("StatusBar").innerHTML = "Run Complete"; 
+            },
+            error: function (ex) {
+                console.log(ex.responseText);
+                document.getElementById("StatusBar").innerHTML = "Run Failed"; 
             }
-            console.log(Results.ResultsList)
-        },
-        error: function (ex) {
-            console.log(ex.responseText);
-        }
-    });
+        });
+}
+
+function SaveModelforRun(func)
+    {
+        document.getElementById("StatusBar").innerHTML = "Saving ..."; 
+        let OutPut = JSON.stringify(new RootData());
+        console.log(OutPut);
+        $.ajax({
+            type: "POST",
+            url: "/api/RunAnalysis/SaveModel",                 
+            contentType: "application/json; charset=utf-8",
+            //dataType: "json",
+            data: OutPut,
+            cache: false,
+            success: function (result) {
+                if(func != null)
+                {
+                    func();
+                }
+                console.log("Data saved");
+                document.getElementById("StatusBar").innerHTML = "Data Saved"; 
+            },
+            error: function (ex) {
+                console.log(ex.responseText);
+                document.getElementById("StatusBar").innerHTML = "Could not save model"; 
+            }
+        });
+}
+
+document.querySelector("#SideSaveButton").addEventListener("click", SaveModel);
+function SaveModel()
+    {
+        document.getElementById("StatusBar").innerHTML = "Saving ..."; 
+        let OutPut = JSON.stringify(new RootData());
+        console.log(OutPut);
+        $.ajax({
+            type: "POST",
+            url: "/api/RunAnalysis/SaveModel",                 
+            contentType: "application/json; charset=utf-8",
+            //dataType: "json",
+            data: OutPut,
+            cache: false,
+            success: function (result) {
+                document.getElementById("StatusBar").innerHTML = "Data Saved"; 
+                console.log("Data saved");
+            },
+            error: function (ex) {
+                console.log(ex.responseText);
+                document.getElementById("StatusBar").innerHTML = "Could not save model"; 
+            }
+        });
+}
+
+function CheckModelName() 
+    {
+        $.ajax({
+            type: "GET",
+            url: "/api/RunAnalysis/CheckModelName",                 
+            //contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            data: OutPut,
+            cache: false,
+            success: function (result) {
+                console.log("Data saved");
+            },
+            error: function (ex) {
+                console.log(ex.responseText);
+            }
+        });
+}
+
+$("#Run").click(function()
+    {
+        DisaplePreProcessorButtons();
+        SaveModelforRun(Run);
 });
