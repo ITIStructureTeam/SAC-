@@ -1,6 +1,7 @@
 class Results
 {
     static ResultsList = [];
+    static Pattern;
     constructor(pattern, frameLabel, startPoint, endPoint, stations, Mx, My, Tz, N, Vx, Vy, rz)
     {
         this.PatternID = pattern;
@@ -36,7 +37,7 @@ class Results
             MaxMxArray.push(MaxLocalMx);
         }
         let MaxMx = Math.max(...MaxMxArray)
-        if(MaxMx == 0){ MaxMx = 1}
+        if(Math.round(MaxMx) == 0){ MaxMx = 1}
 
         let results =    this.MomentX;
         let stations =   this.Stations;
@@ -47,6 +48,7 @@ class Results
         let result = ResultsDiagram(results , stations, startPoint, endPoint, 2, rz, scale);
     
         this.Draw = result;
+        Results.Pattern = pattern
         this.InView();
     }
 
@@ -66,7 +68,7 @@ class Results
             MaxMyArray.push(MaxLocalMy);
         }
         let MaxMy = Math.max(...MaxMyArray)
-        if(MaxMy == 0){ MaxMy = 1}
+        if(Math.round(MaxMy == 0)){ MaxMy = 1}
 
         let results =    this.MomentY;
         let stations =   this.Stations;
@@ -77,6 +79,7 @@ class Results
         let result = ResultsDiagram(results , stations, startPoint, endPoint, 3, rz, scale);
         
         this.Draw = result;
+        Results.Pattern = pattern
         this.InView();
     }
 
@@ -96,7 +99,7 @@ class Results
             MaxMTArray.push(MaxLocalMT);
         }
         let MaxMT = Math.max(...MaxMTArray)
-        if(MaxMT == 0){ MaxMT = 1}
+        if(Math.round(MaxMT) == 0){ MaxMT = 1}
     
         let results =    this.Torsion;
         let stations =   this.Stations;
@@ -107,6 +110,7 @@ class Results
         let result = ResultsDiagram(results , stations, startPoint, endPoint, 2, rz, scale);
         
         this.Draw = result;
+        Results.Pattern = pattern
         this.InView();
     }
 
@@ -126,7 +130,7 @@ class Results
             MaxNArray.push(MaxLocalN);
         }
         let MaxN = Math.max(...MaxNArray)
-        if(MaxN == 0){ MaxN = 1}
+        if(Math.round(MaxN) == 0){ MaxN = 1}
 
         let results =    this.Normal;
         let stations =   this.Stations;
@@ -137,6 +141,7 @@ class Results
         let result = ResultsDiagram(results , stations, startPoint, endPoint, 2, rz, scale);
         
         this.Draw = result;
+        Results.Pattern = pattern
         this.InView();
     }
 
@@ -156,7 +161,7 @@ class Results
             MaxVxArray.push(MaxLocalVx);
         }
         let MaxVx = Math.max(...MaxVxArray)
-        if(MaxVx == 0){ MaxVx = 1}
+        if(Math.round(MaxVx) == 0){ MaxVx = 1}
 
         let results =     this.ShearX;
         let stations =    this.Stations;
@@ -167,6 +172,7 @@ class Results
         let result = ResultsDiagram(results , stations, startPoint, endPoint, 2, rz, scale);
         
         this.Draw = result;
+        Results.Pattern = pattern
         this.InView();
     }
 
@@ -186,7 +192,7 @@ class Results
             MaxVyArray.push(MaxLocalVy);
         }
         let MaxVy = Math.max(...MaxVyArray)
-        if(MaxVy == 0){ MaxVy = 1}
+        if(Math.round(MaxVy) == 0){ MaxVy = 1}
         
         let results =    this.ShearY;
         let stations =   this.Stations;
@@ -197,6 +203,7 @@ class Results
         let result = ResultsDiagram(results , stations, startPoint, endPoint, 3, rz, scale);
 
         this.Draw = result;
+        Results.Pattern = pattern
         this.InView();
     }
 
@@ -216,6 +223,12 @@ class Results
 
     InView()
     {
+        if(this.PatternID == Results.Pattern){
+            this.Show();
+        }
+        else{
+            this.Hide();
+        }
         if(view == "XY")
         {
             if(this.StartPoint[2] != ViewPosition || this.EndPoint[2] != ViewPosition)
@@ -237,11 +250,7 @@ class Results
                 this.Hide();
             }
         }
-        else{
-            this.Show();
-        }
     }
-
 }
 
 
@@ -368,13 +377,13 @@ function ResultsDiagram(results , stations, startPoint, endPoint, direction, rz,
             if(direction ==1 || direction ==2)
             {
                 const textPosition = [line[1][3]+ x, line[1][4]+ y, line[1][5]+ z+ position];
-                const txt = makeResultsTextSprite( results[i].toFixed(3), textPosition[0], textPosition[1], textPosition[2],{fontsize: 110, fontface: "Georgia", textColor:color,
+                const txt = makeResultsTextSprite( results[i].toFixed(2), textPosition[0], textPosition[1], textPosition[2],{fontsize: 110, fontface: "Georgia", textColor:color,
                     vAlign:"center", hAlign:"center"});
                     load.add(txt);
             }
             else{
                 const textPosition = [line[1][3]+ x + position, line[1][4]+ y + position, line[1][5]+ z];
-                const txt = makeResultsTextSprite( results[i].toFixed(3), textPosition[0], textPosition[1], textPosition[2],{fontsize: 110, fontface: "Georgia", textColor:color,
+                const txt = makeResultsTextSprite( results[i].toFixed(2), textPosition[0], textPosition[1], textPosition[2],{fontsize: 110, fontface: "Georgia", textColor:color,
                     vAlign:"center", hAlign:"center"});
                     load.add(txt);
             }

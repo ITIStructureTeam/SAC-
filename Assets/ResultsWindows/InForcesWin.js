@@ -162,9 +162,15 @@ function GetForcesDiagData() {
     //let scale = (document.querySelector('input[value="user"]').checked)? document.querySelector('input[type="number"]').value: null;
     //let digOption = document.querySelector('input[name="diagram"]:checked').value;
     let results = Results.ResultsList.filter(res=> res.PatternID == caseId)
+    
     for(let i = 0; i<Results.ResultsList.length; i++)
     {
         Results.ResultsList[i].Hide();
+    }
+
+    for(let i = 0; i< JointReactions.ReactionsList.length; i++)
+    {
+        JointReactions.ReactionsList[i].Hide();
     }
     switch(force)
     {

@@ -678,9 +678,16 @@ function XYView(XYindex)
     }
     for (let j = 0; j < Results.ResultsList.length; j++)
     {
-        if(Results.ResultsList[i].Draw != null)
+        if(Results.ResultsList[j].Draw != null)
         {
-            Results.ResultsList[i].InView();
+            Results.ResultsList[j].InView();
+        }
+    }
+    for (let j = 0; j < JointReactions.ReactionsList.length; j++)
+    {
+        if(JointReactions.ReactionsList[j].Draw != null)
+        {
+            JointReactions.ReactionsList[j].InView();
         }
     }
 
@@ -761,6 +768,13 @@ function XZView(XZindex){
             Results.ResultsList[j].InView();
         }
     }
+    for (let j = 0; j < JointReactions.ReactionsList.length; j++)
+    {
+        if(JointReactions.ReactionsList[j].Draw != null)
+        {
+            JointReactions.ReactionsList[j].InView();
+        }
+    }
     
     camera.up.set( 0, 0.5, 0.5 );
     camera.position.x = distanceX/2;
@@ -839,6 +853,13 @@ function YZView(YZindex){
         if(Results.ResultsList[j].Draw != null)
         {
             Results.ResultsList[j].InView();
+        }
+    }
+    for (let j = 0; j < JointReactions.ReactionsList.length; j++)
+    {
+        if(JointReactions.ReactionsList[j].Draw != null)
+        {
+            JointReactions.ReactionsList[j].InView();
         }
     }
 
@@ -980,6 +1001,13 @@ function resetScene()
             Results.ResultsList[i].InView();
         }
     }
+    for (let i = 0; i < JointReactions.ReactionsList.length; i++)
+    {
+        if(JointReactions.ReactionsList[i].Draw != null)
+        {
+            JointReactions.ReactionsList[i].InView();
+        }
+    }
 
 }
 
@@ -1010,19 +1038,21 @@ function removeArrows()
 
 
 
-
+Project_Name = "New Example file"
 
 
 class RootData
 {
     constructor()
     {
+        this.ProjectName = Project_Name;
         this.Materials = [...Material.MaterialsList.values()];
         this.Sections = [...Section.SectionList.values()];
         this.Patterns = Array.from(LoadPattern.LoadPatternsList, ([PatternID, Details]) => ({ PatternID, Details }));
         this.Combinations = Array.from(LoadCombo.LoadCombosList, ([CombinationID, Details]) => ({ CombinationID, Details }));
         this.Points = [...Point.PointsArray];
         this.Frames = DrawLine.GetDrawnFrames();
+        this.GridData = [listx, listy, listz];
     }
 }
 
@@ -1082,27 +1112,28 @@ document.getElementById("Unlock").onclick=function(){Unlock()};
 function Unlock()
 { 
     EnaplePreProcessorButtons();
+    document.getElementById("StatusBar").innerHTML = ""; 
     Results.ResultsList.forEach(res => res.Hide());
     Results.ResultsList = [];
+    for(let i = 0; i< JointReactions.ReactionsList.length; i++)
+    {
+        JointReactions.ReactionsList[i].Hide();
+    }
+    JointReactions.ReactionsList = [];
 }
 
 
-
-
-    
-
-    $("#Run").click(function()
+    function Run()
     {
-        DisaplePreProcessorButtons()
-
-        let OutPut = JSON.stringify(new RootData());
-        console.log(OutPut);
+        document.getElementById("StatusBar").innerHTML = "Running Model"; 
+        let inPut = JSON.stringify(Project_Name);
+        console.log(inPut)
         $.ajax({
             type: "POST",
             url: "/api/RunAnalysis/LoadFramesData",                 
             contentType: "application/json; charset=utf-8",
             dataType: "json",
-            data: OutPut,
+            data: inPut,
             cache: false,
             success: function (result) {
                 console.log(result);
@@ -1124,12 +1155,126 @@ function Unlock()
                     new Results(patternID, frameID, startPoint,endPoint,stations,momentX,momentY,torsion,normal,shearX,shearY,rotation) 
                 }
 
-                console.log(Results.ResultsList)
+                let InputRactions = [...result.reactions];
+                for(let i = 0 ; i < InputRactions.length; i++)
+                {
+                    let jointID   = InputRactions[i].jointID;
+                    let patternID = InputRactions[i].patternID;
+                    let position  = InputRactions[i].position;
+                    let rx        = InputRactions[i].rx;
+                    let ry        = InputRactions[i].ry;
+                    let rz        = InputRactions[i].rz;
+                    let mx        = InputRactions[i].mx;
+                    let my        = InputRactions[i].my;
+                    let mz        = InputRactions[i].mz;
+                    new JointReactions(patternID, jointID, position, rx, ry, rz, mx, my, mz)
+                }   
+                console.log(Results.ResultsList);
+                console.log(JointReactions.ReactionsList);
+                document.getElementById("StatusBar").innerHTML = "Run Complete"; 
+            },
+            error: function (ex) {
+                console.log(ex.responseText);
+                document.getElementById("StatusBar").innerHTML = "Run Failed"; 
+            }
+        });
+    }
+    
+
+
+    function SaveModelforRun(func)
+    {
+        document.getElementById("StatusBar").innerHTML = "Saving ..."; 
+        let OutPut = JSON.stringify(new RootData());
+        console.log(OutPut);
+        $.ajax({
+            type: "POST",
+            url: "/api/RunAnalysis/SaveModel",                 
+            contentType: "application/json; charset=utf-8",
+            //dataType: "json",
+            data: OutPut,
+            cache: false,
+            success: function (result) {
+                if(func != null)
+                {
+                    func();
+                }
+                console.log("Data saved");
+                document.getElementById("StatusBar").innerHTML = "Data Saved"; 
+            },
+            error: function (ex) {
+                console.log(ex.responseText);
+                document.getElementById("StatusBar").innerHTML = "Could not save model"; 
+            }
+        });
+    }
+
+
+    document.querySelector("#SideSaveButton").addEventListener("click", SaveModel);
+    function SaveModel()
+    {
+        document.getElementById("StatusBar").innerHTML = "Saving ..."; 
+        let OutPut = JSON.stringify(new RootData());
+        console.log(OutPut);
+        $.ajax({
+            type: "POST",
+            url: "/api/RunAnalysis/SaveModel",                 
+            contentType: "application/json; charset=utf-8",
+            //dataType: "json",
+            data: OutPut,
+            cache: false,
+            success: function (result) {
+                document.getElementById("StatusBar").innerHTML = "Data Saved"; 
+                console.log("Data saved");
+            },
+            error: function (ex) {
+                console.log(ex.responseText);
+                document.getElementById("StatusBar").innerHTML = "Could not save model"; 
+            }
+        });
+    }
+
+    function CheckModelName() 
+    {
+        $.ajax({
+            type: "GET",
+            url: "/api/RunAnalysis/CheckModelName",                 
+            //contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            data: OutPut,
+            cache: false,
+            success: function (result) {
+                console.log("Data saved");
             },
             error: function (ex) {
                 console.log(ex.responseText);
             }
         });
+    }
+
+    $("#Run").click(function()
+    {
+        DisaplePreProcessorButtons();
+        SaveModelforRun(Run);
     });
 
 
+    // let p1 = [0,0,0]
+    // let p2 = [6,4,3]
+    // let p3 = [6,0,0]
+    // let p4 = [0,4,0]
+    // let p5 = [0,0,3]
+    // let p6 = [0,4,3]
+    
+    // let nnns = ResultMomentArrow(-1, p1, 1)
+    // scene.add(nnns)
+    // let esg = ResultMomentArrow(1, p2, 1)
+    // scene.add(esg)
+    // let ges = ResultMomentArrow(-1, p3, 2)
+    // scene.add(ges)
+    // let nnnwwws = ResultMomentArrow(1, p4, 2)
+    // scene.add(nnnwwws)
+    // let nnnws = ResultMomentArrow(-1, p5, 3)
+    // scene.add(nnnws)
+    // let wwws = ResultMomentArrow(1, p6, 3)
+    // scene.add(wwws)
