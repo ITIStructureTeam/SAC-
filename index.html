@@ -4,7 +4,10 @@
 <head>
     <link href="Assets/metro4-dist/css/metro-all.min.css" rel="stylesheet" />
     <link href="Assets/css/style.css" rel="stylesheet" />
-    <link href="Assets/images/KiweIcon.png" rel="icon" type="image/x-icon" />
+
+
+    <link href="Assets/images/SACLOGO.png" rel="icon" type="image/x-icon" />
+
     <link rel="stylesheet" href="./Assets/css/section-material style.css">
     <link rel="stylesheet" href="./Assets/css/Scene.css">
     <link rel="stylesheet" href="./Assets/css/deformation.css">
@@ -13,7 +16,11 @@
     <!-- Provide a short description of the page. -->
     <meta name="Structural Analysis Software" content="Software as a Service for Structural Analysis">
     <!-- This meta tag tells Google not to show the sitelinks search box. -->
-    <meta name="KIWE" content="nositelinkssearchbox" />
+
+
+    <meta name="SAC" content="nositelinkssearchbox" />
+  
+
     <!-- Control the behavior of search engine crawling and indexing. 
  The robots meta tag applies to all search engines, while the "googlebot" meta tag is specific to Google. -->
     <meta name="robots" content="..., ..." />
@@ -48,10 +55,31 @@
     <!-- URL of image to use in the card. Used with summary, summary_large_image, player cards -->
     <meta name="twitter:image" content="" />
 
+
+    <script src="./Assets/metro4-dist/js/metro.min.js"></script>
+
 </head>
 
 <body>
+
+    <script>
+        function intro() {
+            Metro.activity.open({
+                overlayColor: '#fff',
+                overlayAlpha: 1,
+                text: `<img style="width: 500px;"
+        src="./Assets/images/SAcWideLogoPNG.png" alt="KiweIcon" />
+        <div class=\'mt-2 text-large\'>SAC Solutions...</div>
+        <div class=\'mt-2 text-large\'>Loading...</div>`,
+                type: 'bars',
+                autoHide: 3000
+            });
+        }
+        intro();
+    </script>
+
     <div id="webgl">
+
         <!-- SideBar -->
         <!-- <aside class="sidebar pos-absolute z-1" data-role="sidebar" data-toggle="#sidebar-toggle-4" id="sb4" data-static-shift=".shifted-content-2" data-static="md">
             <div class="sidetitlebar">Information bar</div>
@@ -77,9 +105,13 @@
                     <span class="mif-arrow-left mif-2x"></span>
                 </a>
                 <div class="avatar">
-                    <img src="Assets/images/kiwi-icon-27.png" data-email="islam_eng2010@yahoo.com">
+
+
+                    <img src="Assets/images/SACLOGO.png" data-email="islam_eng2010@yahoo.com">
                 </div>
-                <div class="title bold fg-white">KIWE Structural Analysis</div>
+                <div class="title bold fg-white">SAC Solutions</div>
+
+
                 <div class="subtitle fg-white"> 2021 © ITI CEI IN_41</div>
             </div>
             <ul class="sidebar-menu icon">
@@ -220,16 +252,22 @@
                             <span class="caption">Cut</span>
                         </button>-->
 
-                        <button id="Copy" class="ribbon-button" onclick="CopyWindow()" data-role="hint" data-hint-position="bottom"
-                        data-hint-text="Copy Elements">
+
+                        <button id="Copy" class="ribbon-button" onclick="CopyWindow()" data-role="hint"
+                            data-hint-position="bottom" data-hint-text="Copy Elements">
+
+
                             <span class="icon">
                                 <img alt="Copy" src="Assets/images/CopyIcon.jpg">
                             </span>
                             <span class="caption">Copy</span>
                         </button>
 
-                        <button id="Move" class="ribbon-button" onclick="MoveWindow()" data-role="hint" data-hint-position="bottom"
-                        data-hint-text="Move Elements">
+
+                        <button id="Move" class="ribbon-button" onclick="MoveWindow()" data-role="hint"
+                            data-hint-position="bottom" data-hint-text="Move Elements">
+
+
                             <span class="icon">
                                 <img alt="Move" src="Assets/images/MoveIcon.png">
                             </span>
@@ -244,7 +282,9 @@
                         </button>-->
 
                         <button id="Delete" class="ribbon-button" data-role="hint" data-hint-position="bottom"
-                        data-hint-text="Delete Element">
+                            data-hint-text="Delete Element">
+
+
                             <span class="icon">
                                 <img alt="Delete" src="Assets/images/DeleteIcon.jpg">
                             </span>
@@ -271,25 +311,34 @@
                             <span class="caption">Extrude</span>
                         </button>
 
-                        <button id="Standard" onclick="Standard()" class="ribbon-button" data-role="hint" data-hint-position="bottom"
-                            data-hint-text="Standard View">
+
+
+                        <button id="Standard" onclick="Standard()" class="ribbon-button" data-role="hint"
+                            data-hint-position="bottom" data-hint-text="Standard View">
+
+
                             <span class="icon">
                                 <img alt="Standard View" src="Assets/images/UndeformedShapeIcon.jpg">
                             </span>
                             <span class="caption">Standard</span>
                         </button>
 
+
+
                         <span class="title">Geometry</span>
                     </div>
                     <!-- Elements Group (Pannel)    Tab Edit -->
                     <div class="group">
                         <button class="ribbon-button" id="disp-load-btn" data-role="hint" data-hint-position="bottom"
-                        data-hint-text="Edit Point">
+
+                            data-hint-text="Edit Point">
+
                             <span class="icon">
                                 <img alt="Edit" src="Assets/images/EditPoints.png">
                             </span>
                             <span class="caption">Edit Points</span>
                         </button>
+
 
 
                         <div>
@@ -437,6 +486,7 @@
                     </div>
                     <!-- Section Properities Group (Pannel)    Tab Define -->
                     <div class="group">
+
                         <button id = "DefineSections" class="ribbon-button dropdown-toggle">
                             <span class="icon">
                                 <img alt="Section" src="Assets/images/SectionProperitiesIcon.png">
@@ -482,7 +532,9 @@
                 <div class="section" id="Draw-Section">
                     <!-- Draw Group (Pannel)    Tab Draw -->
                     <div class="group">
+
                         <button id="AddPointsOnFrame" class="ribbon-button" onclick="AddPointOnFrameWindow()">
+
                             <span class="icon">
                                 <img alt="Point" src="Assets/images/PointIcon.png">
                             </span>
@@ -491,6 +543,8 @@
 
                         <button id="Draw" class="ribbon-button" data-role="hint" data-hint-position="bottom"
                         data-hint-text="Draw Frames">
+
+
                             <span class="icon">
                                 <img alt="Frame" src="Assets/images/FrameIcon.jpg">
                             </span>
@@ -507,6 +561,7 @@
                     <div class="group">
                         <button id="grids-btn" class="ribbon-button" data-role="hint" data-hint-position="bottom"
                         data-hint-text="Define Grids">
+
                             <span class="icon">
                                 <img alt="Grid" src="Assets/images/GridIcon.png">
                             </span>
@@ -546,13 +601,17 @@
                 <div class="section" id="Assign-Section">
                     <!-- Case Properities Group (Pannel)    Tab Assign -->
                     <div class="group">
+
+
                         <button id ="JointRestraints" class="ribbon-button" onclick="JointRestraint()" data-role="hint"
+
                             data-hint-position="bottom" data-hint-text="Add Joint Restraint">
                             <span class="icon">
                                 <img alt="Restraint" src="Assets/images/HingedIcon.JPG">
                             </span>
                             <span class="caption">Joint Restraint</span>
                         </button>
+
                         <button id="assign-framesec-btn" class="ribbon-button" data-role="hint" data-hint-position="bottom"
                         data-hint-text="Assign Frame Section">
                             <span class="icon">
@@ -560,6 +619,7 @@
                             </span>
                             <span class="caption">Frame Section</span>
                         </button>
+
 
                         <button id="Rotate" class="ribbon-button" onclick="RotateWindow()" data-role="hint" data-hint-position="bottom"
                         data-hint-text="Rotate Frame Local Axis">
@@ -588,6 +648,7 @@
                             </span>
                             <span class="caption">Point Loads</span>
                         </button>
+
                         <button class="ribbon-button" id="distributed-load-btn" data-role="hint" data-hint-position="bottom"
                         data-hint-text="Add Uniform Load">
                             <span class="icon">
@@ -617,6 +678,7 @@
                             <span class="caption">Run Analysis</span>
                         </button>
 
+
                         <button id="Unlock" class="ribbon-button" data-role="hint" data-hint-position="bottom"
                         data-hint-text="Unlock model" disabled = "true">
                             <span class="icon">
@@ -643,7 +705,11 @@
                         </button>
                         <span class="title">Displacements</span>
                     </div>
+
+
                     
+
+
                     <!-- Straining Actions Group (Pannel)    Tab Analyse & Results -->
                     <div class="group">
                         <button id = "reactions" class="ribbon-button">
@@ -699,6 +765,7 @@
                             </span>
                             <span class="caption">Units & Dimensions</span>
                         </button>
+
                         <button class="ribbon-button">
                             <span class="icon">
                                 <img alt="Colors" src="Assets/images/ColorsIcon.png">
@@ -716,13 +783,16 @@
                 data-hint-position="left">
                 &#8597;
             </button>
+
         </nav>
 
         <!-- Status Bar -->
         <div style="background-color: rgb(235,235,235); z-index: 3; position: absolute;" id="Status_bar">
             <img style="width: 20px; margin-left: 10px; margin-bottom: 5px; margin-top: 5px; "
-                src="Assets/images/KiweIcon.png" alt="KiweIcon" />
-            <span id="StatusBar">Welcome to KIEW Structural Analysis - Status Bar - </span>
+
+                src="Assets/images/SACLOGO.png" alt="SAC Icon" />
+            <span id="StatusBar">Welcome to SAC Solutions - Status Bar - </span>
+
         </div>
 
 
@@ -730,7 +800,9 @@
         <div class="dialog" data-role="dialog" id="closebtn" data-close-button="true">
             <div class="dialog-title text-bold">
                 <img style="width: 60px; margin-left: 10px; margin-bottom: 5px; margin-top: 5px; "
-                    src="Assets/images/KiweIcon.png" alt="KiweIcon" /> KIWE Structural Analysis
+
+                    src="Assets/images/SAcWideLogoPNG.png" alt="SAC Icon" /> SAC Solutions
+
 
             </div>
             <div class="dialog-content text-medium">
@@ -746,9 +818,11 @@
         </div>
     </div>
 
-    <title>KIWE STRUCTURES</title>
-    <script src="./Assets/metro4-dist/js/metro.min.js"></script>
+
+    <title>SAC Solutions</title>
+
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
     <!-- <script src="./Assets//node_modules/three/build/three.js"></script> -->
     <!-- <script src="./Assets//node_modules/three/examples/js/controls/OrbitControls.js"></script> -->
 

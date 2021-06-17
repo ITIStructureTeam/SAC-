@@ -1,10 +1,11 @@
+
 let unitForm =`
 
 <div
 class="main-window"
 id="units-window"
 data-role="window"
-data-title="Sections"
+data-title="Units"
 data-btn-min="false"
 data-btn-max="false"
 data-resizable="false"
@@ -161,6 +162,7 @@ document.querySelector('#units-btn').addEventListener("click",function(){
         document.querySelector('#units-window .info').addEventListener("click",function(){      
             projUnits.LenUnit = units[0].value;
             projUnits.ForceUnit=units[1].value;
+            document.getElementById('UnitsBTN').innerHTML=units[1].value + ','+ units[2].value ;
             projUnits.SecDimUnit=units[2].value;
             projUnits.StrenUnit=units[3].value;
             projUnits.TempUnit=units[4].value;

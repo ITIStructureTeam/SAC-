@@ -549,6 +549,13 @@ function XYView(XYindex)
             Results.ResultsList[j].InView();
         }
     }
+    for (let j = 0; j < JointReactions.ReactionsList.length; j++)
+    {
+        if(JointReactions.ReactionsList[j].Draw != null)
+        {
+            JointReactions.ReactionsList[j].InView();
+        }
+    }
 
     if(DeformedShape.deformationMode){
         DeformedShape.DeformShapesList.forEach(defsape => defsape.InView());
@@ -631,7 +638,14 @@ function XZView(XZindex){
             Results.ResultsList[j].InView();
         }
     }
-
+    for (let j = 0; j < JointReactions.ReactionsList.length; j++)
+    {
+        if(JointReactions.ReactionsList[j].Draw != null)
+        {
+            JointReactions.ReactionsList[j].InView();
+        }
+    }
+  
     if(DeformedShape.deformationMode){
         DeformedShape.DeformShapesList.forEach(defsape => defsape.InView());
     }
@@ -715,9 +729,18 @@ function YZView(YZindex){
             Results.ResultsList[j].InView();
         }
     }
+    for (let j = 0; j < JointReactions.ReactionsList.length; j++)
+    {
+        if(JointReactions.ReactionsList[j].Draw != null)
+        {
+            JointReactions.ReactionsList[j].InView();
+        }
+    }
+
     if(DeformedShape.deformationMode){
         DeformedShape.DeformShapesList.forEach(defsape => defsape.InView());
     }
+    
 
     camera.position.x = Math.max(distanceY, distanceZ)*1.7 + ViewPosition;
     camera.position.y = distanceY/2 ;
@@ -857,6 +880,13 @@ function resetScene()
             Results.ResultsList[i].InView();
         }
     }
+    for (let i = 0; i < JointReactions.ReactionsList.length; i++)
+    {
+        if(JointReactions.ReactionsList[i].Draw != null)
+        {
+            JointReactions.ReactionsList[i].InView();
+        }
+    }
 
 }
 
@@ -976,6 +1006,7 @@ function Unlock(){
     EnaplePreProcessorButtons();
     document.getElementById("StatusBar").innerHTML = ""; 
 
+
     // reset Results class
     Results.ResultsList.forEach(res => res.Hide());
     Results.ResultsList = [];
@@ -994,7 +1025,8 @@ function Unlock(){
 
 
 
-function Run()
+
+    function Run()
     {
         document.getElementById("StatusBar").innerHTML = "Running Model"; 
         let inPut = JSON.stringify(Project_Name);
@@ -1031,7 +1063,7 @@ function Run()
                 let InputRactions = [...result.reactions];
                 for(let i = 0 ; i < InputRactions.length; i++)
                 {
-                    let jointID   = InputRactions[i].InputRactions;
+                    let jointID   = InputRactions[i].jointID;
                     let patternID = InputRactions[i].patternID;
                     let position  = InputRactions[i].position;
                     let rx        = InputRactions[i].rx;
@@ -1050,15 +1082,20 @@ function Run()
                 }
 
                 document.getElementById("StatusBar").innerHTML = "Run Complete"; 
+                console.log(Results.ResultsList);
+                console.log(JointReactions.ReactionsList);
+                document.getElementById("StatusBar").innerHTML = "Run Complete"; 
             },
             error: function (ex) {
                 console.log(ex.responseText);
                 document.getElementById("StatusBar").innerHTML = "Run Failed"; 
             }
         });
-}
+    }
+    
 
-function SaveModelforRun(func)
+
+    function SaveModelforRun(func)
     {
         document.getElementById("StatusBar").innerHTML = "Saving ..."; 
         let OutPut = JSON.stringify(new RootData());
@@ -1083,10 +1120,11 @@ function SaveModelforRun(func)
                 document.getElementById("StatusBar").innerHTML = "Could not save model"; 
             }
         });
-}
+    }
 
-document.querySelector("#SideSaveButton").addEventListener("click", SaveModel);
-function SaveModel()
+
+    document.querySelector("#SideSaveButton").addEventListener("click", SaveModel);
+    function SaveModel()
     {
         document.getElementById("StatusBar").innerHTML = "Saving ..."; 
         let OutPut = JSON.stringify(new RootData());
@@ -1107,9 +1145,9 @@ function SaveModel()
                 document.getElementById("StatusBar").innerHTML = "Could not save model"; 
             }
         });
-}
+    }
 
-function CheckModelName() 
+    function CheckModelName() 
     {
         $.ajax({
             type: "GET",
@@ -1123,12 +1161,13 @@ function CheckModelName()
             },
             error: function (ex) {
                 console.log(ex.responseText);
+                document.getElementById("StatusBar").innerHTML = "Run Failed"; 
             }
         });
-}
+    }
 
-$("#Run").click(function()
+    $("#Run").click(function()
     {
         DisaplePreProcessorButtons();
         SaveModelforRun(Run);
-});
+    });

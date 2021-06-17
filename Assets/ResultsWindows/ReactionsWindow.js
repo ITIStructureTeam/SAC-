@@ -34,11 +34,11 @@ let reactionsWin = `
         <div class="flex-col justify-center padding-all-0" data-role="panel">
             <div class="flex-rowm justify-start">
                 <div class="input-width">
-                    <input type="radio" id="Forces" name="force" value="Forces" checked="checked">
+                    <input type="radio" id="Forces" name="force" value="force" checked="checked">
                     <label for="Forces">Forces</label>
                 </div>
                 <div class="input-width">
-                    <input type="radio" id="Moments" name="force" value="Moments">
+                    <input type="radio" id="Moments" name="force" value="moment">
                     <label for="Moments">Moments</label>
                 </div>
             </div>   
@@ -139,16 +139,16 @@ function GetResults() {
 
     switch(force)
     {
-        case 'Forces':
+        case 'force':
             for(let i = 0; i<results.length; i++)
             {
-                results[i].DrawForces();
+                results[i].DrawForces(caseId);
             }
             break;
-        case 'Moments':
+        case 'moment':
             for(let i = 0; i<results.length; i++)
             {
-                results[i].DrawMoments();
+                results[i].DrawMoments(caseId);
             }
             break;
         }
