@@ -4,7 +4,8 @@ var
  mouse,
  stats,
  renderer,
- ViewPosition;  
+ ViewPosition,
+ Project_Name;  
 
  var HiddenGrids = [];
  var HiddenSnapping = []; 
