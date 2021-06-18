@@ -677,7 +677,19 @@ document.querySelector('#point-load-btn').addEventListener("click", function(){
             
             if(DrawLine.SelectedLines.length){
                 if(delLoadOption.checked){
-                    commands.excuteCommand(new DeleteFrameLoad(DrawLine.SelectedLines, patternId, ELoadShape.Point));
+                    
+                    //#region Check validity of lines to delete loads from
+                    let trustedlines = [];
+                    let lines = DrawLine.SelectedLines.filter(drawline => drawline.Frame.LoadsAssigned.has(patternId) );
+                    lines.forEach( line => {
+                        let existingload = line.Frame.LoadsAssigned.get(patternId).filter( appload => appload.Shape == ELoadShape.Point );
+                        if(existingload.length) trustedlines.push(line);
+                    });
+                    //#endregion
+
+                    if(trustedlines.length)
+                    commands.excuteCommand(new DeleteFrameLoad(trustedlines, patternId, ELoadShape.Point));
+
                 }else if(appliedLoads.length){
                     commands.excuteCommand(new AssignFrameLoad(DrawLine.SelectedLines, patternId, appliedLoads));
                 }
@@ -717,7 +729,19 @@ document.querySelector('#distributed-load-btn').addEventListener("click", functi
             DrawLine.DisplayedPattern = patternId;
             if(DrawLine.SelectedLines.length){
                 if(delLoadOption.checked){
-                    commands.excuteCommand(new DeleteFrameLoad(DrawLine.SelectedLines, patternId, ELoadShape.Distributed));
+                    
+                    //#region Check validity of lines to delete loads from
+                    let trustedlines = [];
+                    let lines = DrawLine.SelectedLines.filter(drawline => drawline.Frame.LoadsAssigned.has(patternId) );
+                    lines.forEach( line => {
+                        let existingload = line.Frame.LoadsAssigned.get(patternId).filter(appload => appload.Shape == ELoadShape.Distributed);
+                        if(existingload.length) trustedlines.push(line);
+                    });
+                    //#endregion
+
+                    if(trustedlines.length)
+                    commands.excuteCommand(new DeleteFrameLoad(trustedlines, patternId, ELoadShape.Distributed));
+                    
                 }else if(appliedLoads.length){
                     commands.excuteCommand(new AssignFrameLoad(DrawLine.SelectedLines, patternId, appliedLoads));
                 }
