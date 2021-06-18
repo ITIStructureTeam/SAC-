@@ -788,28 +788,24 @@ class DrawLine
 
     InView()
     {
-        if(view == "XY")
+        if(view == "XY" && (this.Frame.StartPoint.position[2] != ViewPosition || this.Frame.EndPoint.position[2] != ViewPosition))
         {
-            if(this.Frame.StartPoint.position[2] != ViewPosition || this.Frame.EndPoint.position[2] != ViewPosition)
-            {
-                this.Hide();
-            }
+            this.Hide();  
         }
-        else if(view == "XZ")
+        else if(view == "XZ" && (this.Frame.StartPoint.position[1] != ViewPosition || this.Frame.EndPoint.position[1] != ViewPosition))
         {
-            if(this.Frame.StartPoint.position[1] != ViewPosition || this.Frame.EndPoint.position[1] != ViewPosition)
-            {
-                this.Hide();
-            }
+            this.Hide();
         }
-        else if(view == "YZ")
+        else if(view == "YZ" && (this.Frame.StartPoint.position[0] != ViewPosition || this.Frame.EndPoint.position[0] != ViewPosition))
         {
-            if(this.Frame.StartPoint.position[0] != ViewPosition || this.Frame.EndPoint.position[0] != ViewPosition)
-            {
-                this.Hide();
-            }
+            this.Hide();
         }
-        else{
+        else if(DeformedShape.deformationMode)
+        {
+            this.Hide();
+        }
+        else
+        {
             this.Show();
         }
     }

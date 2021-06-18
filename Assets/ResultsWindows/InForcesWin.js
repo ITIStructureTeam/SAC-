@@ -86,35 +86,11 @@ document.querySelector('#frame-forces').addEventListener("click", function(){
 
         document.querySelector('#ok-fforce-btn').addEventListener("click", function(){
 
-            // if in deformation mode go out
-            if(DeformedShape.deformationMode){
-                DeformedShape.deformationMode = false;
-                DeformedShape.DeformShapesList.forEach(defshape => defshape.Hide());
-            }
-
-            // if in load mode go out
-            if(DrawLine.LoadsDisplayed){
-                DrawLine.LoadsDisplayed = false;
-                DrawLine.HideLoads();
-            }
-
             GetForcesDiagData();
             document.querySelector('.main-window').parentElement.parentElement.remove();
         });
 
         document.querySelector('#app-fforce-btn').addEventListener("click", function(){
-
-            // if in deformation mode go out
-            if(DeformedShape.deformationMode){
-                DeformedShape.deformationMode = false;
-                DeformedShape.DeformShapesList.forEach(defshape => defshape.Hide());
-            }
-
-            // if in load mode go out
-            if(DrawLine.LoadsDisplayed){
-                DrawLine.LoadsDisplayed = false;
-                DrawLine.HideLoads();
-            }
 
             GetForcesDiagData();
         });
@@ -149,15 +125,35 @@ function GetForcesDiagData() {
  
     let results = Results.ResultsList.filter(res=> res.PatternID == caseId)
     
+    // if in deformation mode go out
+    if(DeformedShape.deformationMode){
+        DeformedShape.deformationMode = false;
+        DeformedShape.DeformShapesList.forEach(defshape => defshape.Hide());
+    }
+
+    // if in load mode go out
+    if(DrawLine.LoadsDisplayed){
+        DrawLine.LoadsDisplayed = false;
+        DrawLine.HideLoads();
+    }
+
+    //if in reactiomn mode
+    if (JointReactions.ReactMode) {
+        JointReactions.ReactMode = false;
+        for(let i = 0; i< JointReactions.ReactionsList.length; i++)
+        {
+            JointReactions.ReactionsList[i].Hide();
+        }
+    }
+    
     for(let i = 0; i<Results.ResultsList.length; i++)
     {
         Results.ResultsList[i].Hide();
     }
 
-    for(let i = 0; i< JointReactions.ReactionsList.length; i++)
-    {
-        JointReactions.ReactionsList[i].Hide();
-    }
+    Results.ResultsMode = true;
+
+    
     switch(force)
     {
         case 'axial':

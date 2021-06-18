@@ -34,11 +34,11 @@ let reactionsWin = `
         <div class="flex-col justify-center padding-all-0" data-role="panel">
             <div class="flex-rowm justify-start">
                 <div class="input-width">
-                    <input type="radio" id="Forces" name="force" value="Forces" checked="checked">
+                    <input type="radio" id="Forces" name="force" value="force" checked="checked">
                     <label for="Forces">Forces</label>
                 </div>
                 <div class="input-width">
-                    <input type="radio" id="Moments" name="force" value="Moments">
+                    <input type="radio" id="Moments" name="force" value="moment">
                     <label for="Moments">Moments</label>
                 </div>
             </div>   
@@ -62,37 +62,11 @@ document.querySelector('#reactions').addEventListener("click", function(){
         //LoadPrevReactionsOptions();
     
         document.querySelector('#ok-reactions-btn').addEventListener("click", function(){
-           
-            // if in deformation mode go out
-            if(DeformedShape.deformationMode){
-                DeformedShape.deformationMode = false;
-                DeformedShape.DeformShapesList.forEach(defshape => defshape.Hide());
-            }
-
-            // if in load mode go out
-            if(DrawLine.LoadsDisplayed){
-                DrawLine.LoadsDisplayed = false;
-                DrawLine.HideLoads();
-            }
-
             GetResults();
             document.querySelector('.main-window').parentElement.parentElement.remove();
         });
 
-        document.querySelector('#app-reactions-btn').addEventListener("click", function(){
-            
-            // if in deformation mode go out
-            if(DeformedShape.deformationMode){
-                DeformedShape.deformationMode = false;
-                DeformedShape.DeformShapesList.forEach(defshape => defshape.Hide());
-            }
-
-            // if in load mode go out
-            if(DrawLine.LoadsDisplayed){
-                DrawLine.LoadsDisplayed = false;
-                DrawLine.HideLoads();
-            }
-
+        document.querySelector('#app-reactions-btn').addEventListener("click", function(){  
             GetResults();
         });
         
@@ -127,9 +101,26 @@ function GetResults() {
 
     let results = JointReactions.ReactionsList.filter(res=> res.PatternID == caseId)
 
-    for(let i = 0; i< JointReactions.ReactionsList.length; i++)
-    {
-        JointReactions.ReactionsList[i].Hide();
+     // if in deformation mode go out
+     if(DeformedShape.deformationMode){
+        DeformedShape.deformationMode = false;
+        DeformedShape.DeformShapesList.forEach(defshape => defshape.Hide());
+    }
+
+    // if in load mode go out
+    if(DrawLine.LoadsDisplayed){
+        DrawLine.LoadsDisplayed = false;
+        DrawLine.HideLoads();
+    }
+
+    // if in results mode
+    if (Results.ResultsMode) {
+
+        Results.ResultsMode = false;
+        for(let i = 0; i< JointReactions.ReactionsList.length; i++)
+        {
+            JointReactions.ReactionsList[i].Hide();
+        }
     }
     
     for(let i = 0; i<Results.ResultsList.length; i++)
@@ -137,18 +128,19 @@ function GetResults() {
         Results.ResultsList[i].Hide();
     }
 
+    JointReactions.ReactMode = true;
     switch(force)
     {
-        case 'Forces':
+        case 'force':
             for(let i = 0; i<results.length; i++)
             {
-                results[i].DrawForces();
+                results[i].DrawForces(caseId);
             }
             break;
-        case 'Moments':
+        case 'moment':
             for(let i = 0; i<results.length; i++)
             {
-                results[i].DrawMoments();
+                results[i].DrawMoments(caseId);
             }
             break;
         }

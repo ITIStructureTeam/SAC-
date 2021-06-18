@@ -39,6 +39,8 @@ document.querySelector('#Draw').addEventListener("click", function () {
 
     if (!document.querySelector('.main-window')) {
         $('body').append(drawWin);
+       StatusBar = document.getElementById('StatusBar');
+      StatusBar.innerHTML = 'Select First Point';
     }
     document.addEventListener('keydown', function (event) {
         if (event.key === "Escape") {

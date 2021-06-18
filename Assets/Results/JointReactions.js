@@ -1,6 +1,8 @@
 class JointReactions
 {
     static ReactionsList = [];
+    static pattern;
+    static ReactMode = false;
     constructor(pattern, jointLabel, position, Rx, Ry, Rz, Mx, My, Mz)
     {
         this.PatternID = pattern   ;
@@ -15,7 +17,8 @@ class JointReactions
         this.Draw = new THREE.Group();
         JointReactions.ReactionsList.push(this);
     }
-    DrawForces()
+  
+    DrawForces(pattern)
     {
         if(this.Draw.children.length>0)
         {
@@ -38,10 +41,11 @@ class JointReactions
         {
             this.Draw.add(ResultForceArrow(this.ReactionZ[0], this.Position, 2));
         }
+        JointReactions.pattern = pattern;
         this.InView()
     }
 
-    DrawMoments()
+    DrawMoments(pattern)
     {
         if(this.Draw.children.length>0)
         {
@@ -51,16 +55,17 @@ class JointReactions
         }
         if(this.MomentX[0].toFixed(3) != 0)
         {
-            ResultMomentArrow(this.MomentX[0], this.Position, 3)
+            this.Draw.add(ResultMomentArrow(this.MomentX[0], this.Position, 3));
         }
         if(this.MomentY[0].toFixed(3) != 0)
         {
-            ResultMomentArrow(this.MomentY[0], this.Position, 1)
+            this.Draw.add(ResultMomentArrow(this.MomentY[0], this.Position, 1));
         }
         if(this.Tortion[0].toFixed(3) != 0)
         {
-            ResultMomentArrow(this.Tortion[0], this.Position, 2)
+            this.Draw.add(ResultMomentArrow(this.Tortion[0], this.Position, 2));
         }
+        JointReactions.pattern = pattern;
         this.InView()
     }
 
@@ -80,6 +85,14 @@ class JointReactions
 
     InView()
     {
+        if(this.PatternID == JointReactions.pattern && JointReactions.ReactMode)
+        {
+            this.Show();
+        }
+        else{
+            this.Hide();
+        }
+        
         if(view == "XY")
         {
             if(this.Position[2] != ViewPosition)
@@ -100,9 +113,6 @@ class JointReactions
             {
                 this.Hide();
             }
-        }
-        else{
-            this.Show();
         }
     }
 }

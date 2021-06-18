@@ -56,22 +56,22 @@ document.querySelector('#deformed-btn').addEventListener("click", function(){
         }
 
         // hide reactions
-        JointReactions.ReactionsList.forEach(reaction => reaction.Hide());
+        if(JointReactions.ReactMode){
+            JointReactions.ReactMode = false
+            JointReactions.ReactionsList.forEach(reaction => reaction.Hide());
+        }
 
         //hide results
-        Results.ResultsList.forEach(result => result.Hide());
+        if (Results.ResultsMode) {
+            Results.ResultsMode = false
+            Results.ResultsList.forEach(result => result.Hide());
+        }
 
         // hide drawline ---dont work----
-        DrawLine.DrawLinesArray.forEach(drawline=> {
-            drawline.line.visible = false
-            drawline.Extrude.visible = false
-            drawline.refline.visible = false
-            drawline.label.visible = false
-            drawline.name.visible = false
-        });
+        DrawLine.DrawLinesArray.forEach(drawline=> drawline.Hide());
 
         //go to standard view
-        Standard();
+        //Standard();
 
         // hide displayed deformations
         if (DeformedShape.deformationMode) {
@@ -96,16 +96,22 @@ document.querySelector('#deformed-btn').addEventListener("click", function(){
         }
 
         // hide reactions
-        JointReactions.ReactionsList.forEach(reaction => reaction.Hide());
+        if(JointReactions.ReactMode){
+            JointReactions.ReactMode = false
+            JointReactions.ReactionsList.forEach(reaction => reaction.Hide());
+        }
 
         //hide results
-        Results.ResultsList.forEach(result => result.Hide());
+        if (Results.ResultsMode) {
+            Results.ResultsMode = false
+            Results.ResultsList.forEach(result => result.Hide());
+        }
 
         // hide drawline ---dont work----
         DrawLine.DrawLinesArray.forEach(drawline=> drawline.Hide());
 
         //go to standard view
-        Standard();
+        //Standard();
 
         // hide displayed deformations
         if (DeformedShape.deformationMode) {
@@ -123,16 +129,6 @@ document.querySelector('#deformed-btn').addEventListener("click", function(){
     });
 });
 
-document.querySelector('#undeformed-btn').addEventListener("click", function(){
-    DrawLine.DrawLinesArray.forEach(drawline => drawline.InView());
-    
-    if (DeformedShape.deformationMode) {
-        DeformedShape.deformationMode = false;
-        DeformedShape.DeformShapesList.forEach( defShape=> {
-            defShape.Hide();
-        });      
-    }
-});
 
 function GetDeformData() {
     let caseId = $('#case-combo-select')[0].value;
