@@ -89,9 +89,9 @@ class DeformedShape{
                 let z = pointpos.z + pointdeform.u3[0]*amplify;
 
                 let point = new THREE.Vector3(x,y,z);
-                point.applyAxisAngle(new THREE.Vector3(1,0,0), pointdeform.r1[0]);
-                point.applyAxisAngle(new THREE.Vector3(0,1,0), pointdeform.r2[0]);
-                point.applyAxisAngle(new THREE.Vector3(0,0,1), pointdeform.r3[0]);
+                //point.applyAxisAngle(new THREE.Vector3(1,0,0), pointdeform.r1[0]);
+                //point.applyAxisAngle(new THREE.Vector3(0,1,0), pointdeform.r2[0]);
+                //point.applyAxisAngle(new THREE.Vector3(0,0,1), pointdeform.r3[0]);
                 pointsarr.push(point);
             }
             let curve = new THREE.CatmullRomCurve3(pointsarr);
