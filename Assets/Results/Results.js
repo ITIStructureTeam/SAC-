@@ -3,6 +3,7 @@ class Results
     static ResultsList = [];
     static Pattern;
     static ResultsMode = false;
+
     constructor(pattern, frameLabel, startPoint, endPoint, stations, Mx, My, Tz, N, Vx, Vy, rz)
     {
         this.PatternID = pattern;

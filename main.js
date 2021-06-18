@@ -745,7 +745,7 @@ function YZView(YZindex){
             JointReactions.ReactionsList[j].InView();
         }
     }
-
+  
     if(DeformedShape.deformationMode){
         DeformedShape.DeformShapesList.forEach(defsape => defsape.InView());
     }
@@ -898,6 +898,7 @@ function resetScene()
             JointReactions.ReactionsList[i].InView();
         }
     }
+
     if(DeformedShape.deformationMode){
         DeformedShape.DeformShapesList.forEach(defshape => defshape.InView());
     }
@@ -913,6 +914,7 @@ function removeArrows()
     arrows.remove( arrowHelperZ );
     scene.remove(txSpriteZ);
 }
+
 
 
 DisablePostProcessBts();

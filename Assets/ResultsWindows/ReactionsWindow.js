@@ -69,7 +69,7 @@ document.querySelector('#reactions').addEventListener("click", function(){
         document.querySelector('#app-reactions-btn').addEventListener("click", function(){  
             GetResults();
         });
-        
+
         document.querySelector('#close-reactions-btn').addEventListener("click", function(){
             document.querySelector('.main-window').parentElement.parentElement.remove();
         })
@@ -128,7 +128,9 @@ function GetResults() {
         Results.ResultsList[i].Hide();
     }
 
+
     JointReactions.ReactMode = true;
+  
     switch(force)
     {
         case 'force':

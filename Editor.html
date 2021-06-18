@@ -2,6 +2,7 @@
 <html>
 
 <head>
+
     <link href="Assets/metro4-dist/css/metro-all.min.css" rel="stylesheet" />
     <link href="Assets/css/style.css" rel="stylesheet" />
 
@@ -63,6 +64,18 @@
 <body>
 
     <script>
+        let Project_Name ;
+        let ProjectStat;
+        window.onload = function(){
+            Project_Name = localStorage.getItem("ProjectName");
+            ProjectStat = localStorage.getItem("ModelState");
+            if(ProjectStat == "Import")
+            {
+                ImportProjectData();
+            }
+        }
+    </script>
+    <!-- <script>
         function intro() {
             Metro.activity.open({
                 overlayColor: '#fff',
@@ -76,7 +89,8 @@
             });
         }
         intro();
-    </script>
+    </script> -->
+
 
     <div id="webgl">
 
@@ -122,11 +136,13 @@
                     <a> <span><img height="32" width="32" src="Assets/images/OpenIcon.png" alt="OpenIcon"> </span> Open
                     </a>
                 </li>
-                <li id = "SideSaveButton">
+
+                <li id = "SaveButton">
                     <a> <span  ><img height="32" width="32" src="Assets/images/SaveIcon.jpg" alt="SaveIcon"> </span> Save
                     </a>
                 </li>
-                <li>
+              
+                <li id = "SaveAsButton">
                     <a> <span><img height="32" width="32" src="Assets/images/SaveAsIcon.png " alt="SaveAsIcon"></span>
                         Save As </a>
                 </li>
@@ -858,6 +874,10 @@
     <script src="./Assets/Results/JointReactions.js"></script>
     <script src="./Assets/Results/DeformedShape.js"></script>
 
+    
+    <script src = "./SaveAs.js"></script>
+    <script src = "./RootData.js"></script>
+  
     <!--<script src="./Assets/js/BelalLoads.js"></script>-->
 
     <script src="./Assets/Loads.js/LoadPatternWindow.js"></script>
@@ -873,6 +893,7 @@
     <script src="./Assets/ResultsWindows/DeformWin.js"></script>
     <script src="./Assets/ResultsWindows/ReactionsWindow.js"></script>
     <script src="./Assets/ResultsWindows/ResetModel.js"></script>
+
 </body>
 
 </html>

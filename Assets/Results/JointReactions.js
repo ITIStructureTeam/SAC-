@@ -17,7 +17,7 @@ class JointReactions
         this.Draw = new THREE.Group();
         JointReactions.ReactionsList.push(this);
     }
-  
+
     DrawForces(pattern)
     {
         if(this.Draw.children.length>0)

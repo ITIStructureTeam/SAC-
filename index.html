@@ -9,6 +9,8 @@
     <title>SAC Solutions</title>
     <script src="./Assets/metro4-dist/js/metro.min.js"></script>
     <link href="Assets/metro4-dist/css/metro-all.min.css" rel="stylesheet" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
     <style>
         * {
             margin: 0;
@@ -64,59 +66,170 @@
         <div class=\'mt-2 text-large\'>SAC Solutions...</div>
         <div class=\'mt-2 text-large\'>Loading...</div>`,
                 type: 'bars',
-                autoHide: 3000
+                autoHide: 200
             });
         }
-        function validatename() {
-            if (!$('#validatenamewindow').length) {
+        function NewProjectWindow() {
+            if (!$('#NewProjectWin').length) {
 
                 $('body').append(`
         <div   
-    id="validatenamewindow" data-top="200"
-    style="z-index: 10;
-    visibility: visible;"
-    data-left="500"
-    data-role="window"
-    data-width="350" 
-    data-height="450"
-    data-title="Project Information"
-    data-resizable="false"
-    
-    data-icon="<img src='Assets/images/InformationLogo.png'>"> 
-    <input type="text" data-role="input" data-prepend="Company Name: ">
-    <input type="text" data-role="input" data-prepend="Client Name: ">
-    <input type="text" data-role="input" data-prepend="Project Name: ">
-    <input type="text" data-role="input" data-prepend="Project Number: ">
-    <input type="text" data-role="input" data-prepend="Model Name: ">
-    <input type="text" data-role="input" data-prepend="Model Description: ">
-    <input type="text" data-role="input" data-prepend="Revision Number: ">
-    <input type="text" data-role="input" data-prepend="Engineer: ">
-    <input type="text" data-role="input" data-prepend="Supervisor: ">
-    <input type="text" data-role="input" data-prepend="Design Code: ">
-    <div style="margin-top: 10px;margin-right: 10px; float: right;">
-                <button onclick="valid()" class="button secondary">OK</button>
-                <button class="button shadowed">Cancel</button>
+            id="NewProjectWin" data-top="200"
+            style="z-index: 10;
+            visibility: visible;"
+            data-left="500"
+            data-role="window"
+            data-width="420" 
+            data-height="125"
+            data-title="Project Information"
+            data-resizable="false"
+
+            data-icon="<img src='Assets/images/InformationLogo.png'>"> 
+
+            <input id = "ModelName" type="text" data-role="input" data-prepend="Model Name: ">
+
+            <div style="margin-top: 6px;margin-right: 10px;">
+                <span id = "Not_Valid" style = "color:black; float: left; width:350px; overflow-wrap: break-word; margin-left:10px; font-size:12px" ></span>
+                <button onclick="CheckModelName()" class="button secondary" style="float: right;">OK</button>
             </div>
-    </div>`);
+        </div>`);
+        }
+        }
 
+    function valid() {
+        location.href = './Editor.html';
+    }
+
+
+    function StoreModelName(Name, ModelState)
+    {
+        localStorage.setItem('ModelState', ModelState)
+        localStorage.setItem('ProjectName', Name)
+    }
+
+    function CheckModelName() 
+    {
+        document.getElementById("Not_Valid").style.color = 'black';
+        document.getElementById("Not_Valid").innerHTML = "Validating Model Name";
+        let input = JSON.stringify(document.getElementById("ModelName").value);
+        $.ajax({
+            type: "POST",
+            url: "/api/RunAnalysis/CheckModelName",                 
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            data: input,
+            cache: false,
+            success: function (result) {
+                if(result == "True")
+                {
+                    document.getElementById("Not_Valid").innerHTML = "Creating new model";
+                    StoreModelName(document.getElementById("ModelName").value, "New");
+                    valid();
+                }
+                else{
+                    document.getElementById("Not_Valid").style.color = 'red';
+                    document.getElementById("Not_Valid").innerHTML = "The model name is already used or not valid";
+                }
+            },
+            error: function (ex) {
+                console.log(ex.responseText);
             }
-        }
+        });
+    }
 
-        function valid() {
-            location.href = './index.html';
+
+
+
+
+
+
+    function ImportProjectWindow() 
+    {
+            if (!$('#ImportProjectWin').length) {
+
+                $('body').append(`
+        <div   
+            id="ImportProjectWin" data-top="200"
+            style="z-index: 10;
+            visibility: visible;"
+            data-left="500"
+            data-role="window"
+            data-width="420" 
+            data-height="145"
+            data-title="Project Information"
+            data-resizable="false"
+
+            data-icon="<img src='Assets/images/InformationLogo.png'>"> 
+            <div style = "margin-left:10px; margin-top:5px"> Select Project Name</div>
+            <select id = "SelectProject" style = "width:400px; margin-left:10px; height:30px"> </select >
+
+            <div style="margin-top: 6px;margin-right: 10px;">
+                <span id = "Message" style = "color:black; float: left; width:350px; overflow-wrap: break-word; margin-left:10px; font-size:12px" ></span>
+                <button onclick="ImportName()" class="button secondary" style="float: right;">OK</button>
+            </div>
+        </div>`);
         }
+        RetriveProjectsNames();
+    }
+
+    function RetriveProjectsNames() 
+    {
+        document.getElementById("Message").style.color = 'black';
+        document.getElementById("Message").innerHTML = "Getting project...";
+       
+        $.ajax({
+            type: "GET",
+            url: "/api/RunAnalysis/GetProjectsName",                 
+            //contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            //data: input,
+            cache: false,
+            success: function (result) {
+                if(result.length > 0)
+                {
+                    document.getElementById("Message").innerHTML = "Projects names recieved successfully";
+                    const ProjectSelect = document.getElementById("SelectProject");
+                    for(let i = 0; i < result.length; i++)
+                    {
+                        const option = document.createElement("option");
+                        option.text = result[i];
+                        ProjectSelect.add(option, ProjectSelect[i]);
+                    }
+                }
+                else{
+                    document.getElementById("Message").style.color = 'red';
+                    document.getElementById("Message").innerHTML = "No models to import";
+                }
+            },
+            error: function (ex) {
+                console.log(ex.responseText);
+            }
+        });
+    }
+
+    function ImportName()
+    {
+        const value = document.getElementById('SelectProject').value;
+        if(value != null)
+        {
+            StoreModelName(value, "Import");
+            valid();
+        }
+    }
+
     </script>
 </head>
 
 <body onload="init()">
 
 
-    <button onclick='validatename()' id="NewBTN" style="width: 400px; height: 400px;" class="shortcut rounded larg">
+    <button id="NewBTN" style="width: 400px; height: 400px;" class="shortcut rounded larg"  onclick='NewProjectWindow()'>
         <span class="badge">+</span>
         <span class="caption text-bold">Start New Project</span>
         <img src="./Assets/images/UndeformedShapeIcon.png">
     </button>
-    <button id="OpenBTN" style="width: 400px; height: 400px;" class="shortcut rounded larg">
+
+    <button id="OpenBTN" style="width: 400px; height: 400px;" class="shortcut rounded larg"  onclick='ImportProjectWindow()'>
         <span class="badge">+</span>
         <span class="caption text-bold">Open Project</span>
         <img src="./Assets/images/OpenIcon.png">

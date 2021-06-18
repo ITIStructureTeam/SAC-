@@ -1,4 +1,3 @@
-/* Project_Name = "New Example file"
 
 
 class RootData
@@ -15,6 +14,7 @@ class RootData
         this.GridData = [listx, listy, listz];
     }
 }
+
 
 function DisablePostProcessBts() {
     $('#deformed-btn')[0].disabled = true;
@@ -46,10 +46,6 @@ function DisaplePreProcessorButtons()
     document.getElementById("Draw").disabled = true;
     document.getElementById("AddPointsOnFrame").disabled = true;
     document.getElementById("grids-btn").disabled = true;
-    //document.getElementById("materialsBtn").disabled = true;
-    //document.getElementById("DefineSections").disabled = true;
-    //document.getElementById("pattern-btn").disabled = true;
-    //document.getElementById("combo-btn").disabled = true;
     document.getElementById("Run").disabled = true;
     document.getElementById("Unlock").disabled = false;
 }
@@ -80,9 +76,10 @@ function EnaplePreProcessorButtons()
 }
 
 document.getElementById("Unlock").onclick=function(){Unlock()};
+
 function Unlock(){
 
-    locked = false
+    locked = false;
     DisablePostProcessBts();
     EnaplePreProcessorButtons();
     document.getElementById("StatusBar").innerHTML = ""; 
@@ -103,9 +100,6 @@ function Unlock(){
     }
     DeformedShape.DeformShapesList = [];
 }
-
-
-
 
     function Run()
     {
@@ -150,19 +144,17 @@ function Unlock(){
                     let rx        = InputRactions[i].rx;
                     let ry        = InputRactions[i].ry;
                     let rz        = InputRactions[i].rz;
-                    let mx        = InputRactions[i].mx;
-                    let my        = InputRactions[i].my;
+                    let mx        = InputRactions[i].my;
+                    let my        = InputRactions[i].mx;
                     let mz        = InputRactions[i].mz;
                     new JointReactions(patternID, jointID, position, rx, ry, rz, mx, my, mz)
-                } 
-                
+                }   
+  
                 DeformedShape.scaleMap = GetDefScaleMap(result.deformations);
                 DeformedShape.displayedLoadCase = DeformedShape.scaleMap.keys().next().value;
                 for (const framedeform of result.deformations) {
                     new DeformedShape(framedeform.frameID, framedeform.deformationDetails);
                 }
-
-                document.getElementById("StatusBar").innerHTML = "Run Complete"; 
                 console.log(Results.ResultsList);
                 console.log(JointReactions.ReactionsList);
                 document.getElementById("StatusBar").innerHTML = "Run Complete"; 
@@ -180,7 +172,7 @@ function Unlock(){
     {
         document.getElementById("StatusBar").innerHTML = "Saving ..."; 
         let OutPut = JSON.stringify(new RootData());
-        console.log(OutPut);
+
         $.ajax({
             type: "POST",
             url: "/api/RunAnalysis/SaveModel",                 
@@ -204,7 +196,8 @@ function Unlock(){
     }
 
 
-    document.querySelector("#SideSaveButton").addEventListener("click", SaveModel);
+    document.querySelector("#SaveButton").addEventListener("click", SaveModel);
+
     function SaveModel()
     {
         document.getElementById("StatusBar").innerHTML = "Saving ..."; 
@@ -224,25 +217,32 @@ function Unlock(){
             error: function (ex) {
                 console.log(ex.responseText);
                 document.getElementById("StatusBar").innerHTML = "Could not save model"; 
-            }
-        });
-    }
+                }
+            });
+        }
 
-    function CheckModelName() 
-    {
+        
+
+    function ImportProjectData()
+    { 
+        document.getElementById("StatusBar").innerHTML = "Importing ..."; 
+        const input = JSON.stringify(Project_Name);
         $.ajax({
-            type: "GET",
-            url: "/api/RunAnalysis/CheckModelName",                 
-            //contentType: "application/json; charset=utf-8",
+            type: "POST",
+            url: "/api/RunAnalysis/ImportProject",                 
+            contentType: "application/json; charset=utf-8",
             dataType: "json",
-            data: OutPut,
+            data: input,
             cache: false,
             success: function (result) {
-                console.log("Data saved");
+                document.getElementById("StatusBar").innerHTML = "Creating model ..."; 
+                // Code goes in here
+                console.log(result);
+                document.getElementById("StatusBar").innerHTML = "Model created successfully"; 
             },
             error: function (ex) {
+                document.getElementById("StatusBar").innerHTML = "Failed to import model"; 
                 console.log(ex.responseText);
-                document.getElementById("StatusBar").innerHTML = "Run Failed"; 
             }
         });
     }
@@ -251,4 +251,11 @@ function Unlock(){
     {
         DisaplePreProcessorButtons();
         SaveModelforRun(Run);
-    }); */
+    });
+
+    document.querySelector("#SaveAsButton").addEventListener("click", SaveModelAs);
+    function SaveModelAs()
+    {
+        SaveModel();
+        SaveAsWindow();
+    }
