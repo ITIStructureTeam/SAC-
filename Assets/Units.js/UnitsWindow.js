@@ -143,7 +143,7 @@ document.querySelector('#units-btn').addEventListener("click",function(){
         document.querySelector('#units-window .info').addEventListener("click",function(){      
             projUnits.LenUnit = units[0].value;
             projUnits.ForceUnit=units[1].value;
-            document.getElementById('UnitsBTN').innerHTML=units[1].value + ','+ units[2].value ;
+            document.getElementById('UnitsBTN').innerHTML='Project units: '+   units[1].value + ','+ units[2].value ;
             projUnits.SecDimUnit=units[2].value;
             projUnits.StrenUnit=units[3].value;
             projUnits.TempUnit=units[4].value;

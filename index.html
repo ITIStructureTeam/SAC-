@@ -54,13 +54,10 @@
     <!-- URL of image to use in the card. Used with summary, summary_large_image, player cards -->
     <meta name="twitter:image" content="" />
 
-
     <script src="./Assets/metro4-dist/js/metro.min.js"></script>
-
 </head>
 
 <body>
-
     <script>
         function intro() {
             Metro.activity.open({
@@ -71,7 +68,7 @@
         <div class=\'mt-2 text-large\'>SAC Solutions...</div>
         <div class=\'mt-2 text-large\'>Loading...</div>`,
                 type: 'bars',
-                autoHide: 3000
+                autoHide: 1500
             });
         }
         intro();
@@ -702,6 +699,13 @@
                             </span>
                             <span class="caption">Show Deformed Shape</span>
                         </button>
+                        <button class="ribbon-button" onclick="ShowResultsTable()" data-role="hint" data-hint-position="bottom"
+                        data-hint-text="Show Table">
+                            <span class="icon">
+                                <img alt="Show Tables" src="Assets/images/showtables.jpg">
+                            </span>
+                            <span class="caption">Show Tables</span>
+                        </button>
                         <span class="title">Displacements</span>
                     </div>
 
@@ -774,7 +778,10 @@
 
                         <span class="title">Settings</span>
                     </div>
-                    <div class="group"></div>
+                    <div class="group">
+                        
+
+                    </div>
                 </div>
             </div>
 
@@ -791,7 +798,7 @@
 
                 src="Assets/images/SACLOGO.png" alt="SAC Icon" />
             <span class="text-bold" id="StatusBar">Welcome to SAC Solutions - Status Bar - </span>
-
+            <button style=" position: absolute;left: 88%;top:0px;background-color: inherit;" id="UnitsBTN" class="button light text-bold" onclick="document.getElementById('units-btn').click();">Project units: kN,m</button>
         </div>
 
 
@@ -817,10 +824,13 @@
         </div>
     </div>
 
-
+    
+    
     <title>SAC Solutions</title>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script> -->
 
     <!-- <script src="./Assets//node_modules/three/build/three.js"></script> -->
     <!-- <script src="./Assets//node_modules/three/examples/js/controls/OrbitControls.js"></script> -->
@@ -844,22 +854,28 @@
 
     <script type="module" src="main.js"></script>
 
+    <script src="./Assets/Results/JSONTEST.js" ></script>
+
+
     <script src="./Assets/Loads.js/loads-classes.js"></script>
     <script src="./Classes.js"></script>
     <script src="./global.js"></script>
     <script src="./TextLabels.js"></script>
     <script src="./GlobalArrows.js"></script>
-    <script src="./Assets/js/main3.js"></script>
     <script src="./Assets/js/Assign.js"></script>
     <script src="./Assets/Units.js/Units.js"></script>
     <script src="./Assets/grids.js/Grids.js"></script>
     <script src="./Assets/Results/Results.js"></script>
+    <script src="./Assets/Loads.js/LoadComboWindow.js"></script>
+    <script src="./Assets/js/main3.js"></script>
+    <script src="./Assets/js/ResultsTables.js"></script>
+
 
 
     <!--<script src="./Assets/js/BelalLoads.js"></script>-->
 
     <script src="./Assets/Loads.js/LoadPatternWindow.js"></script>
-    <script src="./Assets/Loads.js/LoadComboWindow.js"></script>
+   
     <script src="./Assets/Units.js/UnitsWindow.js"></script>
     <script src="./Assets/Loads.js/AssignLoadWindow.js"></script>
     <script src="./Assets/Loads.js/DisplayLoadsWindow.js"></script>
@@ -869,6 +885,11 @@
     <script src="./Assets/material and section/AssignFrameSectionForm.js"></script>
     <script src="./Assets/ResultsWindows/InForcesWin.js"></script>
     <script src="./Assets/ResultsWindows/DeformWin.js"></script>
+    
+
+
+
+
 </body>
 
 
