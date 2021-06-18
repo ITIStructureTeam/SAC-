@@ -4,7 +4,8 @@ var
  mouse,
  stats,
  renderer,
- ViewPosition;  
+ ViewPosition,
+ Project_Name;  
 
  var HiddenGrids = [];
  var HiddenSnapping = []; 
@@ -787,28 +788,24 @@ class DrawLine
 
     InView()
     {
-        if(view == "XY")
+        if(view == "XY" && (this.Frame.StartPoint.position[2] != ViewPosition || this.Frame.EndPoint.position[2] != ViewPosition))
         {
-            if(this.Frame.StartPoint.position[2] != ViewPosition || this.Frame.EndPoint.position[2] != ViewPosition)
-            {
-                this.Hide();
-            }
+            this.Hide();  
         }
-        else if(view == "XZ")
+        else if(view == "XZ" && (this.Frame.StartPoint.position[1] != ViewPosition || this.Frame.EndPoint.position[1] != ViewPosition))
         {
-            if(this.Frame.StartPoint.position[1] != ViewPosition || this.Frame.EndPoint.position[1] != ViewPosition)
-            {
-                this.Hide();
-            }
+            this.Hide();
         }
-        else if(view == "YZ")
+        else if(view == "YZ" && (this.Frame.StartPoint.position[0] != ViewPosition || this.Frame.EndPoint.position[0] != ViewPosition))
         {
-            if(this.Frame.StartPoint.position[0] != ViewPosition || this.Frame.EndPoint.position[0] != ViewPosition)
-            {
-                this.Hide();
-            }
+            this.Hide();
         }
-        else{
+        else if(DeformedShape.deformationMode)
+        {
+            this.Hide();
+        }
+        else
+        {
             this.Show();
         }
     }
@@ -1534,8 +1531,19 @@ document.getElementById("Extrude").onclick=function(){Extrude()};
 function Extrude()
 {   
     state = false;
-    DrawLine.LoadsDisplayed = false;
-    DrawLine.HideLoads();
+
+    // if loads displayed hide
+    if(DrawLine.LoadsDisplayed){
+        DrawLine.LoadsDisplayed = false;
+        DrawLine.HideLoads();
+    }
+
+    // if deformations displayed hide
+    if (DeformedShape.deformationMode) {
+        DeformedShape.deformationMode = false;
+        DeformedShape.DeformShapesList.forEach(defshape => defshape.Hide());
+    }
+
     Results.ResultsList.forEach(res => res.Hide());
     DrawLine.ExtrudeView();
     document.getElementById("Labels").checked = false;                     
@@ -1575,13 +1583,6 @@ function Labels()
     } 
 }
 
-document.getElementById("Draw").onclick=function(){DrawingMode()};
-function DrawingMode()
-{
-    DrawingModeActive = true;
-    SelectionModeActive = false;
-    Unselect();
-}
 
 function Unselect()
 {

@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    
+
     <link href="Assets/metro4-dist/css/metro-all.min.css" rel="stylesheet" />
     <link href="Assets/css/style.css" rel="stylesheet" />
 
@@ -11,6 +11,7 @@
 
     <link rel="stylesheet" href="./Assets/css/section-material style.css">
     <link rel="stylesheet" href="./Assets/css/Scene.css">
+    <link rel="stylesheet" href="./Assets/css/deformation.css">
 
     <meta charset="utf-8">
     <!-- Provide a short description of the page. -->
@@ -61,6 +62,7 @@
 </head>
 
 <body>
+
     <script>
         let Project_Name ;
         let ProjectStat;
@@ -88,6 +90,7 @@
         }
         intro();
     </script> -->
+
 
     <div id="webgl">
 
@@ -133,10 +136,12 @@
                     <a> <span><img height="32" width="32" src="Assets/images/OpenIcon.png" alt="OpenIcon"> </span> Open
                     </a>
                 </li>
+
                 <li id = "SaveButton">
                     <a> <span  ><img height="32" width="32" src="Assets/images/SaveIcon.jpg" alt="SaveIcon"> </span> Save
                     </a>
                 </li>
+              
                 <li id = "SaveAsButton">
                     <a> <span><img height="32" width="32" src="Assets/images/SaveAsIcon.png " alt="SaveAsIcon"></span>
                         Save As </a>
@@ -702,7 +707,7 @@
                     </div>
                     <!-- Displacements Group (Pannel)    Tab Analyse & Results -->
                     <div class="group">
-                        <button class="ribbon-button">
+                        <button class="ribbon-button" id="undeformed-btn">
                             <span class="icon">
                                 <img alt="Undeformed Shape" src="Assets/images/UndeformedShapeIcon.jpg">
                             </span>
@@ -867,9 +872,12 @@
     <script src="./Assets/grids.js/Grids.js"></script>
     <script src="./Assets/Results/Results.js"></script>
     <script src="./Assets/Results/JointReactions.js"></script>
+    <script src="./Assets/Results/DeformedShape.js"></script>
+
     
     <script src = "./SaveAs.js"></script>
     <script src = "./RootData.js"></script>
+  
     <!--<script src="./Assets/js/BelalLoads.js"></script>-->
 
     <script src="./Assets/Loads.js/LoadPatternWindow.js"></script>
@@ -884,6 +892,8 @@
     <script src="./Assets/ResultsWindows/InForcesWin.js"></script>
     <script src="./Assets/ResultsWindows/DeformWin.js"></script>
     <script src="./Assets/ResultsWindows/ReactionsWindow.js"></script>
+    <script src="./Assets/ResultsWindows/ResetModel.js"></script>
+
 </body>
 
 </html>

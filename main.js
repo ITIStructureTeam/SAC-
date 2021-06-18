@@ -458,6 +458,10 @@ function update(renderer, scene, camera, controls)
         renderer.domElement.removeEventListener('click',ClickToSelectElement,false);
     }
 
+    if(DeformedShape.deformationMode){
+        HideDefLineCircles();
+        ShowDefLineCircles();
+    }
 
     requestAnimationFrame(function(){
         update(renderer, scene, camera, controls);
@@ -467,91 +471,6 @@ function update(renderer, scene, camera, controls)
 
 
 
-// for grids
-
-
-document.querySelector('#grids-btn').addEventListener("click",function(){
-    if(!document.querySelector('.main-window')){
-        $('body').append(GetGridsWin());
-        LoadGridsData('grids-x',listx,xGridsNames);
-        LoadGridsData('grids-y',listy,yGridsNames);
-        LoadGridsData('grids-z',listz,zGridsNames);
-        document.querySelector(`#grids-x-part .info`).addEventListener("click",function(){AddGrid('grids-x',listx, xGridsNames)});
-        document.querySelector(`#grids-y-part .info`).addEventListener("click",function(){AddGrid('grids-y',listy,yGridsNames)});
-        document.querySelector(`#grids-z-part .info`).addEventListener("click",function(){AddGrid('grids-z',listz,zGridsNames)});
-
-        document.querySelector('#grids-window').addEventListener("click",function(){
-
-            if(GetActiveGrid('grids-x')){
-                let activeGrid = GetActiveGrid('grids-x');
-                document.querySelector(`#grids-x-part .default`).addEventListener("click", function(){
-                    if(activeGrid) activeGrid.remove();
-                });
-            }
-            if(GetActiveGrid('grids-y')){
-                let activeGrid = GetActiveGrid('grids-y');
-                document.querySelector(`#grids-y-part .default`).addEventListener("click", function(){
-                    if(activeGrid) activeGrid.remove();
-                });
-            }
-            if(GetActiveGrid('grids-z')){
-                let activeGrid = GetActiveGrid('grids-z');
-                document.querySelector(`#grids-z-part .default`).addEventListener("click", function(){
-                    if(activeGrid) activeGrid.remove();
-                });
-            }
-        })
-        
-        
-        document.querySelector('#grids-ok').addEventListener("click", function(){
-            ReadGrids('grids-x',listx, xGridsNames);
-            ReadGrids('grids-y',listy,yGridsNames);
-            ReadGrids('grids-z',listz,zGridsNames);
-            if(!listx.length || !listy.length || !listz.length){
-                Metro.dialog.create({
-                    title: "Invalid Grids Data",
-                    content: "<div>You must input at least one spacing as positive number in each direction</div>",
-                    closeButton: true
-                });
-            }else{
-                ThreeD();
-                if(group != null)
-                {
-                    scene.remove(group);
-                    gridLines.forEach(element => {
-                        element.material.dispose()
-                        element.geometry.dispose()
-                        scene.remove(element);
-                    });
-                    gridLines = [];
-                    for (var i = group.children.length - 1; i >= 0; i--) {
-                        group.children[i].material.dispose();
-                        group.children[i].geometry.dispose();
-                        group.remove(group.children[i]);
-                    }
-                    removeSelectionGrids();
-                }
-                
-                GridSelections();
-                group = GridPoints(listx,listy,listz,listx.length,listy.length,listz.length);
-                gridLines = GridLine(listx,listy,listz,listx.length,listy.length,listz.length);
-                scene.add(group);
-                gridLines.forEach(element => {
-                    scene.add(element);
-                });
-                
-                document.querySelector('#grids-window').parentElement.parentElement.remove();
-                gridsUpdated=true;
-            }
-        });
-
-        document.querySelector('#grids-close').addEventListener("click",function(){
-            document.querySelector('#grids-window').parentElement.parentElement.remove();
-        });
-        
-        
-    }
-});
 
 if(gridLines == null){
     listx = [6,6,6]
@@ -569,60 +488,7 @@ if(gridLines == null){
 
 
  
-function GridSelections()
-{
-    let position = 0;
-    for (let i = 0; i <= listz.length; i++)
-    {
-        const text = "Z = "+ projUnits.LengthConvert(position, true);
-        position += listz[i];
-        $("#XY").append(`<option value=${position} >${text}</option>`);
-    }
 
-    position = 0;
-    for (let i = 0; i <= listy.length; i++)
-    {
-        const text = "Z = "+ projUnits.LengthConvert(position, true);
-        position += listy[i];
-        $("#XZ").append(`<option value=${position} >${text}</option>`);
-    }
-
-    position = 0;
-    for (let i = 0; i <= listx.length; i++)
-    {
-        const text = "Z = "+ projUnits.LengthConvert(position, true);
-        position += listx[i];
-        $("#YZ").append(`<option value=${position} >${text}</option>`);
-    }
-    
-    // const yz = document.getElementById("YZ");
-    // position = 0;
-    // for (let i = 0; i <= listx.length; i++)
-    // {
-    //     const option = document.createElement("option");
-    //     option.text = "X = "+position;
-    //     yz.add(option, yz[i]);
-    //     position += listx[i];
-    // }
-}
-
-function removeSelectionGrids()
-{
-    const xy = $('#XY').children().length;
-    for (let i = xy - 1; i >= 0; i--) {
-        $('#XY').children()[i].remove(); 
-    }
-    
-    const xz = $('#XZ').children().length;
-    for (let i = xz - 1; i >= 0; i--) {
-        $('#XZ').children()[i].remove(); 
-    }
-    
-    const yz = $('#YZ').children().length;
-    for (let i = yz - 1; i >= 0; i--) {
-        $('#YZ').children()[i].remove(); 
-    }
-}
 
  
 
@@ -668,14 +534,18 @@ function XYView(XYindex)
             scene.remove(gridLines[j]);
         }
     }
+
     for (let j = 0; j < DrawLine.DrawLinesArray.length; j++)
     {
         DrawLine.DrawLinesArray[j].InView();
     }
+
+
     for (let j = 0; j < Point.PointsArray.length; j++)
     {
         Point.PointsArray[j].InView();
     }
+
     for (let j = 0; j < Results.ResultsList.length; j++)
     {
         if(Results.ResultsList[j].Draw != null)
@@ -689,6 +559,10 @@ function XYView(XYindex)
         {
             JointReactions.ReactionsList[j].InView();
         }
+    }
+
+    if(DeformedShape.deformationMode){
+        DeformedShape.DeformShapesList.forEach(defsape => defsape.InView());
     }
 
     camera.position.x = distanceX/2;
@@ -753,10 +627,12 @@ function XZView(XZindex){
             scene.remove(gridLines[j]);
         }
     }
+
     for (let j = 0; j < DrawLine.DrawLinesArray.length; j++)
     {
         DrawLine.DrawLinesArray[j].InView();
     }
+
     for (let j = 0; j < Point.PointsArray.length; j++)
     {
         Point.PointsArray[j].InView();
@@ -774,6 +650,10 @@ function XZView(XZindex){
         {
             JointReactions.ReactionsList[j].InView();
         }
+    }
+  
+    if(DeformedShape.deformationMode){
+        DeformedShape.DeformShapesList.forEach(defsape => defsape.InView());
     }
     
     camera.up.set( 0, 0.5, 0.5 );
@@ -840,10 +720,13 @@ function YZView(YZindex){
             scene.remove(gridLines[j]);
         }
     }
+
     for (let j = 0; j < DrawLine.DrawLinesArray.length; j++)
     {
         DrawLine.DrawLinesArray[j].InView();
     }
+
+    
     for (let j = 0; j < Point.PointsArray.length; j++)
     {
         Point.PointsArray[j].InView();
@@ -862,6 +745,11 @@ function YZView(YZindex){
             JointReactions.ReactionsList[j].InView();
         }
     }
+  
+    if(DeformedShape.deformationMode){
+        DeformedShape.DeformShapesList.forEach(defsape => defsape.InView());
+    }
+    
 
     camera.position.x = Math.max(distanceY, distanceZ)*1.7 + ViewPosition;
     camera.position.y = distanceY/2 ;
@@ -986,10 +874,12 @@ function resetScene()
         scene.add(HiddenGrids[0]);
         HiddenGrids.shift();
     }
+
     for(let i = 0; i < DrawLine.DrawLinesArray.length; i++)
     {
         DrawLine.DrawLinesArray[i].InView();
     }
+
     for(let i = 0; i < Point.PointsArray.length; i++)
     {
         Point.PointsArray[i].InView();
@@ -1009,6 +899,10 @@ function resetScene()
         }
     }
 
+    if(DeformedShape.deformationMode){
+        DeformedShape.DeformShapesList.forEach(defshape => defshape.InView());
+    }
+
 }
 
 function removeArrows()
@@ -1023,39 +917,4 @@ function removeArrows()
 
 
 
-
-
-
-
-
-
-
-
-
-        
-
-
-
-
-
-
-
-    // let p1 = [0,0,0]
-    // let p2 = [6,4,3]
-    // let p3 = [6,0,0]
-    // let p4 = [0,4,0]
-    // let p5 = [0,0,3]
-    // let p6 = [0,4,3]
-    
-    // let nnns = ResultMomentArrow(-1, p1, 1)
-    // scene.add(nnns)
-    // let esg = ResultMomentArrow(1, p2, 1)
-    // scene.add(esg)
-    // let ges = ResultMomentArrow(-1, p3, 2)
-    // scene.add(ges)
-    // let nnnwwws = ResultMomentArrow(1, p4, 2)
-    // scene.add(nnnwwws)
-    // let nnnws = ResultMomentArrow(-1, p5, 3)
-    // scene.add(nnnws)
-    // let wwws = ResultMomentArrow(1, p6, 3)
-    // scene.add(wwws)
+DisablePostProcessBts();

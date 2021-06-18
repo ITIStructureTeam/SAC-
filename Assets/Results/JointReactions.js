@@ -2,6 +2,7 @@ class JointReactions
 {
     static ReactionsList = [];
     static pattern;
+    static ReactMode = false;
     constructor(pattern, jointLabel, position, Rx, Ry, Rz, Mx, My, Mz)
     {
         this.PatternID = pattern   ;
@@ -16,6 +17,7 @@ class JointReactions
         this.Draw = new THREE.Group();
         JointReactions.ReactionsList.push(this);
     }
+
     DrawForces(pattern)
     {
         if(this.Draw.children.length>0)
@@ -83,7 +85,7 @@ class JointReactions
 
     InView()
     {
-        if(this.PatternID == JointReactions.pattern)
+        if(this.PatternID == JointReactions.pattern && JointReactions.ReactMode)
         {
             this.Show();
         }

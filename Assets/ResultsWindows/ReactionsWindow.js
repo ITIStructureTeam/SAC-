@@ -62,16 +62,14 @@ document.querySelector('#reactions').addEventListener("click", function(){
         //LoadPrevReactionsOptions();
     
         document.querySelector('#ok-reactions-btn').addEventListener("click", function(){
-            DrawLine.LoadsDisplayed = false;
-            DrawLine.HideLoads();
             GetResults();
             document.querySelector('.main-window').parentElement.parentElement.remove();
         });
-        document.querySelector('#app-reactions-btn').addEventListener("click", function(){
-            DrawLine.LoadsDisplayed = false;
-            DrawLine.HideLoads();
+
+        document.querySelector('#app-reactions-btn').addEventListener("click", function(){  
             GetResults();
         });
+
         document.querySelector('#close-reactions-btn').addEventListener("click", function(){
             document.querySelector('.main-window').parentElement.parentElement.remove();
         })
@@ -103,9 +101,26 @@ function GetResults() {
 
     let results = JointReactions.ReactionsList.filter(res=> res.PatternID == caseId)
 
-    for(let i = 0; i< JointReactions.ReactionsList.length; i++)
-    {
-        JointReactions.ReactionsList[i].Hide();
+     // if in deformation mode go out
+     if(DeformedShape.deformationMode){
+        DeformedShape.deformationMode = false;
+        DeformedShape.DeformShapesList.forEach(defshape => defshape.Hide());
+    }
+
+    // if in load mode go out
+    if(DrawLine.LoadsDisplayed){
+        DrawLine.LoadsDisplayed = false;
+        DrawLine.HideLoads();
+    }
+
+    // if in results mode
+    if (Results.ResultsMode) {
+
+        Results.ResultsMode = false;
+        for(let i = 0; i< JointReactions.ReactionsList.length; i++)
+        {
+            JointReactions.ReactionsList[i].Hide();
+        }
     }
     
     for(let i = 0; i<Results.ResultsList.length; i++)
@@ -113,6 +128,9 @@ function GetResults() {
         Results.ResultsList[i].Hide();
     }
 
+
+    JointReactions.ReactMode = true;
+  
     switch(force)
     {
         case 'force':
@@ -129,23 +147,3 @@ function GetResults() {
             break;
         }
 }
-
-
-// function LoadPrevReactionsOptions() {
-//     if(prevFForcedOptions.length){
-//         $('#Rcase-combo-select')[0].value = prevReactionsOptions[0];
-//         document.querySelector(`input[value="${prevReactionsOptions[1]}"]`).checked = true
-//         if(prevReactionsOptions[2]){
-//             document.querySelector(`input[value="user"]`).checked = true;
-//             document.querySelector('input[type="number"]').disabled = false
-//             document.querySelector('input[type="number"]').value = prevReactionsOptions[2];
-//         }else{
-//             document.querySelector(`input[value="auto"]`).checked = true;
-//         }
-//         document.querySelector(`input[value="${prevReactionsOptions[3]}"]`).checked = true;       
-//     }else{
-//         document.querySelector('input[value="Force"]').checked=true
-//         document.querySelector('input[value="auto"]').checked=true
-//         document.querySelector('input[value="fill"]').checked = true;
-//     }
-// }

@@ -1,9 +1,9 @@
 
+
 class RootData
 {
     constructor()
     {
-        console.log(Project_Name)
         this.ProjectName = Project_Name;
         this.Materials = [...Material.MaterialsList.values()];
         this.Sections = [...Section.SectionList.values()];
@@ -15,6 +15,18 @@ class RootData
     }
 }
 
+
+function DisablePostProcessBts() {
+    $('#deformed-btn')[0].disabled = true;
+    $('#reactions')[0].disabled = true;
+    $('#frame-forces')[0].disabled = true;
+}
+
+function EnablePostProcessBts() {
+    $('#deformed-btn')[0].disabled = false;
+    $('#reactions')[0].disabled = false;
+    $('#frame-forces')[0].disabled = false;
+}
 
 function DisaplePreProcessorButtons()
 {
@@ -34,10 +46,6 @@ function DisaplePreProcessorButtons()
     document.getElementById("Draw").disabled = true;
     document.getElementById("AddPointsOnFrame").disabled = true;
     document.getElementById("grids-btn").disabled = true;
-    document.getElementById("materialsBtn").disabled = true;
-    document.getElementById("DefineSections").disabled = true;
-    document.getElementById("pattern-btn").disabled = true;
-    document.getElementById("combo-btn").disabled = true;
     document.getElementById("Run").disabled = true;
     document.getElementById("Unlock").disabled = false;
 }
@@ -68,19 +76,30 @@ function EnaplePreProcessorButtons()
 }
 
 document.getElementById("Unlock").onclick=function(){Unlock()};
-function Unlock()
-{ 
+
+function Unlock(){
+
+    locked = false;
+    DisablePostProcessBts();
     EnaplePreProcessorButtons();
     document.getElementById("StatusBar").innerHTML = ""; 
+
+
+    // reset Results class
     Results.ResultsList.forEach(res => res.Hide());
     Results.ResultsList = [];
-    for(let i = 0; i< JointReactions.ReactionsList.length; i++)
-    {
-        JointReactions.ReactionsList[i].Hide();
-    }
-    JointReactions.ReactionsList = [];
-}
 
+    // reset JointReactions class
+    JointReactions.ReactionsList.forEach(reaction => reaction.Hide());
+    JointReactions.ReactionsList = [];
+
+    //reset DeformedShape class
+    if(DeformedShape.deformationMode){
+        DeformedShape.deformationMode = false;
+        DeformedShape.DeformShapesList.forEach(defshape => defshape.Hide());
+    }
+    DeformedShape.DeformShapesList = [];
+}
 
     function Run()
     {
@@ -95,6 +114,8 @@ function Unlock()
             data: inPut,
             cache: false,
             success: function (result) {
+                locked = true;
+                EnablePostProcessBts();
                 console.log(result);
                 let InputResults = [...result.strainingActions];
                 for(let i = 0 ; i < InputResults.length; i++)
@@ -128,6 +149,12 @@ function Unlock()
                     let mz        = InputRactions[i].mz;
                     new JointReactions(patternID, jointID, position, rx, ry, rz, mx, my, mz)
                 }   
+  
+                DeformedShape.scaleMap = GetDefScaleMap(result.deformations);
+                DeformedShape.displayedLoadCase = DeformedShape.scaleMap.keys().next().value;
+                for (const framedeform of result.deformations) {
+                    new DeformedShape(framedeform.frameID, framedeform.deformationDetails);
+                }
                 console.log(Results.ResultsList);
                 console.log(JointReactions.ReactionsList);
                 document.getElementById("StatusBar").innerHTML = "Run Complete"; 
@@ -145,7 +172,7 @@ function Unlock()
     {
         document.getElementById("StatusBar").innerHTML = "Saving ..."; 
         let OutPut = JSON.stringify(new RootData());
-        console.log(OutPut)
+
         $.ajax({
             type: "POST",
             url: "/api/RunAnalysis/SaveModel",                 
@@ -168,7 +195,9 @@ function Unlock()
         });
     }
 
+
     document.querySelector("#SaveButton").addEventListener("click", SaveModel);
+
     function SaveModel()
     {
         document.getElementById("StatusBar").innerHTML = "Saving ..."; 
@@ -217,7 +246,6 @@ function Unlock()
             }
         });
     }
-
 
     $("#Run").click(function()
     {

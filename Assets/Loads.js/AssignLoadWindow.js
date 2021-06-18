@@ -676,10 +676,25 @@ document.querySelector('#point-load-btn').addEventListener("click", function(){
             DrawLine.DisplayedPattern = patternId;
             
             if(DrawLine.SelectedLines.length){
+
                 if(delLoadOption.checked){
-                    commands.excuteCommand(new DeleteFrameLoad(DrawLine.SelectedLines, patternId, ELoadShape.Point));
+
+                    //#region Check validity of lines to delete loads from
+                    let trustedlines = [];
+                    let lines = DrawLine.SelectedLines.filter(drawline => drawline.Frame.LoadsAssigned.has(patternId) );
+                    lines.forEach( line => {
+                        let existingload = line.Frame.LoadsAssigned.get(patternId).filter( appload => appload.Shape == ELoadShape.Point );
+                        if(existingload.length) trustedlines.push(line);
+                    });
+                    //#endregion
+
+                    if(trustedlines.length)
+                    commands.excuteCommand(new DeleteFrameLoad(trustedlines, patternId, ELoadShape.Point));
+
                 }else if(appliedLoads.length){
+
                     commands.excuteCommand(new AssignFrameLoad(DrawLine.SelectedLines, patternId, appliedLoads));
+
                 }
            
             }
@@ -716,10 +731,25 @@ document.querySelector('#distributed-load-btn').addEventListener("click", functi
             let patternId = GetAppLoadPatternId();
             DrawLine.DisplayedPattern = patternId;
             if(DrawLine.SelectedLines.length){
+                
                 if(delLoadOption.checked){
-                    commands.excuteCommand(new DeleteFrameLoad(DrawLine.SelectedLines, patternId, ELoadShape.Distributed));
+
+                    //#region Check validity of lines to delete loads from
+                    let trustedlines = [];
+                    let lines = DrawLine.SelectedLines.filter(drawline => drawline.Frame.LoadsAssigned.has(patternId) );
+                    lines.forEach( line => {
+                        let existingload = line.Frame.LoadsAssigned.get(patternId).filter(appload => appload.Shape == ELoadShape.Distributed);
+                        if(existingload.length) trustedlines.push(line);
+                    });
+                    //#endregion
+
+                    if(trustedlines.length)
+                    commands.excuteCommand(new DeleteFrameLoad(trustedlines, patternId, ELoadShape.Distributed));
+
                 }else if(appliedLoads.length){
+
                     commands.excuteCommand(new AssignFrameLoad(DrawLine.SelectedLines, patternId, appliedLoads));
+
                 }
             }
             document.querySelector('.main-window').parentElement.parentElement.remove();
@@ -736,6 +766,31 @@ document.querySelector('#disp-load-btn').addEventListener("click", function(){
         $('body').append(dispLoadsWindow);
         DispLoadPatts();
         document.querySelector('#ok-disp-load-btn').addEventListener("click", function(){
+
+            // if in deformation mode go out
+            if(DeformedShape.deformationMode){
+                DeformedShape.deformationMode = false;
+                DeformedShape.DeformShapesList.forEach(defshape => defshape.Hide());
+            }
+
+            // if in results mode
+            if(Results.ResultsMode){
+                Results.ResultsMode = false;
+                for(let i = 0; i<Results.ResultsList.length; i++)
+                {
+                    Results.ResultsList[i].Hide();
+                }
+            }
+
+            // if in reaction mode
+            if (JointReactions.ReactMode) {
+                JointReactions.ReactMode = false;
+                for(let i = 0; i< JointReactions.ReactionsList.length; i++)
+                {
+                    JointReactions.ReactionsList[i].Hide();
+                }
+            }
+            
             // go in show load mode
             let patId = GetDispLoadPatternId();
             DrawLine.LoadsDisplayed = true;

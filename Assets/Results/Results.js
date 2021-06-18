@@ -2,6 +2,8 @@ class Results
 {
     static ResultsList = [];
     static Pattern;
+    static ResultsMode = false;
+
     constructor(pattern, frameLabel, startPoint, endPoint, stations, Mx, My, Tz, N, Vx, Vy, rz)
     {
         this.PatternID = pattern;
@@ -223,7 +225,7 @@ class Results
 
     InView()
     {
-        if(this.PatternID == Results.Pattern){
+        if(this.PatternID == Results.Pattern && Results.ResultsMode){
             this.Show();
         }
         else{
