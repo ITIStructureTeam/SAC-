@@ -1,5 +1,5 @@
 import { MapControls } from './Assets/Three.js files/OrbitControls.js'
-import { DoubleSide } from './Assets/Three.js files/three.module.js';
+import { DoubleSide, MeshToonMaterial } from './Assets/Three.js files/three.module.js';
 
 let PreProcessor = true;
 
@@ -162,6 +162,7 @@ function ClickToDrawLine(event) {
             if (intersects.length > 0) {
                 if (points.length < 6) {
                     StatusBar.innerHTML = 'Select Next Point or Press -Enter- to Reset'
+                    Metro.toast.create("Specify Next Point or Press -Enter- to Reset", null, 2000,"secondary")
                     pos_x = intersects[0].object.position.x;
                     pos_y = intersects[0].object.position.y;
                     pos_z = intersects[0].object.position.z;
@@ -175,6 +176,7 @@ function ClickToDrawLine(event) {
                 }
                 else if (points.length == 6) {
                     StatusBar.innerHTML = 'Select First Point'
+                    Metro.toast.create("Specify First Point to Draw a new Element", null, 3000,"secondary")
                     commands.excuteCommand(new DrawLine(new FrameElement(points, GetSelectedSection())));
                     points = [];
                 }
@@ -234,6 +236,8 @@ document.addEventListener("keyup", function () {
         SelectionModeActive = true;
         document.querySelector("body").style = "cursor:default"
     }
+    if (DrawingModeActive == true) 
+    document.querySelector("body").style = "cursor:crosshair"
 });
 
 document.addEventListener('mousedown', function (event) {
