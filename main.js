@@ -234,6 +234,8 @@ document.addEventListener("keyup", function () {
         SelectionModeActive = true;
         document.querySelector("body").style = "cursor:default"
     }
+    if (DrawingModeActive == true) 
+    document.querySelector("body").style = "cursor:crosshair"
 });
 
 document.addEventListener('mousedown', function (event) {
