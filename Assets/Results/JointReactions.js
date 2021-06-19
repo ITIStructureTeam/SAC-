@@ -186,12 +186,12 @@ function ResultForceArrow(value, Position, direction)
 
     if(direction == 2 && value < 0)
     {
-        const txt = makeResultsTextSprite( value.toFixed(2), vertices[0], vertices[1], vertices[2]-0.2,{fontsize: 140, fontface: "Georgia", textColor:{r:0,g:60,b:0,a:1},
+        const txt = makeResultsTextSprite( projUnits.ForceConvert(value, true).toFixed(2), vertices[0], vertices[1], vertices[2]-0.2,{fontsize: 140, fontface: "Georgia", textColor:{r:0,g:60,b:0,a:1},
         vAlign:"center", hAlign:"center"});
         arrow.add(txt);
     }
     else{
-        const txt = makeResultsTextSprite( value.toFixed(2), vertices[15], vertices[16], vertices[17],{fontsize: 140, fontface: "Georgia", textColor:{r:0,g:60,b:0,a:1},
+        const txt = makeResultsTextSprite( projUnits.ForceConvert(value, true).toFixed(2), vertices[15], vertices[16], vertices[17],{fontsize: 140, fontface: "Georgia", textColor:{r:0,g:60,b:0,a:1},
         vAlign:"center", hAlign:"center"});
         arrow.add(txt);
     }
@@ -285,12 +285,12 @@ function ResultMomentArrow(value, Position, direction)
 
     if(direction == 2 && value < 0)
     {
-        const txt = makeResultsTextSprite( value.toFixed(2), vertices[0], vertices[1], vertices[2]-0.2,{fontsize: 140, fontface: "Georgia", textColor:{r:0,g:60,b:0,a:1},
+        const txt = makeResultsTextSprite( projUnits.MomentConvert(value).toFixed(2), vertices[0], vertices[1], vertices[2]-0.2,{fontsize: 140, fontface: "Georgia", textColor:{r:0,g:60,b:0,a:1},
         vAlign:"center", hAlign:"center"});
         arrow.add(txt);
     }
     else{
-        const txt = makeResultsTextSprite( value.toFixed(2), vertices[30], vertices[31], vertices[32],{fontsize: 140, fontface: "Georgia", textColor:{r:0,g:60,b:0,a:1},
+        const txt = makeResultsTextSprite( projUnits.MomentConvert(value).toFixed(2), vertices[30], vertices[31], vertices[32],{fontsize: 140, fontface: "Georgia", textColor:{r:0,g:60,b:0,a:1},
         vAlign:"center", hAlign:"center"});
         arrow.add(txt);
     }

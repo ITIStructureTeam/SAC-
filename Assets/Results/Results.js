@@ -47,7 +47,7 @@ class Results
         let endPoint =   this.EndPoint;
         let rz =         this.Rotation;
         let scale = 1.25/MaxMx;
-        let result = ResultsDiagram(results , stations, startPoint, endPoint, 2, rz, scale);
+        let result = ResultsDiagram(results , stations, startPoint, endPoint, 2, rz, scale, "Moment");
     
         this.Draw = result;
         Results.Pattern = pattern
@@ -78,7 +78,7 @@ class Results
         let endPoint =   this.EndPoint;
         let rz =         this.Rotation;
         let scale = 1.25/MaxMy;
-        let result = ResultsDiagram(results , stations, startPoint, endPoint, 3, rz, scale);
+        let result = ResultsDiagram(results , stations, startPoint, endPoint, 3, rz, scale, "Moment");
         
         this.Draw = result;
         Results.Pattern = pattern
@@ -109,7 +109,7 @@ class Results
         let endPoint =   this.EndPoint;
         let rz =         this.Rotation;
         let scale = 1.25/MaxMT;
-        let result = ResultsDiagram(results , stations, startPoint, endPoint, 2, rz, scale);
+        let result = ResultsDiagram(results , stations, startPoint, endPoint, 2, rz, scale, "Moment");
         
         this.Draw = result;
         Results.Pattern = pattern
@@ -140,7 +140,7 @@ class Results
         let endPoint =   this.EndPoint;
         let rz =         this.Rotation;
         let scale = 1.25/MaxN;
-        let result = ResultsDiagram(results , stations, startPoint, endPoint, 2, rz, scale);
+        let result = ResultsDiagram(results , stations, startPoint, endPoint, 2, rz, scale, "Force");
         
         this.Draw = result;
         Results.Pattern = pattern
@@ -171,7 +171,7 @@ class Results
         let endPoint =    this.EndPoint;
         let rz =          this.Rotation;
         let scale = 1.25/MaxVx;
-        let result = ResultsDiagram(results , stations, startPoint, endPoint, 2, rz, scale);
+        let result = ResultsDiagram(results , stations, startPoint, endPoint, 2, rz, scale, "Force");
         
         this.Draw = result;
         Results.Pattern = pattern
@@ -202,7 +202,7 @@ class Results
         let endPoint =   this.EndPoint;
         let rz =         this.Rotation;
         let scale = 1.25/MaxVy;
-        let result = ResultsDiagram(results , stations, startPoint, endPoint, 3, rz, scale);
+        let result = ResultsDiagram(results , stations, startPoint, endPoint, 3, rz, scale, "Force");
 
         this.Draw = result;
         Results.Pattern = pattern
@@ -330,7 +330,7 @@ function ResultLines(length, x,y,z, startPoint, endPoint,  direction, rz, scale 
 
 
 // This function assumes results are from points distributed equally along the frame
-function ResultsDiagram(results , stations, startPoint, endPoint, direction, rz, scale = 1)
+function ResultsDiagram(results , stations, startPoint, endPoint, direction, rz, scale = 1, type)
 {
     if(results.length != stations.length)
     {
@@ -374,18 +374,27 @@ function ResultsDiagram(results , stations, startPoint, endPoint, direction, rz,
             position += 0.1;
             color = {r:180,g:0,b:0,a:1}
         }
+
         if(results[i] != results[i-1] && (results[i] == max || results[i] == min ))
         {
+            let text;
+            if(type == "Moment")
+            {
+                text = projUnits.MomentConvert(results[i]);
+            }
+            else{
+                text = projUnits.ForceConvert(results[i], true);
+            }
             if(direction ==1 || direction ==2)
             {
                 const textPosition = [line[1][3]+ x, line[1][4]+ y, line[1][5]+ z+ position];
-                const txt = makeResultsTextSprite( results[i].toFixed(2), textPosition[0], textPosition[1], textPosition[2],{fontsize: 110, fontface: "Georgia", textColor:color,
+                const txt = makeResultsTextSprite( text.toFixed(2), textPosition[0], textPosition[1], textPosition[2],{fontsize: 110, fontface: "Georgia", textColor:color,
                     vAlign:"center", hAlign:"center"});
                     load.add(txt);
             }
             else{
                 const textPosition = [line[1][3]+ x + position, line[1][4]+ y + position, line[1][5]+ z];
-                const txt = makeResultsTextSprite( results[i].toFixed(2), textPosition[0], textPosition[1], textPosition[2],{fontsize: 110, fontface: "Georgia", textColor:color,
+                const txt = makeResultsTextSprite( text.toFixed(2), textPosition[0], textPosition[1], textPosition[2],{fontsize: 110, fontface: "Georgia", textColor:color,
                     vAlign:"center", hAlign:"center"});
                     load.add(txt);
             }

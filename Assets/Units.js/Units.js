@@ -335,5 +335,12 @@ class ProjUnits {
         }
         return returned;
     }
+
+    MomentConvert(value)
+    {
+        let converted = this.ForceConvert(value, true);
+        converted = this.LengthConvert(converted, true);
+        return converted;
+    }
 }
 var projUnits = new ProjUnits();
