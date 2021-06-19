@@ -96,18 +96,17 @@
             alert ( "refresh or leave"); 
             } 
         } 
-    </script>
-    <script>
+
         function intro() {
             Metro.activity.open({
                 overlayColor: '#fff',
                 overlayAlpha: 1,
                 text: `<img style="width: 500px;"
-        src="./Assets/images/SAcWideLogoPNG.png" alt="KiweIcon" />
-        <div class=\'mt-2 text-large\'>SAC Solutions...</div>
-        <div class=\'mt-2 text-large\'>Loading...</div>`,
+                    src="./Assets/images/SAcWideLogoPNG.png" alt="KiweIcon" />
+                    <div class=\'mt-2 text-large\'>SAC Solutions...</div>
+                    <div class=\'mt-2 text-large\'>Loading...</div>`,
                 type: 'bars',
-                autoHide: 1500
+                autoHide: 1700
             });
         }
         intro();
@@ -288,7 +287,7 @@
                         <button id="Draw" class="ribbon-button" data-role="hint" data-hint-position="bottom"
                         data-hint-text="Draw Frames">
                             <span class="icon">
-                                <img alt="Frame" src="Assets/images/FrameIcon.jpg">
+                                <img alt="Frame" src="Assets/images/FrameIcon.png">
                             </span>
                             <span class="caption">Frame Element</span>
                         </button>
@@ -776,17 +775,7 @@
                                 <img alt="Deformed Shape" src="Assets/images/DeformedIcon.png">
                             </span>
                           <span class="caption">Deformed Shape</span>                            
-                        </button>
-                      
-                        <button class="ribbon-button" onclick="ShowResultsTable()" data-role="hint" data-hint-position="bottom"
-                        data-hint-text="Show Table">
-                            <span class="icon">
-                                <img alt="Show Tables" src="Assets/images/showtables.jpg">
-                            </span>
-                            <span class="caption">Show Tables</span>
-                        </button>
-
-                        
+                        </button>                        
                         <span class="title">Displacements</span>
                     </div>
 
@@ -814,6 +803,17 @@
                         <span class="title">Forces</span>
                     </div>
 
+
+                    <div class="group">
+                        <button id="tables-btn" class="ribbon-button" onclick="ShowResultsTable()" data-role="hint" data-hint-position="bottom"
+                        data-hint-text="Show Table">
+                            <span class="icon">
+                                <img alt="Show Tables" src="Assets/images/showtables.jpg">
+                            </span>
+                            <span class="caption">Show Tables</span>
+                        </button>
+                        <span class="title">Results Tables</span>
+                    </div>
 
                 </div>
 

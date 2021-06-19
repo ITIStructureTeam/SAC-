@@ -185,6 +185,7 @@ function ClickToDrawLine(event) {
 
 //keys
 document.addEventListener('keydown', function (event) {
+
     if (event.key === "Escape") {
         points = [];
         DrawingModeActive = false;
@@ -419,7 +420,6 @@ function update(renderer, scene, camera, controls) {
 
 
     if (DrawingModeActive == true) {
-        document.querySelector("body").style = "cursor:crosshair"
         renderer.domElement.addEventListener('click', ClickToDrawLine, false);
         hover();
         SelectionModeActive == false;

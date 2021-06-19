@@ -8,24 +8,23 @@ let ResultantPattern;
 let ResultantFrame;
 let patternchoise;
 let memberchoise;
-fillTable();
+
 
 function fillTable() {
-    ResultantPattern = ListofAllResults.filter(res => res.PatternID == patternchoise);
-
+    ResultantPattern = Results.ResultsList.filter(res => res.PatternID == patternchoise);
     ResultantFrame = ResultantPattern.filter(res => res.FrameID == memberchoise);
-
 
     for (let i = 0; i < ResultantFrame.length; i++) {
         for (let j = 0; j < ResultantFrame[i].Stations.length; j++) {
             newElement = {
-                Station: ResultantFrame[i].Stations[j].toFixed(userPrecision),
-                MomentX: ResultantFrame[i].MomentX[j].toFixed(userPrecision),
-                MomentY: ResultantFrame[i].MomentY[j].toFixed(userPrecision),
-                ShearX: ResultantFrame[i].ShearX[j].toFixed(userPrecision),
-                ShearY: ResultantFrame[i].ShearY[j].toFixed(userPrecision),
-                Normal: ResultantFrame[i].Normal[j].toFixed(userPrecision),
-                Torsion: ResultantFrame[i].Torsion[j].toFixed(userPrecision)
+                Station: projUnits.LengthConvert( parseFloat(ResultantFrame[i].Stations[j].toFixed(userPrecision)), true),
+                MomentX: projUnits.MomentConvert(parseFloat( ResultantFrame[i].MomentX[j].toFixed(userPrecision) )),
+                MomentY: projUnits.MomentConvert(parseFloat(ResultantFrame[i].MomentY[j].toFixed(userPrecision) )),
+                ShearX: projUnits.ForceConvert(parseFloat(ResultantFrame[i].ShearX[j].toFixed(userPrecision)), true) ,
+                ShearY: projUnits.ForceConvert(parseFloat(ResultantFrame[i].ShearY[j].toFixed(userPrecision)), true),
+                Normal: projUnits.ForceConvert(parseFloat(ResultantFrame[i].Normal[j].toFixed(userPrecision)), true),
+                Torsion: projUnits.MomentConvert(parseFloat(ResultantFrame[i].Torsion[j].toFixed(userPrecision)))
+
             };
             newTable.push(newElement);
         }
