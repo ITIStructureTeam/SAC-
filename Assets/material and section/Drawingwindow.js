@@ -62,6 +62,7 @@ function InitFramePropWindow() {
     Unselect();
     document.querySelector('#frameprop-sec-list').addEventListener("change", GetSelectedSection);
     document.querySelector("body").style = "cursor:crosshair";
+
 }
 
 function FillSectionList() {

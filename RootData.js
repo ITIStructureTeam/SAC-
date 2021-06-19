@@ -26,6 +26,7 @@ function EnablePostProcessBts() {
     $('#reactions')[0].disabled = false;
     $('#frame-forces')[0].disabled = false;
     $('#tables-btn')[0].disabled = false;
+
 }
 
 function DisaplePreProcessorButtons() {
@@ -144,6 +145,7 @@ function Run() {
                 let mz = InputRactions[i].mz;
                 new JointReactions(patternID, jointID, position, rx, ry, rz, mx, my, mz)
             }
+
             fillTable();
 
             DeformedShape.scaleMap = GetDefScaleMap(result.deformations);

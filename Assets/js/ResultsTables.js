@@ -8,13 +8,11 @@ let ResultantPattern;
 let ResultantFrame;
 let patternchoise;
 let memberchoise;
-//fillTable();
+
 
 function fillTable() {
     ResultantPattern = Results.ResultsList.filter(res => res.PatternID == patternchoise);
-
     ResultantFrame = ResultantPattern.filter(res => res.FrameID == memberchoise);
-
 
     for (let i = 0; i < ResultantFrame.length; i++) {
         for (let j = 0; j < ResultantFrame[i].Stations.length; j++) {
@@ -26,6 +24,7 @@ function fillTable() {
                 ShearY: projUnits.ForceConvert(parseFloat(ResultantFrame[i].ShearY[j].toFixed(userPrecision)), true),
                 Normal: projUnits.ForceConvert(parseFloat(ResultantFrame[i].Normal[j].toFixed(userPrecision)), true),
                 Torsion: projUnits.MomentConvert(parseFloat(ResultantFrame[i].Torsion[j].toFixed(userPrecision)))
+
             };
             newTable.push(newElement);
         }
