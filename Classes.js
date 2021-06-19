@@ -186,6 +186,37 @@ class FrameElement
         }
     }
 
+    static ReadFromJson(jsobj) {
+
+        let frames = [];
+
+        jsobj.forEach(frame => {
+            //get start and end points and section
+            let startPt = Point.PointsArray.filter(pt => pt.Label == frame.StartPoint)[0];
+            let endPt = Point.PointsArray.filter(pt => pt.Label == frame.EndPoint)[0];
+            let section = Section.GetSectionByName(frame.Section);
+            //create new frame
+            let newframe = new FrameElement([...startPt.position, ...endPt.position], section);
+            //set important properties
+            newframe.Label = frame.Label;
+            newframe.Rotation = frame.Rotation * Math.PI / 180;
+            FrameElement.#num = newframe.Label+1;
+            frame.Loads.forEach(load => {
+                let appliedloads = [];
+                load.LoadDetails.forEach(loaddetail => {
+                    let appliedload = (loaddetail.Shape == ELoadShape.Point) ?
+                        new AppliedLoadInfo(loaddetail.CoordSys, loaddetail.Dir, loaddetail.Type, loaddetail.Shape, loaddetail.Distance[0], loaddetail.Magnitude[0]) :
+                        new AppliedLoadInfo(loaddetail.CoordSys, loaddetail.Dir, loaddetail.Type, loaddetail.Shape, loaddetail.Distance, loaddetail.Magnitude);
+                    appliedloads.push(appliedload);
+                });
+                newframe.LoadsAssigned.set(load.Pattern, appliedloads);
+                LoadPattern.LoadPatternsList.get(load.Pattern).OnElements.push(newframe.Label)
+            });
+            frames.push(newframe);
+        });
+
+        return frames;
+    }
 
     toJSON()
     {
@@ -987,6 +1018,15 @@ class Point
         this.InView();
     }
 
+    static ReadFromJson(jsobj){
+        jsobj.forEach(point => {
+            let pt = new Point(point.position);
+            pt.Label = point.label;
+            pt.Restraint = point.Restraints;
+            pt.ViewIndication();
+            Point.#Pointnum = pt.Label+1;
+        });
+    }
     toJSON()
     {
         return{label:this.Label, position:this.position, Restraints:this.Restraint}
