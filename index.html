@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="Assets/images/SACLOGO.png" rel="icon" type="image/x-icon" />
+    <title>SAC - Application</title>
+    <script src="./Assets/metro4-dist/js/metro.min.js"></script>
+    <link href="Assets/metro4-dist/css/metro-all.min.css" rel="stylesheet" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <link href="StyleNavibar.css" rel="stylesheet"/>
+    
+    <script>
+        function init() {
+            // Metro.activity.open({
+            //     overlayColor: '#fff',
+            //     overlayAlpha: 1,
+            //     text: `<img style="width: 500px;"
+            //         src="./Assets/images/SAcWideLogoPNG.png" alt="KiweIcon" />
+            //         <div class=\'mt-2 text-large\'>SAC Solutions...</div>
+            //         <div class=\'mt-2 text-large\'>Loading...</div>`,
+            //     type: 'bars',
+            //     autoHide: 200
+            // });
+        }
+        function NewProjectWindow() {
+            if (!$('#NewProjectWin').length) {
+
+                $('body').append(`
+                <div   
+                    id="NewProjectWin"
+                    style="z-index: 10;
+                    visibility: visible;"
+                    data-left="100"
+                    data-top="610"
+                    data-role="window"
+                    data-width="420" 
+                    data-height="125"
+                    data-title="Project Information"
+                    data-resizable="false"
+
+                    data-icon="<img src='Assets/images/InformationLogo.png'>"> 
+
+                    <input id = "ModelName" type="text" data-role="input" data-prepend="Model Name: ">
+
+                    <div style="margin-top: 6px;margin-right: 10px;">
+                        <span id = "Not_Valid" style = "color:black; float: left; width:350px; overflow-wrap: break-word; margin-left:10px; font-size:12px" ></span>
+                        <button onclick="CheckModelName()" class="button secondary" style="float: right;">OK</button>
+                    </div>
+                </div>`);
+            if($('#ImportProjectWin').length){
+                    Metro.window.close('#ImportProjectWin');
+                }
+            }
+        }
+
+    function valid() {
+        location.href = './Editor.html';
+    }
+
+
+    function StoreModelName(Name, ModelState)
+    {
+        localStorage.setItem('ModelState', ModelState)
+        localStorage.setItem('ProjectName', Name)
+    }
+
+    function CheckModelName() 
+    {
+        document.getElementById("Not_Valid").style.color = 'black';
+        document.getElementById("Not_Valid").innerHTML = "Validating Model Name";
+        let input = JSON.stringify(document.getElementById("ModelName").value);
+        $.ajax({
+            type: "POST",
+            url: "/api/RunAnalysis/CheckModelName",                 
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            data: input,
+            cache: false,
+            success: function (result) {
+                if(result == "True")
+                {
+                    document.getElementById("Not_Valid").innerHTML = "Creating new model";
+                    StoreModelName(document.getElementById("ModelName").value, "New");
+                    valid();
+                }
+                else{
+                    document.getElementById("Not_Valid").style.color = 'red';
+                    document.getElementById("Not_Valid").innerHTML = "The model name is already used or not valid";
+                }
+            },
+            error: function (ex) {
+                console.log(ex.responseText);
+            }
+        });
+    }
+
+    function ImportProjectWindow() 
+    {
+        if (!$('#ImportProjectWin').length) {
+
+            $('body').append(`
+                <div   
+                    id="ImportProjectWin"
+                    style="z-index: 10;
+                    visibility: visible;"
+                    data-left="500"
+                    data-top="610"
+                    data-role="window"
+                    data-width="420" 
+                    data-height="145"
+                    data-title="Project Information"
+                    data-resizable="false"
+
+                    data-icon="<img src='Assets/images/InformationLogo.png'>"> 
+                    <div style = "margin-left:10px; margin-top:5px"> Select Project Name</div>
+                    <select id = "SelectProject" style = "width:400px; margin-left:10px; height:30px"> </select >
+
+                    <div style="margin-top: 6px;margin-right: 10px;">
+                        <span id = "Message" style = "color:black; float: left; width:350px; overflow-wrap: break-word; margin-left:10px; font-size:12px" ></span>
+                        <button onclick="ImportName()" class="button secondary" style="float: right;">OK</button>
+                    </div>
+                </div>`);
+            if($('#NewProjectWin').length){
+                Metro.window.close('#NewProjectWin');
+            }
+        }
+        RetriveProjectsNames();
+    }
+
+    function RetriveProjectsNames() 
+    {
+        document.getElementById("Message").style.color = 'black';
+        document.getElementById("Message").innerHTML = "Getting project...";
+       
+        $.ajax({
+            type: "GET",
+            url: "/api/RunAnalysis/GetProjectsName",                 
+            //contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            //data: input,
+            cache: false,
+            success: function (result) {
+                if(result.length > 0)
+                {
+                    document.getElementById("Message").innerHTML = "Projects names recieved successfully";
+                    const ProjectSelect = document.getElementById("SelectProject");
+                    for(let i = 0; i < result.length; i++)
+                    {
+                        const option = document.createElement("option");
+                        option.text = result[i];
+                        ProjectSelect.add(option, ProjectSelect[i]);
+                    }
+                }
+                else{
+                    document.getElementById("Message").style.color = 'red';
+                    document.getElementById("Message").innerHTML = "No models to import";
+                }
+            },
+            error: function (ex) {
+                console.log(ex.responseText);
+            }
+        });
+    }
+
+    function ImportName()
+    {
+        const value = document.getElementById('SelectProject').value;
+        if(value != null)
+        {
+            StoreModelName(value, "Import");
+            valid();
+        }
+    }
+
+    </script>
+</head>
+
+<body onload="init()">
+
+    <!-- Navigation bar -->
+    <div id = "Header">
+        <div class="Logo">
+            <div id="Solution_Logo">
+                <img src="Assets/images/SACLOGO.png" id="Solution_Logo_img">
+            </div>                  
+            <div  id="Solution_Name">
+                <div id="Solution_Shortcut">SAC</div>
+                <div id="Solution_Name_Details">
+                    <div id="Seperator"></div>
+                    <div id="Solution_Name_Details_List">
+                        <div>Structural</div>
+                        <div>Analysis</div>
+                        <div>Cloud</div>
+                    </div>                        
+                </div>                    
+            </div>
+        </div>
+        <div class="navbar_bta3na">
+            <a class="active" href="index.html">Application</a>
+            <a href="TeamMembers.html">Team Members</a>
+        </div>        
+    </div>        
+
+    <button id="NewBTN" style="width: 300px; height: 300px;" class="shortcut rounded larg"  onclick='NewProjectWindow()'>
+        <span class="badge">+</span>
+        <span class="caption text-bold">Start New Project</span>
+        <img src="./Assets/images/UndeformedShapeIcon.png">
+    </button>
+
+    <button id="OpenBTN" style="width: 300px; height: 300px;" class="shortcut rounded larg"  onclick='ImportProjectWindow()'>
+        <span class="badge">+</span>
+        <span class="caption text-bold">Open Project</span>
+        <img src="./Assets/images/OpenIcon.png">
+    </button>
+
+    <span id="Video_Name">Demo Video</span>
+    
+    <iframe id="YoutubeVideoPlayer" src="https://www.youtube-nocookie.com/embed/Mc2-YM9Bhu4" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    <script>
+                
+    </script>
+</body>
+
+</html>
