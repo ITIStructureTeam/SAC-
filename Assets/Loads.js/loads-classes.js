@@ -30,9 +30,9 @@ class LoadPattern{
     #type;
     #selfWtMult
     #inCombos;
-    _id;
+    #id;
     #onElements;
-    static _loadPatternsList = new Map();
+    static #loadPatternsList = new Map();
     static #loadPattId = 1;
     static #initPattern = (function(){
         new LoadPattern('DEAD',ELoadPatternType.Dead,1);
@@ -40,7 +40,7 @@ class LoadPattern{
     })();
     constructor(name, type, selfWtMult){
 
-        this._id = 'p'+LoadPattern.#loadPattId;
+        this.#id = 'p'+LoadPattern.#loadPattId;
         this.Name = name;
         this.Type = type;
         this.SelfWtMult = selfWtMult;
@@ -57,7 +57,7 @@ class LoadPattern{
 
 
         let matching;
-        for (const pattern of LoadPattern._loadPatternsList.values()) {
+        for (const pattern of LoadPattern.#loadPatternsList.values()) {
             if(pattern.Name == value){
                 matching = pattern;
                 break;
@@ -66,7 +66,7 @@ class LoadPattern{
         if(!matching) 
             this.#name=value;
         else{
-            if(matching._id != this._id)
+            if(matching.#id != this.#id)
                 throw new Error("There is another load pattern having the same name");
             this.#name=value;
         }
@@ -104,27 +104,41 @@ class LoadPattern{
     }
 
     get ID(){
-        return this._id;
+        return this.#id;
     }
 
     set OnElements(value){
         this.#onElements = value;
     }
+    
     static get LoadPatternsList(){
-        return LoadPattern._loadPatternsList;
+        return LoadPattern.#loadPatternsList;
     }
 
     AddCombo(comboName){
         this.InCombos.push(comboName);
     }
+
     RemoveCombo(comboName){
         let comboIndex = this.InCombos.indexOf(comboName);
         this.InCombos.splice(comboIndex, 1);
     }
+
     Delete(){
         if(this.OnElements.length) throw new Error('There are loads assigned in this pattern');
         if(this.InCombos.length)   throw new Error('This pattern is used in a load combination');
         LoadPattern.LoadPatternsList.delete(String(this.ID));
+    }
+
+    static ReadFromJson(jsobj){
+        LoadPattern.LoadPatternsList.clear();
+        jsobj.forEach(pattern => {
+            let loadedpat = new LoadPattern(pattern.Details.Name, pattern.Details.Type, pattern.Details.SelfWtMult);
+            LoadPattern.LoadPatternsList.delete(loadedpat.ID);
+            loadedpat.#id = pattern.PatternID;
+            LoadPattern.LoadPatternsList.set(loadedpat.ID, loadedpat);
+            LoadPattern.#loadPattId = parseInt(loadedpat.ID.split('p')[1]) + 1;
+        });
     }
 
     toJSON()
@@ -317,6 +331,28 @@ class LoadCombo {
         this._cpyNo++;
         return new LoadCombo(`${this.Name}- ${this._cpyNo}`,this.LoadCasesInfo);
     }
+
+    static ReadFromJson(jsobj){
+
+        LoadCombo.LoadCombosList.clear();
+
+        jsobj.forEach( combo => {
+            let loadedCombo = new LoadCombo(combo.Details.Name, combo.Details.Info);
+            LoadCombo.LoadCombosList.delete(loadedCombo.ID);
+            loadedCombo.#id = combo.CombinationID;
+            LoadCombo.LoadCombosList.set(loadedCombo.ID, loadedCombo);
+            LoadCombo.#loadComboId = parseInt(loadedCombo.ID.split('c')[1]) +1 ;
+        });
+    }
+
+    toJSON()
+    {
+        return{
+            Name : this.Name,
+            Info : this.LoadCasesInfo
+        } 
+    }
+
 }
 
 function GetLoadCase(caseId) {
@@ -448,7 +484,7 @@ function ArrowOnLine(length, x,y,z, startpoint, endpoint,  direction, rz, scale 
         x_axis = crossProduct([axis.x, axis.y, axis.z], [1*Math.sin((axis.y/Math.abs(axis.y))* -rz), 0, 1*Math.cos(rz)]);   //3-local direction
     }
     else if(axis.x == 0 && axis.y == 0 && axis.z != 0){
-        x_axis = [1*Math.sin((axis.z/Math.abs(axis.z))* rz) , 1*Math.cos(rz), 0];    
+        x_axis = crossProduct([axis.x, axis.y, axis.z],[1*Math.cos(rz), 1*Math.sin((axis.z/Math.abs(axis.z))* rz) , 0]);    
     }
     else if((axis.x != 0 && axis.y != 0 && axis.z != 0))
     {

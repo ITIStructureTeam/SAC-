@@ -3,6 +3,11 @@ const ELengthUnits = {
     cm: 'cm',
     mm: 'mm'
 }
+const EDeformUnits = {
+    m: 'm',
+    cm: 'cm',
+    mm: 'mm'
+}
 const EForceUnits = {
     kN: 'kN',
     N: 'N',
@@ -31,6 +36,7 @@ const EDensUnits = {
 }
 
 Object.freeze(ELengthUnits);
+Object.freeze(EDeformUnits);
 Object.freeze(EForceUnits);
 Object.freeze(ESecDimUnits);
 Object.freeze(ETempUnits);
@@ -40,13 +46,16 @@ Object.freeze(EDensUnits);
 class ProjUnits {
 
     #lenUnit;
+    #defromUnit;
     #forceUnit;
     #secDimUnit;
     #tempUnit;
     #strenUnit;
     #densUnit;
-    constructor(length=ELengthUnits.m, force=EForceUnits.kN, sec=ESecDimUnits.m, temp=ETempUnits.C, strength=EStrenUnits.MPa, density=EDensUnits.KN_m3) {
+    constructor(length=ELengthUnits.m, force=EForceUnits.kN, sec=ESecDimUnits.m, temp=ETempUnits.C,
+         strength=EStrenUnits.MPa, density=EDensUnits.KN_m3, deform = EDeformUnits.m ) {
         this.LenUnit = length;
+        this.DeformUnit = deform;
         this.ForceUnit = force;
         this.SecDimUnit = sec;
         this.TempUnit = temp;
@@ -57,6 +66,10 @@ class ProjUnits {
     set LenUnit(unit) {
         if (!Object.values(ELengthUnits).includes(unit)) throw new TypeError('invalid length unit');
         this.#lenUnit = unit;
+    }
+    set DeformUnit(unit) {
+        if (!Object.values(EDeformUnits).includes(unit)) throw new TypeError('invalid unit');
+        this.#defromUnit = unit;
     }
     set ForceUnit(unit) {
         if (!Object.values(EForceUnits).includes(unit)) throw new TypeError('invalid force unit');
@@ -81,6 +94,9 @@ class ProjUnits {
 
     get LenUnit() {
         return this.#lenUnit
+    }
+    get DeformUnit() {
+        return this.#defromUnit;
     }
     get ForceUnit() {
         return this.#forceUnit
@@ -296,5 +312,35 @@ class ProjUnits {
         return converted;
     }
 
+    DeformConvert(deform) {
+        // convert always to user
+        let converted;
+        switch (this.DeformUnit) {
+            case EDeformUnits.cm:
+                converted = deform * 100;
+                break;
+            case EDeformUnits.mm:
+                converted = deform * 1000;
+                break;
+            case EDeformUnits.m:
+                converted = deform;
+                break;
+        }
+        if(converted === 0) return converted;
+        
+        let returned = parseFloat(converted.toFixed(4));
+        if (returned == 0 ) {
+            // use scientific notation
+            returned = parseFloat(converted.toExponential(2));
+        }
+        return returned;
+    }
+
+    MomentConvert(value)
+    {
+        let converted = this.ForceConvert(value, true);
+        converted = this.LengthConvert(converted, true);
+        return converted;
+    }
 }
 var projUnits = new ProjUnits();

@@ -1,6 +1,7 @@
 import {MapControls} from './Assets/Three.js files/OrbitControls.js'
-import { DoubleSide } from './Assets/Three.js files/three.module.js';
+import {DoubleSide } from './Assets/Three.js files/three.module.js';
 
+let PreProcessor = true;
 
 init();
 
@@ -206,20 +207,28 @@ document.addEventListener('keydown', function(event){
 		points = [];
 	}
     if(event.key === "z" && event.ctrlKey){
-		Undo();
+        if(PreProcessor == true){
+            Undo();
+        }
 	}
     if(event.key === "y" && event.ctrlKey){
-		Redo();
+        if(PreProcessor == true){
+		    Redo();
+        }
 	}
     if( event.key === "Z" && event.shiftKey && event.ctrlKey){
-		Redo();
+        if(PreProcessor == true){
+		    Redo();
+        }
 	}
     if(event.shiftKey || event.ctrlKey){
         SelectionModeActive = false;
 	 document.querySelector("body").style = "cursor:alias"
     }
     if(event.key === "Delete"){
-        DeleteButton();
+        if(PreProcessor == true){
+            DeleteButton();
+        }
     }
 });
 
@@ -355,7 +364,9 @@ function ClickToSelectElement(event){
                 else{
                     filterselected[i].object.DrawLine.Selected = false;
                     filterselected[i].object.DrawLine.updateColors();
-                    DrawLine.SelectedLines.pop(filterselected[i].object.DrawLine);
+                    //DrawLine.SelectedLines.pop(filterselected[i].object.DrawLine);
+                    let frameIndex = DrawLine.SelectedLines.indexOf(filterselected[i].object.DrawLine);
+                    DrawLine.SelectedLines.splice(frameIndex,1); 
                 }
             }    
         }
@@ -373,7 +384,9 @@ function ClickToSelectElement(event){
                         else{
                             Point.PointsArray[j].Selected = false;
                             Point.PointsArray[j].Highlight();
-                            Point.SelectedPoints.pop(Point.PointsArray[j]); 
+                            //Point.SelectedPoints.pop(Point.PointsArray[j]);
+                            let pointIndex = Point.SelectedPoints.indexOf(Point.PointsArray[j]);
+                            Point.SelectedPoints.splice(pointIndex,1); 
                         }
                     }
                 }
@@ -445,6 +458,10 @@ function update(renderer, scene, camera, controls)
         renderer.domElement.removeEventListener('click',ClickToSelectElement,false);
     }
 
+    if(DeformedShape.deformationMode){
+        HideDefLineCircles();
+        ShowDefLineCircles();
+    }
 
     requestAnimationFrame(function(){
         update(renderer, scene, camera, controls);
@@ -454,91 +471,6 @@ function update(renderer, scene, camera, controls)
 
 
 
-// for grids
-
-
-document.querySelector('#grids-btn').addEventListener("click",function(){
-    if(!document.querySelector('.main-window')){
-        $('body').append(GetGridsWin());
-        LoadGridsData('grids-x',listx,xGridsNames);
-        LoadGridsData('grids-y',listy,yGridsNames);
-        LoadGridsData('grids-z',listz,zGridsNames);
-        document.querySelector(`#grids-x-part .info`).addEventListener("click",function(){AddGrid('grids-x',listx, xGridsNames)});
-        document.querySelector(`#grids-y-part .info`).addEventListener("click",function(){AddGrid('grids-y',listy,yGridsNames)});
-        document.querySelector(`#grids-z-part .info`).addEventListener("click",function(){AddGrid('grids-z',listz,zGridsNames)});
-
-        document.querySelector('#grids-window').addEventListener("click",function(){
-
-            if(GetActiveGrid('grids-x')){
-                let activeGrid = GetActiveGrid('grids-x');
-                document.querySelector(`#grids-x-part .default`).addEventListener("click", function(){
-                    if(activeGrid) activeGrid.remove();
-                });
-            }
-            if(GetActiveGrid('grids-y')){
-                let activeGrid = GetActiveGrid('grids-y');
-                document.querySelector(`#grids-y-part .default`).addEventListener("click", function(){
-                    if(activeGrid) activeGrid.remove();
-                });
-            }
-            if(GetActiveGrid('grids-z')){
-                let activeGrid = GetActiveGrid('grids-z');
-                document.querySelector(`#grids-z-part .default`).addEventListener("click", function(){
-                    if(activeGrid) activeGrid.remove();
-                });
-            }
-        })
-        
-        
-        document.querySelector('#grids-ok').addEventListener("click", function(){
-            ReadGrids('grids-x',listx, xGridsNames);
-            ReadGrids('grids-y',listy,yGridsNames);
-            ReadGrids('grids-z',listz,zGridsNames);
-            if(!listx.length || !listy.length || !listz.length){
-                Metro.dialog.create({
-                    title: "Invalid Grids Data",
-                    content: "<div>You must input at least one spacing as positive number in each direction</div>",
-                    closeButton: true
-                });
-            }else{
-                ThreeD();
-                if(group != null)
-                {
-                    scene.remove(group);
-                    gridLines.forEach(element => {
-                        element.material.dispose()
-                        element.geometry.dispose()
-                        scene.remove(element);
-                    });
-                    gridLines = [];
-                    for (var i = group.children.length - 1; i >= 0; i--) {
-                        group.children[i].material.dispose();
-                        group.children[i].geometry.dispose();
-                        group.remove(group.children[i]);
-                    }
-                    removeSelectionGrids();
-                }
-                
-                GridSelections();
-                group = GridPoints(listx,listy,listz,listx.length,listy.length,listz.length);
-                gridLines = GridLine(listx,listy,listz,listx.length,listy.length,listz.length);
-                scene.add(group);
-                gridLines.forEach(element => {
-                    scene.add(element);
-                });
-                
-                document.querySelector('#grids-window').parentElement.parentElement.remove();
-                gridsUpdated=true;
-            }
-        });
-
-        document.querySelector('#grids-close').addEventListener("click",function(){
-            document.querySelector('#grids-window').parentElement.parentElement.remove();
-        });
-        
-        
-    }
-});
 
 if(gridLines == null){
     listx = [6,6,6]
@@ -554,6 +486,11 @@ if(gridLines == null){
     });
 }
 
+
+ 
+
+
+ 
 
 document.getElementById("XYSection").onclick=function(){XYSection()};
 function XYSection()
@@ -597,14 +534,37 @@ function XYView(XYindex)
             scene.remove(gridLines[j]);
         }
     }
+
     for (let j = 0; j < DrawLine.DrawLinesArray.length; j++)
     {
         DrawLine.DrawLinesArray[j].InView();
     }
+
+
     for (let j = 0; j < Point.PointsArray.length; j++)
     {
         Point.PointsArray[j].InView();
     }
+
+    for (let j = 0; j < Results.ResultsList.length; j++)
+    {
+        if(Results.ResultsList[j].Draw != null)
+        {
+            Results.ResultsList[j].InView();
+        }
+    }
+    for (let j = 0; j < JointReactions.ReactionsList.length; j++)
+    {
+        if(JointReactions.ReactionsList[j].Draw != null)
+        {
+            JointReactions.ReactionsList[j].InView();
+        }
+    }
+
+    if(DeformedShape.deformationMode){
+        DeformedShape.DeformShapesList.forEach(defsape => defsape.InView());
+    }
+
     camera.position.x = distanceX/2;
     camera.position.y = distanceY/2;
     camera.position.z = Math.max(distanceX, distanceY)*1.5 + ViewPosition;
@@ -667,14 +627,35 @@ function XZView(XZindex){
             scene.remove(gridLines[j]);
         }
     }
+
     for (let j = 0; j < DrawLine.DrawLinesArray.length; j++)
     {
         DrawLine.DrawLinesArray[j].InView();
     }
+
     for (let j = 0; j < Point.PointsArray.length; j++)
     {
         Point.PointsArray[j].InView();
     }
+    for (let j = 0; j < Results.ResultsList.length; j++)
+    {
+        if(Results.ResultsList[j].Draw != null)
+        {
+            Results.ResultsList[j].InView();
+        }
+    }
+    for (let j = 0; j < JointReactions.ReactionsList.length; j++)
+    {
+        if(JointReactions.ReactionsList[j].Draw != null)
+        {
+            JointReactions.ReactionsList[j].InView();
+        }
+    }
+  
+    if(DeformedShape.deformationMode){
+        DeformedShape.DeformShapesList.forEach(defsape => defsape.InView());
+    }
+    
     camera.up.set( 0, 0.5, 0.5 );
     camera.position.x = distanceX/2;
     camera.position.y = Math.max(distanceX,distanceZ)*1.5 + ViewPosition;
@@ -739,14 +720,36 @@ function YZView(YZindex){
             scene.remove(gridLines[j]);
         }
     }
+
     for (let j = 0; j < DrawLine.DrawLinesArray.length; j++)
     {
         DrawLine.DrawLinesArray[j].InView();
     }
+
+    
     for (let j = 0; j < Point.PointsArray.length; j++)
     {
         Point.PointsArray[j].InView();
     }
+    for (let j = 0; j < Results.ResultsList.length; j++)
+    {
+        if(Results.ResultsList[j].Draw != null)
+        {
+            Results.ResultsList[j].InView();
+        }
+    }
+    for (let j = 0; j < JointReactions.ReactionsList.length; j++)
+    {
+        if(JointReactions.ReactionsList[j].Draw != null)
+        {
+            JointReactions.ReactionsList[j].InView();
+        }
+    }
+  
+    if(DeformedShape.deformationMode){
+        DeformedShape.DeformShapesList.forEach(defsape => defsape.InView());
+    }
+    
 
     camera.position.x = Math.max(distanceY, distanceZ)*1.7 + ViewPosition;
     camera.position.y = distanceY/2 ;
@@ -871,13 +874,33 @@ function resetScene()
         scene.add(HiddenGrids[0]);
         HiddenGrids.shift();
     }
+
     for(let i = 0; i < DrawLine.DrawLinesArray.length; i++)
     {
         DrawLine.DrawLinesArray[i].InView();
     }
+
     for(let i = 0; i < Point.PointsArray.length; i++)
     {
         Point.PointsArray[i].InView();
+    }
+    for (let i = 0; i < Results.ResultsList.length; i++)
+    {
+        if(Results.ResultsList[i].Draw != null)
+        {
+            Results.ResultsList[i].InView();
+        }
+    }
+    for (let i = 0; i < JointReactions.ReactionsList.length; i++)
+    {
+        if(JointReactions.ReactionsList[i].Draw != null)
+        {
+            JointReactions.ReactionsList[i].InView();
+        }
+    }
+
+    if(DeformedShape.deformationMode){
+        DeformedShape.DeformShapesList.forEach(defshape => defshape.InView());
     }
 
 }
@@ -894,215 +917,4 @@ function removeArrows()
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-document.getElementById("AddPoints").onclick=function(){AddPointsToFrame()};
-function AddPointsToFrame()
-{
-    var number = prompt("Add points at equal intervals of frame element", "Number of points");
-    if(!isNaN(number)){
-        const selected = DrawLine.GetSelectedFrames();
-        for (let i =0; i<selected.length; i++)
-        {
-            selected[i].AddPointsAtEqualDistances(number);
-        }
-    }
-}
-
-
-
-//#region // Results visualization
-function ResultLines(length, x,y,z, startPoint, endPoint,  direction, rz, scale = 1) // , local = false)
-{
-    startPoint = new THREE.Vector3(startPoint[0], startPoint[1], startPoint[2]);
-    endPoint = new THREE.Vector3(endPoint[0], endPoint[1], endPoint[2]);
-
-    const axis = new THREE.Vector3().subVectors(startPoint, endPoint).normalize(); // Z-local direction
- 
-    let x_axis = crossProduct([axis.x, axis.y, axis.z], [0,0,1]);
-    if(arrayEquals(x_axis,[0,0,0]))
-    {
-        x_axis = [0,1,0]
-    }
-    const y_axis = crossProduct([axis.x, axis.y, axis.z], x_axis);
-    const X_axis = new THREE.Vector3(x_axis[0], x_axis[1], x_axis[2]);
-    const Y_axis = new THREE.Vector3(y_axis[0], y_axis[1], y_axis[2]);
-
-    const material = new THREE.LineBasicMaterial();
-    if(length > 0)
-    {
-        material.color = {r:0,g:0,b:180}
-    }
-    else{
-        material.color = {r:180,g:0,b:0}
-    }
- 
-    const l = length *scale;
-    var geometry = new THREE.BufferGeometry();
-    var vertices =[];  
-
-    // if(local == false)
-    // {
-    //     if(direction == 1 || direction )
-    //     vertices.push(0, 0, 0);
-    //     vertices.push(0, 0, l);
-    //     geometry.setAttribute( 'position', new THREE.Float32BufferAttribute( vertices, 3 ) );
-    // }
-    // else
-    // {
-    if(direction == 2 || direction == 1)
-    {
-        vertices.push(0, 0, 0);
-        vertices.push(l*Y_axis.x, l*Y_axis.y, l*Y_axis.z);
-        geometry.setAttribute( 'position', new THREE.Float32BufferAttribute( vertices, 3 ) );
-    }
-    else if(direction == 3){
-        vertices.push(0, 0, 0);
-        vertices.push(l*X_axis.x, l*X_axis.y, l*X_axis.z);
-        geometry.setAttribute( 'position', new THREE.Float32BufferAttribute( vertices, 3 ) );
-    }
-    //}
-    var line = new THREE.Line( geometry, material );
-
-    line.position.x = x;
-    line.position.y = y;
-    line.position.z = z;
-    line.rotateOnAxis(axis, rz)
-    scene.add(line);
-    return vertices;
-}
-
-// This function assumes results are from points distributed equally along the frame
-function ResultsDiagram(results ,startPoint, endPoint, direction, rz, scale = 1, local = false)
-{
-    const StartPoint = new THREE.Vector3( startPoint[0], startPoint[1], startPoint[2]);
-    const EndPoint = new THREE.Vector3(endPoint[0], endPoint[1], endPoint[2]);
-
-    const load = new THREE.Group();
-    const distance = new THREE.Vector3().subVectors(StartPoint, EndPoint).length();
- 
-    const dX = (EndPoint.x - StartPoint.x );
-    const dY = (EndPoint.y - StartPoint.y );
-    const dZ = (EndPoint.z - StartPoint.z );
-
-    const max = Math.max(...results);
-    const min = Math.min(...results);
-    const material = new THREE.LineBasicMaterial({color:'rgb(0,0,0)'});
-    const number = results.length -1;
-    const geometry = new THREE.BufferGeometry();
-    var vertices =[];  
-    vertices.push(StartPoint.x, StartPoint.y, StartPoint.z);
-
-    for (let i = 0; i <= number ; i++)
-    {
-        const x = StartPoint.x + (dX*i/number); 
-        const y = StartPoint.y + (dY*i/number);
-        const z = StartPoint.z + (dZ*i/number);
-        
-        const line = ResultLines(results[i], x, y, z, startPoint, endPoint,direction, rz, 1, local);
- 
-        vertices.push(line[3]+ x, line[4]+ y, line[5]+ z);
-        let position = 0;
-        var color;
-        if(results[i]>=0){
-            position -= 0.1;
-            color = {r:0,g:0,b:180,a:1}
-        }
-        else{
-            position += 0.1;
-            color = {r:180,g:0,b:0,a:1}
-        }
-        if(i == 0 || i == number || results[i] == max || results[i] == min)
-        {
-            if(direction ==1 || direction ==2 || results[i] == max || results[i] == min)
-            {
-                const textPosition = [line[3]+ x, line[4]+ y, line[5]+ z+ position];
-                const txt = makeTextSprite( results[i], textPosition[0], textPosition[1], textPosition[2],{fontsize: 80, fontface: "Georgia", textColor:color,
-                    vAlign:"center", hAlign:"center"});
-                    load.add(txt);
-            }
-            else{
-                const textPosition = [line[3]+ x + + position, line[4]+ y + position, line[5]+ z];
-                const txt = makeTextSprite( results[i], textPosition[0], textPosition[1], textPosition[2],{fontsize: 80, fontface: "Georgia", textColor:color,
-                    vAlign:"center", hAlign:"center"});
-                    load.add(txt);
-            }
-        }
-        //load.add(arrow);
-    }
-
-    vertices.push(EndPoint.x, EndPoint.y, EndPoint.z);
-    
-    geometry.setAttribute( 'position', new THREE.Float32BufferAttribute( vertices, 3 ) );
-    const container = new THREE.Line( geometry, material );
-    load.add(container)
-    scene.add(load)
-}
-//#endregion
-
-
-
-
-class RootData
-{
-    constructor()
-    {
-        this.Materials = [...Material.MaterialsList.values()];
-        this.Sections = [...Section.SectionList.values()];
-        this.Points = [...Point.PointsArray];
-        this.Frames = DrawLine.GetDrawnFrames();
-        this.Grids = {
-            Listx: listx,
-            Listy : listy,
-            Listz: listz
-        }
-    }
-}
-
-
-
-
-document.getElementById("Run").onclick=function(){Run()};
-function Run()
-{ 
-    //const Frames = [...DrawLine.GetDrawnFrames()];
-    let OutPut = JSON.stringify(new RootData());
-    console.log(OutPut);
-    // $.ajax({
-    //     type: "POST",
-    //     url: "http://192.168.1.10:8080/Main.html",                   ///// URL must be specified
-    //     contentType: "application/json; charset=utf-8",
-    //     dataType: "json",
-    //     data: "{Frames: " + OutPut + "}",
-    //     cache: false,
-    //     success: function (result) {
-    
-    //     },
-    //     error: function (ex) {
-    //         WriteToConsole(ex.responseText);
-    //     }
-    // });
-
-
-// var fs = require('fs');
-// fs.writeFile("OutPut.json", OutPut, function(err) {
-//     if (err) {
-//         console.log(err);
-//     }
-// });
-}
+DisablePostProcessBts();

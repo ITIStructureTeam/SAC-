@@ -46,7 +46,8 @@ class Section {
     set Name(value) {
         if (typeof value != "string" && !(value instanceof String))
             throw new TypeError("Section Name must be string");
-
+        if (value == "")
+            throw new TypeError("Section must have a name");
         let matching;
         for (const section of Section.SectionList.values()) {
             if(section.Name == value){
@@ -195,6 +196,14 @@ class Section {
     
         }
     
+    }
+
+    static ReadFromJson(jsobj) {
+        Section.SectionList.clear();
+        jsobj.forEach(section => {
+            let mat = Material.GetMaterialByName(section.Material);
+            new Section(section.Name, mat, section.SecType, section.Dimensions, section.PropModifiers);
+        });
     }
 
     toJSON()

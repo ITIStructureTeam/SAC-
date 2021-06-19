@@ -4,7 +4,7 @@ var
  mouse,
  stats,
  renderer,
- ViewPosition;  
+ ViewPosition;
 
  var HiddenGrids = [];
  var HiddenSnapping = []; 
@@ -186,6 +186,37 @@ class FrameElement
         }
     }
 
+    static ReadFromJson(jsobj) {
+
+        let frames = [];
+
+        jsobj.forEach(frame => {
+            //get start and end points and section
+            let startPt = Point.PointsArray.filter(pt => pt.Label == frame.StartPoint)[0];
+            let endPt = Point.PointsArray.filter(pt => pt.Label == frame.EndPoint)[0];
+            let section = Section.GetSectionByName(frame.Section);
+            //create new frame
+            let newframe = new FrameElement([...startPt.position, ...endPt.position], section);
+            //set important properties
+            newframe.Label = frame.Label;
+            newframe.Rotation = frame.Rotation * Math.PI / 180;
+            FrameElement.#num = newframe.Label+1;
+            frame.Loads.forEach(load => {
+                let appliedloads = [];
+                load.LoadDetails.forEach(loaddetail => {
+                    let appliedload = (loaddetail.Shape == ELoadShape.Point) ?
+                        new AppliedLoadInfo(loaddetail.CoordSys, loaddetail.Dir, loaddetail.Type, loaddetail.Shape, loaddetail.Distance[0], loaddetail.Magnitude[0]) :
+                        new AppliedLoadInfo(loaddetail.CoordSys, loaddetail.Dir, loaddetail.Type, loaddetail.Shape, loaddetail.Distance, loaddetail.Magnitude);
+                    appliedloads.push(appliedload);
+                });
+                newframe.LoadsAssigned.set(load.Pattern, appliedloads);
+                LoadPattern.LoadPatternsList.get(load.Pattern).OnElements.push(newframe.Label)
+            });
+            frames.push(newframe);
+        });
+
+        return frames;
+    }
 
     toJSON()
     {
@@ -193,7 +224,7 @@ class FrameElement
             Section:this.Section.Name,
             StartPoint:this.StartPoint.Label,
             EndPoint:this.EndPoint.Label,
-            Rotation:this.Rotation * 180/Math.PI,
+            Rotation:(this.Rotation * 180/Math.PI).toFixed(3),
             Loads:Array.from(this.LoadsAssigned, ([Pattern, LoadDetails]) => ({ Pattern, LoadDetails }))
         }
     }
@@ -600,11 +631,12 @@ class DrawLine
         return selectedFrames;
     }
 
-    static HideLoads(){
+    static HideLoads()
+    {
         DrawLine.DrawLinesArray.forEach( line => {
             line.#dispLoads.forEach(load =>{
-                scene.remove(load);
-                load.clear();
+            load.clear();
+            scene.remove(load);
             });
         });
     }
@@ -622,7 +654,6 @@ class DrawLine
             this.#extrude.visible = true;
             this.line.visible = false;
         }
-        this.InView();
         this.updateColors();
         this.InView()
     }
@@ -787,28 +818,24 @@ class DrawLine
 
     InView()
     {
-        if(view == "XY")
+        if(view == "XY" && (this.Frame.StartPoint.position[2] != ViewPosition || this.Frame.EndPoint.position[2] != ViewPosition))
         {
-            if(this.Frame.StartPoint.position[2] != ViewPosition || this.Frame.EndPoint.position[2] != ViewPosition)
-            {
-                this.Hide();
-            }
+            this.Hide();  
         }
-        else if(view == "XZ")
+        else if(view == "XZ" && (this.Frame.StartPoint.position[1] != ViewPosition || this.Frame.EndPoint.position[1] != ViewPosition))
         {
-            if(this.Frame.StartPoint.position[1] != ViewPosition || this.Frame.EndPoint.position[1] != ViewPosition)
-            {
-                this.Hide();
-            }
+            this.Hide();
         }
-        else if(view == "YZ")
+        else if(view == "YZ" && (this.Frame.StartPoint.position[0] != ViewPosition || this.Frame.EndPoint.position[0] != ViewPosition))
         {
-            if(this.Frame.StartPoint.position[0] != ViewPosition || this.Frame.EndPoint.position[0] != ViewPosition)
-            {
-                this.Hide();
-            }
+            this.Hide();
         }
-        else{
+        else if(DeformedShape.deformationMode)
+        {
+            this.Hide();
+        }
+        else
+        {
             this.Show();
         }
     }
@@ -991,6 +1018,15 @@ class Point
         this.InView();
     }
 
+    static ReadFromJson(jsobj){
+        jsobj.forEach(point => {
+            let pt = new Point(point.position);
+            pt.Label = point.label;
+            pt.Restraint = point.Restraints;
+            pt.ViewIndication();
+            Point.#Pointnum = pt.Label+1;
+        });
+    }
     toJSON()
     {
         return{label:this.Label, position:this.position, Restraints:this.Restraint}
@@ -1428,24 +1464,24 @@ class AssignRestraints
 {
     constructor(restraint)
     {
-        this.SelectedPoints = [];
-        for(let i = 0; i < Point.SelectedPoints.length; i++)
-        {
-            this.SelectedPoints.push(Point.SelectedPoints[i]);
-        }
+        this.SelectedPoints = [...Point.SelectedPoints];
+        // for(let i = 0; i < Point.SelectedPoints.length; i++)
+        // {
+        //     this.SelectedPoints.push(Point.SelectedPoints[i]);
+        // }
         this.TempRestraints = [];   
         this.Restraint = [...restraint];
     }
 
     excute()
     {
-        Unselect();
         for(let i = 0; i < this.SelectedPoints.length; i++)
         {
             this.TempRestraints[i] = this.SelectedPoints[i].Restraint;
             this.SelectedPoints[i].Restraint = [...this.Restraint];
             this.SelectedPoints[i].ViewIndication();
         }
+        Unselect();
     }
 
     undo()
@@ -1534,8 +1570,20 @@ document.getElementById("Extrude").onclick=function(){Extrude()};
 function Extrude()
 {   
     state = false;
-    DrawLine.LoadsDisplayed = false;
-    DrawLine.HideLoads();
+
+    // if loads displayed hide
+    if(DrawLine.LoadsDisplayed){
+        DrawLine.LoadsDisplayed = false;
+        DrawLine.HideLoads();
+    }
+
+    // if deformations displayed hide
+    if (DeformedShape.deformationMode) {
+        DeformedShape.deformationMode = false;
+        DeformedShape.DeformShapesList.forEach(defshape => defshape.Hide());
+    }
+
+    Results.ResultsList.forEach(res => res.Hide());
     DrawLine.ExtrudeView();
     document.getElementById("Labels").checked = false;                     
     document.getElementById("Sections").checked = false;
@@ -1574,13 +1622,6 @@ function Labels()
     } 
 }
 
-document.getElementById("Draw").onclick=function(){DrawingMode()};
-function DrawingMode()
-{
-    DrawingModeActive = true;
-    SelectionModeActive = false;
-    Unselect();
-}
 
 function Unselect()
 {

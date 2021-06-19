@@ -182,6 +182,13 @@ class Material {
         return new Material(this.Name +" - " +this.#_cpyNo, this.Weight, this.ElasticModulus, this.Poisson, this.ThermalExpansion, this.MaterialType, this.Strength);
     }
 
+    static ReadFromJson(jsobj) {
+        Material.MaterialsList.clear();
+        jsobj.forEach(material => {
+            new Material(material.Name, material.Weight, material.ElasticModulus, material.Poisson, material.ThermalExpansion, material.MaterialType, material.Strength)
+        });
+    }
+
     toJSON(){
         
         return{
