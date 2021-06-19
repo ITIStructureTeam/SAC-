@@ -67,38 +67,6 @@ let frameForceWin = `
             
         </div>
 
-        <p class="panel-head">Scaling For Diagram</p>
-        <div class="flex-col justify-center padding-all-0" data-role="panel">
-            <div class="input-width">
-                <input type="radio" id="auto" name="scale" value="auto" >
-                <label for="auto">Automatic</label>
-            </div>
-            <div class="flex-rowm justify-between">
-                <div class="input-width">
-                    <input type="radio" id="user" name="scale" value="user">
-                    <label for="user">User Defined</label>
-                </div>
-                <div class="width-80">
-                    <input type="number" min="0" class="input-small" data-role="input" data-clear-button="false" disabled>
-                </div>
-            </div>
-
-        </div>
-
-        <p class="panel-head">Diagram Options</p>
-        <div class="flex-col justify-center padding-all-0" data-role="panel">
-            <div class="flex-rowm justify-start">
-                <div class="input-width">
-                    <input type="radio" id="fill" name="diagram" value="fill" >
-                    <label for="fill">Fill Diagram</label>
-                </div>
-                <div class="input-width">
-                    <input type="radio" id="values" name="diagram" value="values">
-                    <label for="values">Show Values</label>
-                </div>
-            </div>
-        </div>
-
         <div class="flex-rowm justify-center">
             <div> <button class="button default" id="ok-fforce-btn" style="width: 64px;"> Ok </button> </div>
             <div> <button class="button default" id="close-fforce-btn" style="width: 64px;"> Close </button> </div>
@@ -115,23 +83,18 @@ document.querySelector('#frame-forces').addEventListener("click", function(){
         $('body').append(frameForceWin);
         FillFForcesCases();
         LoadPrevFForcesOptions();
-        document.querySelector('#user').addEventListener("input", function(){
-            document.querySelector('input[type="number"]').disabled = false;
-        });
-        document.querySelector('#auto').addEventListener("input", function(){
-            document.querySelector('input[type="number"]').disabled = true;
-        });
+
         document.querySelector('#ok-fforce-btn').addEventListener("click", function(){
-            DrawLine.LoadsDisplayed = false;
-            DrawLine.HideLoads();
+
             GetForcesDiagData();
             document.querySelector('.main-window').parentElement.parentElement.remove();
         });
+
         document.querySelector('#app-fforce-btn').addEventListener("click", function(){
-            DrawLine.LoadsDisplayed = false;
-            DrawLine.HideLoads();
+
             GetForcesDiagData();
         });
+
         document.querySelector('#close-fforce-btn').addEventListener("click", function(){
             document.querySelector('.main-window').parentElement.parentElement.remove();
         })
@@ -159,13 +122,38 @@ function FillFForcesCases() {
 function GetForcesDiagData() {
     let caseId = $('#case-combo-select')[0].value;
     let force =  document.querySelector('input[name="force"]:checked').value;
-    //let scale = (document.querySelector('input[value="user"]').checked)? document.querySelector('input[type="number"]').value: null;
-    //let digOption = document.querySelector('input[name="diagram"]:checked').value;
+ 
     let results = Results.ResultsList.filter(res=> res.PatternID == caseId)
+    
+    // if in deformation mode go out
+    if(DeformedShape.deformationMode){
+        DeformedShape.deformationMode = false;
+        DeformedShape.DeformShapesList.forEach(defshape => defshape.Hide());
+    }
+
+    // if in load mode go out
+    if(DrawLine.LoadsDisplayed){
+        DrawLine.LoadsDisplayed = false;
+        DrawLine.HideLoads();
+    }
+
+    //if in reactiomn mode
+    if (JointReactions.ReactMode) {
+        JointReactions.ReactMode = false;
+        for(let i = 0; i< JointReactions.ReactionsList.length; i++)
+        {
+            JointReactions.ReactionsList[i].Hide();
+        }
+    }
+    
     for(let i = 0; i<Results.ResultsList.length; i++)
     {
         Results.ResultsList[i].Hide();
     }
+
+    Results.ResultsMode = true;
+
+    
     switch(force)
     {
         case 'axial':
@@ -212,17 +200,7 @@ function LoadPrevFForcesOptions() {
     if(prevFForcedOptions.length){
         $('#case-combo-select')[0].value = prevFForcedOptions[0];
         document.querySelector(`input[value="${prevFForcedOptions[1]}"]`).checked = true
-        if(prevFForcedOptions[2]){
-            document.querySelector(`input[value="user"]`).checked = true;
-            document.querySelector('input[type="number"]').disabled = false
-            document.querySelector('input[type="number"]').value = prevFForcedOptions[2];
-        }else{
-            document.querySelector(`input[value="auto"]`).checked = true;
-        }
-        document.querySelector(`input[value="${prevFForcedOptions[3]}"]`).checked = true;       
     }else{
         document.querySelector('input[value="axial"]').checked=true
-        document.querySelector('input[value="auto"]').checked=true
-        document.querySelector('input[value="fill"]').checked = true;
     }
 }

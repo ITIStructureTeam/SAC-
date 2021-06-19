@@ -13,7 +13,7 @@ data-place="center"
 data-width="250">
 
     
-    <div class="flex-col justify-center align-center"   >
+    <div class="flex-col justify-center align-center">
     <div data-role="panel" data-width="245">
         <div class="flex-rowm justify-between margin-b-20"> 
             <div>
@@ -117,6 +117,24 @@ data-width="250">
                 </select>
             </div>
         </div>
+
+        <div class="flex-rowm justify-between margin-b-20"> 
+            <div>
+                <label>Deformation</label>
+            </div>
+            <div class="width-80">
+                <select 
+                class="input-small "
+                data-role="select"
+                data-filter="false"
+                data-drop-height=80>
+                    <option value = ${EDeformUnits.m}>m</option>
+                    <option value = ${EDeformUnits.cm}>cm</option>
+                    <option value = ${EDeformUnits.mm}>mm</option>
+                </select>
+            </div>
+        </div>
+
     </div>   
         <div class="flex-rowm justify-center" style="margin-top:10px" >
             <button class="button info">Ok</button>
@@ -139,15 +157,17 @@ document.querySelector('#units-btn').addEventListener("click",function(){
         units[3].value = projUnits.StrenUnit;
         units[4].value = projUnits.TempUnit;
         units[5].value = projUnits.DensUnit;
+        units[6].value = projUnits.DeformUnit;
 
         document.querySelector('#units-window .info').addEventListener("click",function(){      
             projUnits.LenUnit = units[0].value;
             projUnits.ForceUnit=units[1].value;
-            document.getElementById('UnitsBTN').innerHTML='Project units: '+   units[1].value + ','+ units[2].value ;
+            document.getElementById('UnitsBTN').innerHTML= 'Project units: ' + projUnits.ForceUnit + ','+  projUnits.LenUnit ;
             projUnits.SecDimUnit=units[2].value;
             projUnits.StrenUnit=units[3].value;
             projUnits.TempUnit=units[4].value;
             projUnits.DensUnit=units[5].value;
+            projUnits.DeformUnit=units[6].value;
             document.querySelector('#units-window').parentElement.parentElement.remove();
             unitsUpdated = true;
         });

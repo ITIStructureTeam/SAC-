@@ -78,6 +78,15 @@ document.querySelector('#pattern-btn').addEventListener("click",function(){
         LoadDefPatterns();
         if(document.querySelector('#load-data .current-select'))ShowPattData();
         
+        if (locked) {
+            let bts = document.querySelectorAll('#pattern-window button');
+            let inputs = document.querySelectorAll('#pattern-window input');
+            bts.forEach( bt => bt.disabled = true);
+            inputs.forEach( input => input.disabled = true);
+            $('#pattern-type')[0].disabled = true;
+            $('#pattern-close-btn')[0].disabled = false;
+        }
+
         document.querySelector('#mod-pattern').addEventListener("click",function(){
             let pattId= document.querySelector('#load-data .current-select').getAttribute('value');
             ModifyPattern(pattId);

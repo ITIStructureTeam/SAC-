@@ -25,7 +25,7 @@ class Material {
     static #_materialsList=new Map();
     //#endregion
 
-    static #InitiateMaterialList = (function(){
+   static #InitiateMaterialList = (function(){
         new Material("Concrete",25,4400,0.2,5e-9,EmaterialType.Concrete,[30]);
         new Material("Steel",78.5,2100,0.3,5e-9,EmaterialType.Steel,[240,360]);
     })();
@@ -160,6 +160,16 @@ class Material {
     }
     //#endregion
 
+    static GetMaterialByName(name){
+        let mat;
+        for(let material of Material.MaterialsList.values()){
+            if(material.Name == name ){
+                mat = material
+                break;
+            } 
+        }
+        return mat;
+    }
 
     Delete() {
         if (this.#_assignedToSections.length != 0)
@@ -170,6 +180,13 @@ class Material {
     Clone() {
         this.#_cpyNo++;
         return new Material(this.Name +" - " +this.#_cpyNo, this.Weight, this.ElasticModulus, this.Poisson, this.ThermalExpansion, this.MaterialType, this.Strength);
+    }
+
+    static ReadFromJson(jsobj) {
+        Material.MaterialsList.clear();
+        jsobj.forEach(material => {
+            new Material(material.Name, material.Weight, material.ElasticModulus, material.Poisson, material.ThermalExpansion, material.MaterialType, material.Strength)
+        });
     }
 
     toJSON(){

@@ -2,6 +2,7 @@
 <html>
 
 <head>
+
     <link href="Assets/metro4-dist/css/metro-all.min.css" rel="stylesheet" />
     <link href="Assets/css/style.css" rel="stylesheet" />
 
@@ -10,6 +11,7 @@
 
     <link rel="stylesheet" href="./Assets/css/section-material style.css">
     <link rel="stylesheet" href="./Assets/css/Scene.css">
+    <link rel="stylesheet" href="./Assets/css/deformation.css">
 
     <meta charset="utf-8">
     <!-- Provide a short description of the page. -->
@@ -55,9 +57,46 @@
     <meta name="twitter:image" content="" />
 
     <script src="./Assets/metro4-dist/js/metro.min.js"></script>
+
 </head>
 
-<body>
+<body onunload="CloseOpen(event)">
+
+    <script>
+        let Project_Name ;
+        let ProjectStat;
+        window.onload = function(){
+            Project_Name = localStorage.getItem("ProjectName");
+            ProjectStat = localStorage.getItem("ModelState");
+            if(ProjectStat == "Import")
+            {
+                ImportProjectData();
+            }
+            if(Project_Name == null || ProjectStat == null)
+            {
+                location.href = './index.html';
+            }
+            // localStorage.removeItem("ProjectName");
+            // localStorage.removeItem("ModelState");
+        }
+        // window.onunload = function (event) {
+        //     event.preventDefault();
+        //     event.returnValue = 'Data will be lost .. continue without saving?';
+        //     //return confirm('Data will be lost .. continue without saving?');
+        // }
+
+        function CloseOpen(event) 
+        { 
+            if(event.clientX<=0 && event.clientY<0) 
+            { 
+                alert ( "Close"); 
+            } 
+            else 
+            { 
+            alert ( "refresh or leave"); 
+            } 
+        } 
+    </script>
     <script>
         function intro() {
             Metro.activity.open({
@@ -73,6 +112,7 @@
         }
         intro();
     </script>
+
 
     <div id="webgl">
 
@@ -118,11 +158,13 @@
                     <a> <span><img height="32" width="32" src="Assets/images/OpenIcon.png" alt="OpenIcon"> </span> Open
                     </a>
                 </li>
-                <li>
-                    <a> <span><img height="32" width="32" src="Assets/images/SaveIcon.jpg" alt="SaveIcon"> </span> Save
+
+                <li id = "SaveButton">
+                    <a> <span  ><img height="32" width="32" src="Assets/images/SaveIcon.jpg" alt="SaveIcon"> </span> Save
                     </a>
                 </li>
-                <li>
+              
+                <li id = "SaveAsButton">
                     <a> <span><img height="32" width="32" src="Assets/images/SaveAsIcon.png " alt="SaveAsIcon"></span>
                         Save As </a>
                 </li>
@@ -199,26 +241,27 @@
             <ul class="tabs-holder">
                 <li class="static" id="sidebar-toggle-2" style="cursor: pointer;"><a>File</a></li>
                 <!-- File-->
-                <li><a href="#Edit-Section">Edit</a></li>
+                <li><a href="#Edit-Section">Home</a></li>
                 <!-- Edit-->
                 <li><a href="#View-Section">View</a></li>
                 <!-- View-->
                 <li><a href="#Define-Section">Define</a></li>
                 <!-- Define-->
-                <li><a href="#Draw-Section">Draw</a></li>
+                <!-- <li><a href="#Draw-Section">Draw</a></li> -->
                 <!-- Draw-->
-                <li><a href="#Select-Section">Select</a></li>
+                <!-- <li><a href="#Select-Section">Select</a></li> -->
                 <!-- Select-->
                 <li><a href="#Assign-Section">Assign</a></li>
                 <!-- Assign-->
                 <li><a href="#Analyse-Section">Analysis & Results</a></li>
                 <!-- Analyse-->
-                <li><a href="#Options-Section">Options</a></li>
+                <!-- <li><a href="#Options-Section">Options</a></li> -->
                 <!-- Options-->
             </ul>
             <!-- Ribbon Pannels and Buttons -->
             <div class="content-holder">
-                <!-- Edit Tab -->
+                <!-- Home Tab -->
+
                 <div class="section" id="Edit-Section">
                     <!-- Actions Group (Pannel)  Tab Edit -->
                     <div class="group">
@@ -239,6 +282,18 @@
                         <span class="title">Actions</span>
                     </div>
                     <!-- Modify Group (Pannel)    Tab Edit -->
+
+
+                    <div class="group">
+                        <button id="Draw" class="ribbon-button" data-role="hint" data-hint-position="bottom"
+                        data-hint-text="Draw Frames">
+                            <span class="icon">
+                                <img alt="Frame" src="Assets/images/FrameIcon.jpg">
+                            </span>
+                            <span class="caption">Frame Element</span>
+                        </button>
+                        <span class="title">Draw</span>
+                    </div>
                     <div class="group">
 
                         <!--<button class="ribbon-button">
@@ -279,8 +334,6 @@
 
                         <button id="Delete" class="ribbon-button" data-role="hint" data-hint-position="bottom"
                             data-hint-text="Delete Element">
-
-
                             <span class="icon">
                                 <img alt="Delete" src="Assets/images/DeleteIcon.jpg">
                             </span>
@@ -326,18 +379,17 @@
                     <!-- Elements Group (Pannel)    Tab Edit -->
                     <div class="group">
                         <button class="ribbon-button" id="disp-load-btn" data-role="hint" data-hint-position="bottom"
-
-                            data-hint-text="Edit Point">
-
+                            data-hint-text="Show Loads Assigned">
                             <span class="icon">
-                                <img alt="Edit" src="Assets/images/EditPoints.png">
+                                <img alt="Edit" src="Assets/images/PointLoadIcon.png">
                             </span>
-                            <span class="caption">Edit Points</span>
+                            <span class="caption">Show Loads</span>
                         </button>
 
 
 
-                        <div>
+
+                        <!--<div>
                             <button class="ribbon-button dropdown-toggle">
                                 <span class="icon">
                                     <img alt="Edit Area" src="Assets/images/EditArea.png">
@@ -356,9 +408,10 @@
                                         <span>Merge Area ...</span>
                                     </a></li>
                             </ul>
-                        </div>
 
-                        <div>
+                        </div>-->
+
+                        <!--<div>
                             <button class="ribbon-button dropdown-toggle">
                                 <span class="icon">
                                     <img alt="Edit Line" src="Assets/images/EditLines.png">
@@ -375,9 +428,21 @@
                                         Join Frame ... </a>
                                 </li>
                             </ul>
-                        </div>
+                        </div>-->
                         <span class="title">Elements</span>
                     </div>
+
+                    <div class="group">
+                        <button id="grids-btn" class="ribbon-button" data-role="hint" data-hint-position="bottom"
+                        data-hint-text="Define Grids">
+                            <span class="icon">
+                                <img alt="Grid" src="Assets/images/GridIcon.png">
+                            </span>
+                            <span class="caption">Grids</span>
+                        </button>
+                        <span class="title">Datum</span>
+                    </div>
+                    
                     <div class="group">
                         <input data-role="checkbox" type="checkbox" id="Labels" data-caption="Show Labels"
                             onclick="Labels()">
@@ -385,13 +450,33 @@
                             onclick="Labels()">
                     </div>
 
+                    
+                    <div class="group">
+                        <button id="units-btn" class="ribbon-button">
+                            <span class="icon">
+                                <img alt="Dimensions" src="Assets/images/DimensionsIcon.png">
+                            </span>
+                            <span class="caption">Units & Dimensions</span>
+                        </button>
 
+                        <!-- <button class="ribbon-button">
+                            <span class="icon">
+                                <img alt="Colors" src="Assets/images/ColorsIcon.png">
+                            </span>
+                            <span class="caption">Colors</span>
+                        </button> -->
+
+                        <span class="title">Settings</span>
+                    </div>
+                    <div class="group"></div>
+                    
                 </div>
                 <!-- View Tab -->
                 <div class="section" id="View-Section">
 
                     <!-- Zooming Group (Pannel    Tab View) -->
-                    <div class="group">
+
+                    <!--<div class="group">
                         <button class="ribbon-button">
                             <span class="icon">
                                 <img alt="Zoom In" src="Assets/images/ZoomIn.png">
@@ -411,7 +496,8 @@
                             <span class="caption">Restore View</span>
                         </button>
                         <span class="title">Zooming</span>
-                    </div>
+                    </div>-->
+
                     <!-- UP & DOWN Group (Pannel    Tab View) -->
                     <div class="group">
                         <button id="Next" class="ribbon-button">
@@ -523,29 +609,13 @@
                         </button>
                         <span class="title">Loads Properities</span>
                     </div>
+                    
+                    <div class="group"></div>
                 </div>
                 <!-- Draw Tab -->
-                <div class="section" id="Draw-Section">
+                <!--<div class="section" id="Draw-Section">-->
                     <!-- Draw Group (Pannel)    Tab Draw -->
-                    <div class="group">
-
-                        <button id="AddPointsOnFrame" class="ribbon-button" onclick="AddPointOnFrameWindow()">
-
-                            <span class="icon">
-                                <img alt="Point" src="Assets/images/PointIcon.png">
-                            </span>
-                            <span class="caption">Point</span>
-                        </button>
-
-                        <button id="Draw" class="ribbon-button" data-role="hint" data-hint-position="bottom"
-                        data-hint-text="Draw Frames">
-
-
-                            <span class="icon">
-                                <img alt="Frame" src="Assets/images/FrameIcon.png">
-                            </span>
-                            <span class="caption">Frame</span>
-                        </button>
+                    <!--<div class="group">             
                         <button class="ribbon-button">
                             <span class="icon">
                                 <img alt="Area" src="Assets/images/AreaIcon.png">
@@ -554,23 +624,13 @@
                         </button>
                         <span class="title">Draw</span>
                     </div>
-                    <div class="group">
-                        <button id="grids-btn" class="ribbon-button" data-role="hint" data-hint-position="bottom"
-                        data-hint-text="Define Grids">
+                    
 
-                            <span class="icon">
-                                <img alt="Grid" src="Assets/images/GridIcon.png">
-                            </span>
-                            <span class="caption">Grids</span>
-                        </button>
-                        <span class="title">Datum</span>
-                    </div>
-
-                </div>
+                </div>-->
                 <!-- Select Tab -->
-                <div class="section" id="Select-Section">
+                <!-- <div class="section" id="Select-Section"> -->
                     <!-- Select Properities Group (Pannel)    Tab Select -->
-                    <div class="group">
+                    <!-- <div class="group">
                         <button class="ribbon-button">
                             <span class="icon">
                                 <img alt="Materials" src="Assets/images/MaterialIcon.webp">
@@ -583,7 +643,8 @@
                             </span>
                             <span class="caption">Frame Section</span>
                         </button>
-                        <button class="ribbon-button">
+
+                        <<button class="ribbon-button">
                             <span class="icon">
                                 <img alt="Area" src="Assets/images/AreaSectionIcon.png">
                             </span>
@@ -592,13 +653,13 @@
                         <span class="title">Properities</span>
                     </div>
                     <div class="group"></div>
-                </div>
+
+                </div> -->
                 <!-- Assign Tab -->
                 <div class="section" id="Assign-Section">
-                    <!-- Case Properities Group (Pannel)    Tab Assign -->
+
+                    <!-- Joints Group (Pannel)    Tab Assign -->
                     <div class="group">
-
-
                         <button id ="JointRestraints" class="ribbon-button" onclick="JointRestraint()" data-role="hint"
 
                             data-hint-position="bottom" data-hint-text="Add Joint Restraint">
@@ -608,6 +669,20 @@
                             <span class="caption">Joint Restraint</span>
                         </button>
 
+                        <button id="AddPointsOnFrame" class="ribbon-button" onclick="AddPointOnFrameWindow()"
+                        data-role="hint" data-hint-position="bottom" data-hint-text="Assign Points On Frame">
+
+                            <span class="icon">
+                                <img alt="Point" src="Assets/images/PointIcon.png">
+                            </span>
+                            <span class="caption">Add Points</span>
+                        </button>
+
+                        <span class="title">Joints</span>
+                    </div>
+
+                    <!-- Frames Group (Pannel)    Tab Assign -->
+                    <div class="group">
                         <button id="assign-framesec-btn" class="ribbon-button" data-role="hint" data-hint-position="bottom"
                         data-hint-text="Assign Frame Section">
                             <span class="icon">
@@ -625,14 +700,16 @@
                             <span class="caption">Frame Axis</span>
                         </button>
 
-                        <button class="ribbon-button">
+                        <!--<button class="ribbon-button">
                             <span class="icon">
                                 <img alt="Area Section" src="Assets/images/AreaSectionIcon.png">
                             </span>
                             <span class="caption">Area Section</span>
-                        </button>
-                        <span class="title">Case Properities</span>
+
+                        </button>-->
+                        <span class="title">Frames</span>
                     </div>
+
                     <!-- Assign Loads Group (Pannel)    Tab Assign -->
                     <div class="group">
 
@@ -652,13 +729,14 @@
                             </span>
                             <span class="caption">Distributed Loads</span>
                         </button>
-                        <button class="ribbon-button">
+
+                        <!--<button class="ribbon-button">
                             <span class="icon">
                                 <img alt="Area Loads" src="Assets/images/AreaLoadsIcon.png">
                             </span>
                             <span class="caption">Area Loads</span>
-                        </button>
-                        <span class="title">Assign Loads</span>
+                        </button>-->
+                        <span class="title">Loads</span>
 
                     </div>
                 </div>
@@ -687,7 +765,7 @@
                     </div>
                     <!-- Displacements Group (Pannel)    Tab Analyse & Results -->
                     <div class="group">
-                        <button class="ribbon-button">
+                        <button class="ribbon-button" id="undeformed-btn">
                             <span class="icon">
                                 <img alt="Undeformed Shape" src="Assets/images/UndeformedShapeIcon.jpg">
                             </span>
@@ -697,8 +775,9 @@
                             <span class="icon">
                                 <img alt="Deformed Shape" src="Assets/images/DeformedIcon.png">
                             </span>
-                            <span class="caption">Show Deformed Shape</span>
+                          <span class="caption">Deformed Shape</span>                            
                         </button>
+                      
                         <button class="ribbon-button" onclick="ShowResultsTable()" data-role="hint" data-hint-position="bottom"
                         data-hint-text="Show Table">
                             <span class="icon">
@@ -706,6 +785,8 @@
                             </span>
                             <span class="caption">Show Tables</span>
                         </button>
+
+                        
                         <span class="title">Displacements</span>
                     </div>
 
@@ -715,74 +796,29 @@
 
                     <!-- Straining Actions Group (Pannel)    Tab Analyse & Results -->
                     <div class="group">
-                        <button class="ribbon-button">
+
+                        <button id = "reactions" class="ribbon-button">
                             <span class="icon">
                                 <img alt="Reactions" src="Assets/images/ReactionIcon.jpg">
                             </span>
                             <span class="caption">Reactions</span>
                         </button>
-                        <span class="title">Joint Reactions</span>
-                    </div>
-                    <div class="group">
+
+
                         <button class="ribbon-button" id="frame-forces">
                             <span class="icon">
                                 <img alt="Axial Force" src="Assets/images/NormalIcon.png">
                             </span>
-                            <span class="caption">Normal Force</span>
+                            <span class="caption">Straining Actions</span>
                         </button>
-                        <button class="ribbon-button">
-                            <span class="icon">
-                                <img alt="Moment" src="Assets/images/MomentIcon.png">
-                            </span>
-                            <span class="caption">Bending Moment 2</span>
-                        </button>
-                        <button class="ribbon-button">
-                            <span class="icon">
-                                <img alt="Moment" src="Assets/images/MomentIcon.png">
-                            </span>
-                            <span class="caption">Bending Moment 3</span>
-                        </button>
-                        <button class="ribbon-button">
-                            <span class="icon">
-                                <img alt="Moment" src="Assets/images/ShearIcon.PNG">
-                            </span>
-                            <span class="caption">Shear Force 2</span>
-                        </button>
-                        <button class="ribbon-button">
-                            <span class="icon">
-                                <img alt="Moment" src="Assets/images/ShearIcon.PNG">
-                            </span>
-                            <span class="caption">Shear Force 3</span>
-                        </button>
-                        <span class="title">Straining Actions</span>
+                        <span class="title">Forces</span>
                     </div>
+
 
                 </div>
 
                 <!-- Option Tab -->
-                <div class="section" id="Options-Section">
-                    <div class="group">
-                        <button id="units-btn" class="ribbon-button">
-                            <span class="icon">
-                                <img alt="Dimensions" src="Assets/images/DimensionsIcon.png">
-                            </span>
-                            <span class="caption">Units & Dimensions</span>
-                        </button>
-
-                        <button class="ribbon-button">
-                            <span class="icon">
-                                <img alt="Colors" src="Assets/images/ColorsIcon.png">
-                            </span>
-                            <span class="caption">Colors</span>
-                        </button>
-
-                        <span class="title">Settings</span>
-                    </div>
-                    <div class="group">
-                        
-
-                    </div>
-                </div>
+               
             </div>
 
             <button id="resizeribbonbtn" onclick="resizeribbon()" data-role="hint" data-hint-text="Resize Ribbon"
@@ -797,6 +833,7 @@
             <img style="width: 20px; margin-left: 10px; margin-bottom: 5px; margin-top: 5px; "
 
                 src="Assets/images/SACLOGO.png" alt="SAC Icon" />
+
             <span class="text-bold" id="StatusBar">Welcome to SAC Solutions - Status Bar - </span>
             <button style=" position: absolute;left: 88%;top:0px;background-color: inherit;" id="UnitsBTN" class="button light text-bold" onclick="document.getElementById('units-btn').click();">Project units: kN,m</button>
         </div>
@@ -824,13 +861,10 @@
         </div>
     </div>
 
-    
-    
+
     <title>SAC Solutions</title>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-
-    <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script> -->
 
     <!-- <script src="./Assets//node_modules/three/build/three.js"></script> -->
     <!-- <script src="./Assets//node_modules/three/examples/js/controls/OrbitControls.js"></script> -->
@@ -855,17 +889,18 @@
     <script type="module" src="main.js"></script>
 
     <script src="./Assets/Results/JSONTEST.js" ></script>
-
-
+  
     <script src="./Assets/Loads.js/loads-classes.js"></script>
     <script src="./Classes.js"></script>
     <script src="./global.js"></script>
     <script src="./TextLabels.js"></script>
     <script src="./GlobalArrows.js"></script>
+
     <script src="./Assets/js/Assign.js"></script>
     <script src="./Assets/Units.js/Units.js"></script>
     <script src="./Assets/grids.js/Grids.js"></script>
     <script src="./Assets/Results/Results.js"></script>
+
     <script src="./Assets/Loads.js/LoadComboWindow.js"></script>
     <script src="./Assets/js/main3.js"></script>
     <script src="./Assets/js/ResultsTables.js"></script>
@@ -874,7 +909,13 @@
 
     <!--<script src="./Assets/js/BelalLoads.js"></script>-->
 
-    <script src="./Assets/Loads.js/LoadPatternWindow.js"></script>
+    <script src="./Assets/Loads.js/LoadPatternWindow.js"></script> 
+    <script src="./Assets/Results/JointReactions.js"></script>
+    <script src="./Assets/Results/DeformedShape.js"></script>
+    
+    <script src="./loadjson.js"></script>    
+    <script src = "./SaveAs.js"></script>
+    <script src = "./RootData.js"></script>
    
     <script src="./Assets/Units.js/UnitsWindow.js"></script>
     <script src="./Assets/Loads.js/AssignLoadWindow.js"></script>
@@ -885,12 +926,9 @@
     <script src="./Assets/material and section/AssignFrameSectionForm.js"></script>
     <script src="./Assets/ResultsWindows/InForcesWin.js"></script>
     <script src="./Assets/ResultsWindows/DeformWin.js"></script>
-    
-
-
-
+    <script src="./Assets/ResultsWindows/ReactionsWindow.js"></script>
+    <script src="./Assets/ResultsWindows/ResetModel.js"></script>
 
 </body>
-
 
 </html>

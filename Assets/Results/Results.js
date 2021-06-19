@@ -1,6 +1,9 @@
 class Results
 {
     static ResultsList = [];
+    static Pattern;
+    static ResultsMode = false;
+
     constructor(pattern, frameLabel, startPoint, endPoint, stations, Mx, My, Tz, N, Vx, Vy, rz)
     {
         this.PatternID = pattern;
@@ -36,7 +39,7 @@ class Results
             MaxMxArray.push(MaxLocalMx);
         }
         let MaxMx = Math.max(...MaxMxArray)
-        if(MaxMx == 0){ MaxMx = 1}
+        if(Math.round(MaxMx) == 0){ MaxMx = 1}
 
         let results =    this.MomentX;
         let stations =   this.Stations;
@@ -44,9 +47,10 @@ class Results
         let endPoint =   this.EndPoint;
         let rz =         this.Rotation;
         let scale = 1.25/MaxMx;
-        let result = ResultsDiagram(results , stations, startPoint, endPoint, 2, rz, scale);
+        let result = ResultsDiagram(results , stations, startPoint, endPoint, 2, rz, scale, "Moment");
     
         this.Draw = result;
+        Results.Pattern = pattern
         this.InView();
     }
 
@@ -66,7 +70,7 @@ class Results
             MaxMyArray.push(MaxLocalMy);
         }
         let MaxMy = Math.max(...MaxMyArray)
-        if(MaxMy == 0){ MaxMy = 1}
+        if(Math.round(MaxMy == 0)){ MaxMy = 1}
 
         let results =    this.MomentY;
         let stations =   this.Stations;
@@ -74,9 +78,10 @@ class Results
         let endPoint =   this.EndPoint;
         let rz =         this.Rotation;
         let scale = 1.25/MaxMy;
-        let result = ResultsDiagram(results , stations, startPoint, endPoint, 3, rz, scale);
+        let result = ResultsDiagram(results , stations, startPoint, endPoint, 3, rz, scale, "Moment");
         
         this.Draw = result;
+        Results.Pattern = pattern
         this.InView();
     }
 
@@ -96,7 +101,7 @@ class Results
             MaxMTArray.push(MaxLocalMT);
         }
         let MaxMT = Math.max(...MaxMTArray)
-        if(MaxMT == 0){ MaxMT = 1}
+        if(Math.round(MaxMT) == 0){ MaxMT = 1}
     
         let results =    this.Torsion;
         let stations =   this.Stations;
@@ -104,9 +109,10 @@ class Results
         let endPoint =   this.EndPoint;
         let rz =         this.Rotation;
         let scale = 1.25/MaxMT;
-        let result = ResultsDiagram(results , stations, startPoint, endPoint, 2, rz, scale);
+        let result = ResultsDiagram(results , stations, startPoint, endPoint, 2, rz, scale, "Moment");
         
         this.Draw = result;
+        Results.Pattern = pattern
         this.InView();
     }
 
@@ -126,7 +132,7 @@ class Results
             MaxNArray.push(MaxLocalN);
         }
         let MaxN = Math.max(...MaxNArray)
-        if(MaxN == 0){ MaxN = 1}
+        if(Math.round(MaxN) == 0){ MaxN = 1}
 
         let results =    this.Normal;
         let stations =   this.Stations;
@@ -134,9 +140,10 @@ class Results
         let endPoint =   this.EndPoint;
         let rz =         this.Rotation;
         let scale = 1.25/MaxN;
-        let result = ResultsDiagram(results , stations, startPoint, endPoint, 2, rz, scale);
+        let result = ResultsDiagram(results , stations, startPoint, endPoint, 2, rz, scale, "Force");
         
         this.Draw = result;
+        Results.Pattern = pattern
         this.InView();
     }
 
@@ -156,7 +163,7 @@ class Results
             MaxVxArray.push(MaxLocalVx);
         }
         let MaxVx = Math.max(...MaxVxArray)
-        if(MaxVx == 0){ MaxVx = 1}
+        if(Math.round(MaxVx) == 0){ MaxVx = 1}
 
         let results =     this.ShearX;
         let stations =    this.Stations;
@@ -164,9 +171,10 @@ class Results
         let endPoint =    this.EndPoint;
         let rz =          this.Rotation;
         let scale = 1.25/MaxVx;
-        let result = ResultsDiagram(results , stations, startPoint, endPoint, 2, rz, scale);
+        let result = ResultsDiagram(results , stations, startPoint, endPoint, 2, rz, scale, "Force");
         
         this.Draw = result;
+        Results.Pattern = pattern
         this.InView();
     }
 
@@ -186,7 +194,7 @@ class Results
             MaxVyArray.push(MaxLocalVy);
         }
         let MaxVy = Math.max(...MaxVyArray)
-        if(MaxVy == 0){ MaxVy = 1}
+        if(Math.round(MaxVy) == 0){ MaxVy = 1}
         
         let results =    this.ShearY;
         let stations =   this.Stations;
@@ -194,9 +202,10 @@ class Results
         let endPoint =   this.EndPoint;
         let rz =         this.Rotation;
         let scale = 1.25/MaxVy;
-        let result = ResultsDiagram(results , stations, startPoint, endPoint, 3, rz, scale);
+        let result = ResultsDiagram(results , stations, startPoint, endPoint, 3, rz, scale, "Force");
 
         this.Draw = result;
+        Results.Pattern = pattern
         this.InView();
     }
 
@@ -216,6 +225,12 @@ class Results
 
     InView()
     {
+        if(this.PatternID == Results.Pattern && Results.ResultsMode){
+            this.Show();
+        }
+        else{
+            this.Hide();
+        }
         if(view == "XY")
         {
             if(this.StartPoint[2] != ViewPosition || this.EndPoint[2] != ViewPosition)
@@ -237,11 +252,7 @@ class Results
                 this.Hide();
             }
         }
-        else{
-            this.Show();
-        }
     }
-
 }
 
 
@@ -319,7 +330,7 @@ function ResultLines(length, x,y,z, startPoint, endPoint,  direction, rz, scale 
 
 
 // This function assumes results are from points distributed equally along the frame
-function ResultsDiagram(results , stations, startPoint, endPoint, direction, rz, scale = 1)
+function ResultsDiagram(results , stations, startPoint, endPoint, direction, rz, scale = 1, type)
 {
     if(results.length != stations.length)
     {
@@ -363,18 +374,27 @@ function ResultsDiagram(results , stations, startPoint, endPoint, direction, rz,
             position += 0.1;
             color = {r:180,g:0,b:0,a:1}
         }
+
         if(results[i] != results[i-1] && (results[i] == max || results[i] == min ))
         {
+            let text;
+            if(type == "Moment")
+            {
+                text = projUnits.MomentConvert(results[i]);
+            }
+            else{
+                text = projUnits.ForceConvert(results[i], true);
+            }
             if(direction ==1 || direction ==2)
             {
                 const textPosition = [line[1][3]+ x, line[1][4]+ y, line[1][5]+ z+ position];
-                const txt = makeResultsTextSprite( results[i].toFixed(3), textPosition[0], textPosition[1], textPosition[2],{fontsize: 110, fontface: "Georgia", textColor:color,
+                const txt = makeResultsTextSprite( text.toFixed(2), textPosition[0], textPosition[1], textPosition[2],{fontsize: 110, fontface: "Georgia", textColor:color,
                     vAlign:"center", hAlign:"center"});
                     load.add(txt);
             }
             else{
                 const textPosition = [line[1][3]+ x + position, line[1][4]+ y + position, line[1][5]+ z];
-                const txt = makeResultsTextSprite( results[i].toFixed(3), textPosition[0], textPosition[1], textPosition[2],{fontsize: 110, fontface: "Georgia", textColor:color,
+                const txt = makeResultsTextSprite( text.toFixed(2), textPosition[0], textPosition[1], textPosition[2],{fontsize: 110, fontface: "Georgia", textColor:color,
                     vAlign:"center", hAlign:"center"});
                     load.add(txt);
             }

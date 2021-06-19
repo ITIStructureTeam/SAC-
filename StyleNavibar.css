@@ -1,0 +1,139 @@
+ /*Background color*/
+            body{
+                background-color: #f8f8f8;
+                padding: 0px;
+                margin: 0px;
+            }
+            /*Top bar*/
+            #Header{
+                background-color: #0064c8;
+                overflow: hidden;
+                height: 120px;
+                font-family: 'Times New Roman', Times, serif;
+            }
+            /*Logo*/
+            .Logo{
+                float: left;
+                overflow:hidden; 
+                margin-top: 5px;
+                margin-left: 10px;
+            }
+            #Solution_Logo{
+                float: left; 
+                margin-left: 10px;
+                margin-top: -2px;
+            }
+            #Solution_Logo_img{
+                height: 100px;           
+                margin-top: 5px;
+            }
+            #Solution_Name{
+                float: right;
+            }
+            #Solution_Shortcut{     
+                height: 60px;   
+                text-align: center;        
+                margin-top: -15px;
+                margin-left: 15px;
+                float: left;
+                font-size: 95px;
+                color: white;
+                font-weight: bold;
+            }            
+            #Solution_Name_Details{
+                float: right;
+            }
+            #Seperator{
+                margin-left: 15px;
+                float: left;
+                width: 2px;
+                background-color: white;
+                height: 100px;
+                margin-right: 15px;
+                margin-top: 5px;
+            }
+            #Solution_Name_Details_List{
+                float: right;
+                font-size: 23px;
+                color: #f8f8f8;
+                margin-top: 5px;
+            }
+            /*Navigation bar*/
+            .navbar_bta3na {
+                background-color: #0064c8;
+                overflow: hidden;
+                float: right;
+                margin-right: 100px;
+                margin-top: 27px;
+            }
+            .navbar_bta3na a {                
+                display: flex;
+                float:left;
+                color: #ddd;
+                text-align: center;
+                padding: 14px 16px;
+                text-decoration: none;
+                font-size: 24px;
+                /* border: solid 1px #f8f8f8; */
+            }
+            .navbar_bta3na a:hover {
+                background-color: #ddd;
+                color: #0064c8;
+            }
+            .navbar_bta3na a.active {
+                background-color: #4ea0f7;
+                color: white;
+            }
+            #NewBTN {
+                position: absolute;
+                top: 305px;
+                left: 100px;
+                z-index: 2;
+            }
+            #OpenBTN {
+                position: absolute;
+                top: 305px;
+                left: 500px;
+            }
+            #Video_Name{
+                position: absolute;
+                top: 200px;
+                left: 900px;
+                font-size: 25px;
+                font-weight: bold;
+            }
+            #YoutubeVideoPlayer{
+                position: absolute;
+                top: 250px;
+                left: 900px;
+                height: 500px;
+                width: 900px;
+            }
+            /*About me*/
+            #Team_Members{                   
+                left: 0px;  
+                padding: 0%;           
+            }
+            #Team_Member_Profile{
+                display: inline-block;
+                width: 900px;
+            }
+            #profilepic{                
+                float: left;
+                margin-left: 140px;
+                margin-top: 100px;
+                width: 180px;
+                border-radius: 50%;
+                border: 5px solid #0064c8;
+            }
+            #About_{
+                float: left;
+                margin-top: 100px; 
+                margin-left:  20px;
+                vertical-align: middle;
+            }
+            .Data{
+                margin-bottom: 30px;
+                font-size: 22px;
+                font-weight: bold;
+            }

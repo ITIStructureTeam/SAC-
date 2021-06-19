@@ -1,0 +1,14 @@
+.deform-info-label {
+
+    background-color: rgba(252, 229, 99, 0.2);
+    position: fixed;
+    
+    pointer-events: none;
+    
+}
+.deform-info-label p{
+    padding: 0px 0px 0px 0px;
+    margin: 0px 0px 3px 0px;
+    font-size: small;
+    font-family:Cambria, Cochin, Georgia, Times, 'Times New Roman', serif
+}

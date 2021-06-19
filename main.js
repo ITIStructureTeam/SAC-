@@ -437,6 +437,10 @@ function update(renderer, scene, camera, controls) {
         renderer.domElement.removeEventListener('click', ClickToSelectElement, false);
     }
 
+    if(DeformedShape.deformationMode){
+        HideDefLineCircles();
+        ShowDefLineCircles();
+    }
 
     requestAnimationFrame(function () {
         update(renderer, scene, camera, controls);
@@ -445,91 +449,6 @@ function update(renderer, scene, camera, controls) {
 }
 
 
-
-// for grids
-
-
-document.querySelector('#grids-btn').addEventListener("click", function () {
-    if (!document.querySelector('.main-window')) {
-        $('body').append(GetGridsWin());
-        LoadGridsData('grids-x', listx, xGridsNames);
-        LoadGridsData('grids-y', listy, yGridsNames);
-        LoadGridsData('grids-z', listz, zGridsNames);
-        document.querySelector(`#grids-x-part .info`).addEventListener("click", function () { AddGrid('grids-x', listx, xGridsNames) });
-        document.querySelector(`#grids-y-part .info`).addEventListener("click", function () { AddGrid('grids-y', listy, yGridsNames) });
-        document.querySelector(`#grids-z-part .info`).addEventListener("click", function () { AddGrid('grids-z', listz, zGridsNames) });
-
-        document.querySelector('#grids-window').addEventListener("click", function () {
-
-            if (GetActiveGrid('grids-x')) {
-                let activeGrid = GetActiveGrid('grids-x');
-                document.querySelector(`#grids-x-part .default`).addEventListener("click", function () {
-                    if (activeGrid) activeGrid.remove();
-                });
-            }
-            if (GetActiveGrid('grids-y')) {
-                let activeGrid = GetActiveGrid('grids-y');
-                document.querySelector(`#grids-y-part .default`).addEventListener("click", function () {
-                    if (activeGrid) activeGrid.remove();
-                });
-            }
-            if (GetActiveGrid('grids-z')) {
-                let activeGrid = GetActiveGrid('grids-z');
-                document.querySelector(`#grids-z-part .default`).addEventListener("click", function () {
-                    if (activeGrid) activeGrid.remove();
-                });
-            }
-        })
-
-
-        document.querySelector('#grids-ok').addEventListener("click", function () {
-            ReadGrids('grids-x', listx, xGridsNames);
-            ReadGrids('grids-y', listy, yGridsNames);
-            ReadGrids('grids-z', listz, zGridsNames);
-            if (!listx.length || !listy.length || !listz.length) {
-                Metro.dialog.create({
-                    title: "Invalid Grids Data",
-                    content: "<div>You must input at least one spacing as positive number in each direction</div>",
-                    closeButton: true
-                });
-            } else {
-                ThreeD();
-                if (group != null) {
-                    scene.remove(group);
-                    gridLines.forEach(element => {
-                        element.material.dispose()
-                        element.geometry.dispose()
-                        scene.remove(element);
-                    });
-                    gridLines = [];
-                    for (var i = group.children.length - 1; i >= 0; i--) {
-                        group.children[i].material.dispose();
-                        group.children[i].geometry.dispose();
-                        group.remove(group.children[i]);
-                    }
-                    removeSelectionGrids();
-                }
-
-                GridSelections();
-                group = GridPoints(listx, listy, listz, listx.length, listy.length, listz.length);
-                gridLines = GridLine(listx, listy, listz, listx.length, listy.length, listz.length);
-                scene.add(group);
-                gridLines.forEach(element => {
-                    scene.add(element);
-                });
-
-                document.querySelector('#grids-window').parentElement.parentElement.remove();
-                gridsUpdated = true;
-            }
-        });
-
-        document.querySelector('#grids-close').addEventListener("click", function () {
-            document.querySelector('#grids-window').parentElement.parentElement.remove();
-        });
-
-
-    }
-});
 
 if (gridLines == null) {
     listx = [6, 6, 6]
@@ -546,56 +465,6 @@ if (gridLines == null) {
 }
 
 
-
-function GridSelections() {
-    let position = 0;
-    for (let i = 0; i <= listz.length; i++) {
-        const text = "Z = " + projUnits.LengthConvert(position, true);
-        position += listz[i];
-        $("#XY").append(`<option value=${position} >${text}</option>`);
-    }
-
-    position = 0;
-    for (let i = 0; i <= listy.length; i++) {
-        const text = "Z = " + projUnits.LengthConvert(position, true);
-        position += listy[i];
-        $("#XZ").append(`<option value=${position} >${text}</option>`);
-    }
-
-    position = 0;
-    for (let i = 0; i <= listx.length; i++) {
-        const text = "Z = " + projUnits.LengthConvert(position, true);
-        position += listx[i];
-        $("#YZ").append(`<option value=${position} >${text}</option>`);
-    }
-
-    // const yz = document.getElementById("YZ");
-    // position = 0;
-    // for (let i = 0; i <= listx.length; i++)
-    // {
-    //     const option = document.createElement("option");
-    //     option.text = "X = "+position;
-    //     yz.add(option, yz[i]);
-    //     position += listx[i];
-    // }
-}
-
-function removeSelectionGrids() {
-    const xy = $('#XY').children().length;
-    for (let i = xy - 1; i >= 0; i--) {
-        $('#XY').children()[i].remove();
-    }
-
-    const xz = $('#XZ').children().length;
-    for (let i = xz - 1; i >= 0; i--) {
-        $('#XZ').children()[i].remove();
-    }
-
-    const yz = $('#YZ').children().length;
-    for (let i = yz - 1; i >= 0; i--) {
-        $('#YZ').children()[i].remove();
-    }
-}
 
 
 
@@ -636,21 +505,40 @@ function XYView(XYindex) {
             scene.remove(gridLines[j]);
         }
     }
-    for (let j = 0; j < DrawLine.DrawLinesArray.length; j++) {
+
+    for (let j = 0; j < DrawLine.DrawLinesArray.length; j++)
+    {
         DrawLine.DrawLinesArray[j].InView();
     }
-    for (let j = 0; j < Point.PointsArray.length; j++) {
+
+
+    for (let j = 0; j < Point.PointsArray.length; j++)
+    {
         Point.PointsArray[j].InView();
     }
-    for (let j = 0; j < Results.ResultsList.length; j++) {
-        if (Results.ResultsList[i].Draw != null) {
-            Results.ResultsList[i].InView();
+
+    for (let j = 0; j < Results.ResultsList.length; j++)
+    {
+        if(Results.ResultsList[j].Draw != null)
+        {
+            Results.ResultsList[j].InView();
+        }
+    }
+    for (let j = 0; j < JointReactions.ReactionsList.length; j++)
+    {
+        if(JointReactions.ReactionsList[j].Draw != null)
+        {
+            JointReactions.ReactionsList[j].InView();
         }
     }
 
-    camera.position.x = distanceX / 2;
-    camera.position.y = distanceY / 2;
-    camera.position.z = Math.max(distanceX, distanceY) * 1.5 + ViewPosition;
+    if(DeformedShape.deformationMode){
+        DeformedShape.DeformShapesList.forEach(defsape => defsape.InView());
+    }
+
+    camera.position.x = distanceX/2;
+    camera.position.y = distanceY/2;
+    camera.position.z = Math.max(distanceX, distanceY)*1.5 + ViewPosition;
     controls.enableRotate = false;
     controls.target = new THREE.Vector3(camera.position.x, camera.position.y, 0);
 
@@ -706,10 +594,14 @@ function XZView(XZindex) {
             scene.remove(gridLines[j]);
         }
     }
-    for (let j = 0; j < DrawLine.DrawLinesArray.length; j++) {
+
+    for (let j = 0; j < DrawLine.DrawLinesArray.length; j++)
+    {
         DrawLine.DrawLinesArray[j].InView();
     }
-    for (let j = 0; j < Point.PointsArray.length; j++) {
+
+    for (let j = 0; j < Point.PointsArray.length; j++)
+    {
         Point.PointsArray[j].InView();
     }
     for (let j = 0; j < Results.ResultsList.length; j++) {
@@ -718,10 +610,22 @@ function XZView(XZindex) {
         }
     }
 
-    camera.up.set(0, 0.5, 0.5);
-    camera.position.x = distanceX / 2;
-    camera.position.y = Math.max(distanceX, distanceZ) * 1.5 + ViewPosition;
-    camera.position.z = distanceZ / 2;
+    for (let j = 0; j < JointReactions.ReactionsList.length; j++)
+    {
+        if(JointReactions.ReactionsList[j].Draw != null)
+        {
+            JointReactions.ReactionsList[j].InView();
+        }
+    }
+  
+    if(DeformedShape.deformationMode){
+        DeformedShape.DeformShapesList.forEach(defsape => defsape.InView());
+    }
+    
+    camera.up.set( 0, 0.5, 0.5 );
+    camera.position.x = distanceX/2;
+    camera.position.y = Math.max(distanceX,distanceZ)*1.5 + ViewPosition;
+    camera.position.z = distanceZ/2;
     controls.enableRotate = false;
     controls.target = new THREE.Vector3(camera.position.x, 0, camera.position.z);
 
@@ -778,10 +682,15 @@ function YZView(YZindex) {
             scene.remove(gridLines[j]);
         }
     }
-    for (let j = 0; j < DrawLine.DrawLinesArray.length; j++) {
+
+    for (let j = 0; j < DrawLine.DrawLinesArray.length; j++)
+    {
         DrawLine.DrawLinesArray[j].InView();
     }
-    for (let j = 0; j < Point.PointsArray.length; j++) {
+
+    
+    for (let j = 0; j < Point.PointsArray.length; j++)
+    {
         Point.PointsArray[j].InView();
     }
     for (let j = 0; j < Results.ResultsList.length; j++) {
@@ -789,6 +698,18 @@ function YZView(YZindex) {
             Results.ResultsList[j].InView();
         }
     }
+    for (let j = 0; j < JointReactions.ReactionsList.length; j++)
+    {
+        if(JointReactions.ReactionsList[j].Draw != null)
+        {
+            JointReactions.ReactionsList[j].InView();
+        }
+    }
+  
+    if(DeformedShape.deformationMode){
+        DeformedShape.DeformShapesList.forEach(defsape => defsape.InView());
+    }
+    
 
     camera.position.x = Math.max(distanceY, distanceZ) * 1.7 + ViewPosition;
     camera.position.y = distanceY / 2;
@@ -906,16 +827,31 @@ function resetScene() {
         scene.add(HiddenGrids[0]);
         HiddenGrids.shift();
     }
-    for (let i = 0; i < DrawLine.DrawLinesArray.length; i++) {
+
+    for(let i = 0; i < DrawLine.DrawLinesArray.length; i++)
+    {
         DrawLine.DrawLinesArray[i].InView();
     }
-    for (let i = 0; i < Point.PointsArray.length; i++) {
+
+    for(let i = 0; i < Point.PointsArray.length; i++)
+    {
         Point.PointsArray[i].InView();
     }
     for (let i = 0; i < Results.ResultsList.length; i++) {
         if (Results.ResultsList[i].Draw != null) {
             Results.ResultsList[i].InView();
         }
+    }
+    for (let i = 0; i < JointReactions.ReactionsList.length; i++)
+    {
+        if(JointReactions.ReactionsList[i].Draw != null)
+        {
+            JointReactions.ReactionsList[i].InView();
+        }
+    }
+
+    if(DeformedShape.deformationMode){
+        DeformedShape.DeformShapesList.forEach(defshape => defshape.InView());
     }
 
 }
@@ -930,135 +866,5 @@ function removeArrows() {
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-class RootData {
-    constructor() {
-        this.Materials = [...Material.MaterialsList.values()];
-        this.Sections = [...Section.SectionList.values()];
-        this.Patterns = Array.from(LoadPattern.LoadPatternsList, ([PatternID, Details]) => ({ PatternID, Details }));
-        this.Combinations = Array.from(LoadCombo.LoadCombosList, ([CombinationID, Details]) => ({ CombinationID, Details }));
-        this.Points = [...Point.PointsArray];
-        this.Frames = DrawLine.GetDrawnFrames();
-    }
-}
-
-
-function DisaplePreProcessorButtons() {
-    Unselect();
-    DrawingModeActive = false;
-    PreProcessor = false;
-    document.getElementById("Move").disabled = true;
-    document.getElementById("Copy").disabled = true;
-    document.getElementById("Delete").disabled = true;
-    document.getElementById("Undo").disabled = true;
-    document.getElementById("Redo").disabled = true;
-    document.getElementById("Rotate").disabled = true;
-    document.getElementById("point-load-btn").disabled = true;
-    document.getElementById("distributed-load-btn").disabled = true;
-    document.getElementById("JointRestraints").disabled = true;
-    document.getElementById("assign-framesec-btn").disabled = true;
-    document.getElementById("Draw").disabled = true;
-    document.getElementById("AddPointsOnFrame").disabled = true;
-    document.getElementById("grids-btn").disabled = true;
-    document.getElementById("materialsBtn").disabled = true;
-    document.getElementById("DefineSections").disabled = true;
-    document.getElementById("pattern-btn").disabled = true;
-    document.getElementById("combo-btn").disabled = true;
-    document.getElementById("Run").disabled = true;
-    document.getElementById("Unlock").disabled = false;
-}
-
-function EnaplePreProcessorButtons() {
-    PreProcessor = true;
-    document.getElementById("Move").disabled = false;
-    document.getElementById("Copy").disabled = false;
-    document.getElementById("Delete").disabled = false;
-    document.getElementById("Undo").disabled = false;
-    document.getElementById("Redo").disabled = false;
-    document.getElementById("Rotate").disabled = false;
-    document.getElementById("point-load-btn").disabled = false;
-    document.getElementById("distributed-load-btn").disabled = false;
-    document.getElementById("JointRestraints").disabled = false;
-    document.getElementById("assign-framesec-btn").disabled = false;
-    document.getElementById("disp-load-btn").disabled = false;
-    document.getElementById("Draw").disabled = false;
-    document.getElementById("AddPointsOnFrame").disabled = false;
-    document.getElementById("grids-btn").disabled = false;
-    document.getElementById("materialsBtn").disabled = false;
-    document.getElementById("DefineSections").disabled = false;
-    document.getElementById("pattern-btn").disabled = false;
-    document.getElementById("combo-btn").disabled = false;
-    document.getElementById("Run").disabled = false;
-    document.getElementById("Unlock").disabled = true;
-}
-
-document.getElementById("Unlock").onclick = function () { Unlock() };
-function Unlock() {
-    EnaplePreProcessorButtons();
-    Results.ResultsList.forEach(res => res.Hide());
-    Results.ResultsList = [];
-}
-
-
-
-
-
-
-$("#Run").click(function () {
-    DisaplePreProcessorButtons()
-
-    let OutPut = JSON.stringify(new RootData());
-    console.log(OutPut);
-    $.ajax({
-        type: "POST",
-        url: "/api/RunAnalysis/LoadFramesData",
-        contentType: "application/json; charset=utf-8",
-        dataType: "json",
-        data: OutPut,
-        cache: false,
-        success: function (result) {
-            console.log(result);
-            let InputResults = [...result.strainingActions];
-            for (let i = 0; i < InputResults.length; i++) {
-                let patternID = InputResults[i].patternID;
-                let frameID = InputResults[i].frameID;
-                let startPoint = InputResults[i].startPoint;
-                let endPoint = InputResults[i].endPoint;
-                let stations = InputResults[i].stations;
-                let momentX = InputResults[i].momentX;
-                let momentY = InputResults[i].momentY;
-                let torsion = InputResults[i].torsion;
-                let normal = InputResults[i].normal;
-                let shearX = InputResults[i].shearX;
-                let shearY = InputResults[i].shearY;
-                let rotation = InputResults[i].rotation;
-                new Results(patternID, frameID, startPoint, endPoint, stations, momentX, momentY, torsion, normal, shearX, shearY, rotation)
-            }
-
-            console.log(Results.ResultsList)
-        },
-        error: function (ex) {
-            console.log(ex.responseText);
-        }
-    });
-});
-
+DisablePostProcessBts();
 
