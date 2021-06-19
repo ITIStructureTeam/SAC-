@@ -230,6 +230,7 @@ function ImportProjectData() {
             LoadJson(result);
             console.log(result);
             document.getElementById("StatusBar").innerHTML = "Model created successfully";
+            localStorage.setItem('ModelState', "New")
         },
         error: function (ex) {
             document.getElementById("StatusBar").innerHTML = "Failed to import model";

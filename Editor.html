@@ -61,7 +61,7 @@
 
 </head>
 
-<body>
+<body onunload="CloseOpen(event)">
 
     <script>
         let Project_Name ;
@@ -73,7 +73,30 @@
             {
                 ImportProjectData();
             }
+            if(Project_Name == null || ProjectStat == null)
+            {
+                location.href = './index.html';
+            }
+            // localStorage.removeItem("ProjectName");
+            // localStorage.removeItem("ModelState");
         }
+        // window.onunload = function (event) {
+        //     event.preventDefault();
+        //     event.returnValue = 'Data will be lost .. continue without saving?';
+        //     //return confirm('Data will be lost .. continue without saving?');
+        // }
+
+        function CloseOpen(event) 
+        { 
+            if(event.clientX<=0 && event.clientY<0) 
+            { 
+                alert ( "Close"); 
+            } 
+            else 
+            { 
+            alert ( "refresh or leave"); 
+            } 
+        } 
     </script>
     <!-- <script>
         function intro() {
