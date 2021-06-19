@@ -56,7 +56,6 @@
     <!-- URL of image to use in the card. Used with summary, summary_large_image, player cards -->
     <meta name="twitter:image" content="" />
 
-
     <script src="./Assets/metro4-dist/js/metro.min.js"></script>
 
 </head>
@@ -98,7 +97,7 @@
             } 
         } 
     </script>
-    <!-- <script>
+    <script>
         function intro() {
             Metro.activity.open({
                 overlayColor: '#fff',
@@ -108,11 +107,11 @@
         <div class=\'mt-2 text-large\'>SAC Solutions...</div>
         <div class=\'mt-2 text-large\'>Loading...</div>`,
                 type: 'bars',
-                autoHide: 3000
+                autoHide: 1500
             });
         }
         intro();
-    </script> -->
+    </script>
 
 
     <div id="webgl">
@@ -262,6 +261,7 @@
             <!-- Ribbon Pannels and Buttons -->
             <div class="content-holder">
                 <!-- Home Tab -->
+
                 <div class="section" id="Edit-Section">
                     <!-- Actions Group (Pannel)  Tab Edit -->
                     <div class="group">
@@ -283,6 +283,7 @@
                     </div>
                     <!-- Modify Group (Pannel)    Tab Edit -->
 
+
                     <div class="group">
                         <button id="Draw" class="ribbon-button" data-role="hint" data-hint-position="bottom"
                         data-hint-text="Draw Frames">
@@ -293,7 +294,6 @@
                         </button>
                         <span class="title">Draw</span>
                     </div>
-
                     <div class="group">
 
                         <!--<button class="ribbon-button">
@@ -388,6 +388,7 @@
 
 
 
+
                         <!--<div>
                             <button class="ribbon-button dropdown-toggle">
                                 <span class="icon">
@@ -407,6 +408,7 @@
                                         <span>Merge Area ...</span>
                                     </a></li>
                             </ul>
+
                         </div>-->
 
                         <!--<div>
@@ -473,6 +475,7 @@
                 <div class="section" id="View-Section">
 
                     <!-- Zooming Group (Pannel    Tab View) -->
+
                     <!--<div class="group">
                         <button class="ribbon-button">
                             <span class="icon">
@@ -494,6 +497,7 @@
                         </button>
                         <span class="title">Zooming</span>
                     </div>-->
+
                     <!-- UP & DOWN Group (Pannel    Tab View) -->
                     <div class="group">
                         <button id="Next" class="ribbon-button">
@@ -611,9 +615,7 @@
                 <!-- Draw Tab -->
                 <!--<div class="section" id="Draw-Section">-->
                     <!-- Draw Group (Pannel)    Tab Draw -->
-                    <!--<div class="group">
-
-                        
+                    <!--<div class="group">             
                         <button class="ribbon-button">
                             <span class="icon">
                                 <img alt="Area" src="Assets/images/AreaIcon.png">
@@ -641,6 +643,7 @@
                             </span>
                             <span class="caption">Frame Section</span>
                         </button>
+
                         <<button class="ribbon-button">
                             <span class="icon">
                                 <img alt="Area" src="Assets/images/AreaSectionIcon.png">
@@ -650,13 +653,13 @@
                         <span class="title">Properities</span>
                     </div>
                     <div class="group"></div>
+
                 </div> -->
                 <!-- Assign Tab -->
                 <div class="section" id="Assign-Section">
 
                     <!-- Joints Group (Pannel)    Tab Assign -->
                     <div class="group">
-
                         <button id ="JointRestraints" class="ribbon-button" onclick="JointRestraint()" data-role="hint"
 
                             data-hint-position="bottom" data-hint-text="Add Joint Restraint">
@@ -680,7 +683,6 @@
 
                     <!-- Frames Group (Pannel)    Tab Assign -->
                     <div class="group">
-
                         <button id="assign-framesec-btn" class="ribbon-button" data-role="hint" data-hint-position="bottom"
                         data-hint-text="Assign Frame Section">
                             <span class="icon">
@@ -703,10 +705,10 @@
                                 <img alt="Area Section" src="Assets/images/AreaSectionIcon.png">
                             </span>
                             <span class="caption">Area Section</span>
+
                         </button>-->
                         <span class="title">Frames</span>
                     </div>
-
 
                     <!-- Assign Loads Group (Pannel)    Tab Assign -->
                     <div class="group">
@@ -727,6 +729,7 @@
                             </span>
                             <span class="caption">Distributed Loads</span>
                         </button>
+
                         <!--<button class="ribbon-button">
                             <span class="icon">
                                 <img alt="Area Loads" src="Assets/images/AreaLoadsIcon.png">
@@ -772,8 +775,18 @@
                             <span class="icon">
                                 <img alt="Deformed Shape" src="Assets/images/DeformedIcon.png">
                             </span>
-                            <span class="caption">Deformed Shape</span>
+                          <span class="caption">Deformed Shape</span>                            
                         </button>
+                      
+                        <button class="ribbon-button" onclick="ShowResultsTable()" data-role="hint" data-hint-position="bottom"
+                        data-hint-text="Show Table">
+                            <span class="icon">
+                                <img alt="Show Tables" src="Assets/images/showtables.jpg">
+                            </span>
+                            <span class="caption">Show Tables</span>
+                        </button>
+
+                        
                         <span class="title">Displacements</span>
                     </div>
 
@@ -783,6 +796,7 @@
 
                     <!-- Straining Actions Group (Pannel)    Tab Analyse & Results -->
                     <div class="group">
+
                         <button id = "reactions" class="ribbon-button">
                             <span class="icon">
                                 <img alt="Reactions" src="Assets/images/ReactionIcon.jpg">
@@ -790,13 +804,13 @@
                             <span class="caption">Reactions</span>
                         </button>
 
+
                         <button class="ribbon-button" id="frame-forces">
                             <span class="icon">
                                 <img alt="Axial Force" src="Assets/images/NormalIcon.png">
                             </span>
                             <span class="caption">Straining Actions</span>
                         </button>
-
                         <span class="title">Forces</span>
                     </div>
 
@@ -804,7 +818,7 @@
                 </div>
 
                 <!-- Option Tab -->
-                
+               
             </div>
 
             <button id="resizeribbonbtn" onclick="resizeribbon()" data-role="hint" data-hint-text="Resize Ribbon"
@@ -819,7 +833,8 @@
             <img style="width: 20px; margin-left: 10px; margin-bottom: 5px; margin-top: 5px; "
 
                 src="Assets/images/SACLOGO.png" alt="SAC Icon" />
-            <span id="StatusBar">Welcome to SAC Solutions - Status Bar - </span>
+
+            <span class="text-bold" id="StatusBar">Welcome to SAC Solutions - Status Bar - </span>
             <button style=" position: absolute;left: 88%;top:0px;background-color: inherit;" id="UnitsBTN" class="button light text-bold" onclick="document.getElementById('units-btn').click();">Project units: kN,m</button>
         </div>
 
@@ -873,27 +888,35 @@
 
     <script type="module" src="main.js"></script>
 
+    <script src="./Assets/Results/JSONTEST.js" ></script>
+  
     <script src="./Assets/Loads.js/loads-classes.js"></script>
     <script src="./Classes.js"></script>
     <script src="./global.js"></script>
     <script src="./TextLabels.js"></script>
     <script src="./GlobalArrows.js"></script>
-    <script src="./Assets/js/main3.js"></script>
+
     <script src="./Assets/js/Assign.js"></script>
     <script src="./Assets/Units.js/Units.js"></script>
     <script src="./Assets/grids.js/Grids.js"></script>
     <script src="./Assets/Results/Results.js"></script>
+
+    <script src="./Assets/Loads.js/LoadComboWindow.js"></script>
+    <script src="./Assets/js/main3.js"></script>
+    <script src="./Assets/js/ResultsTables.js"></script>
+
+
+
+    <!--<script src="./Assets/js/BelalLoads.js"></script>-->
+
+    <script src="./Assets/Loads.js/LoadPatternWindow.js"></script> 
     <script src="./Assets/Results/JointReactions.js"></script>
     <script src="./Assets/Results/DeformedShape.js"></script>
     
     <script src="./loadjson.js"></script>    
     <script src = "./SaveAs.js"></script>
     <script src = "./RootData.js"></script>
-  
-    <!--<script src="./Assets/js/BelalLoads.js"></script>-->
-
-    <script src="./Assets/Loads.js/LoadPatternWindow.js"></script>
-    <script src="./Assets/Loads.js/LoadComboWindow.js"></script>
+   
     <script src="./Assets/Units.js/UnitsWindow.js"></script>
     <script src="./Assets/Loads.js/AssignLoadWindow.js"></script>
     <script src="./Assets/Loads.js/DisplayLoadsWindow.js"></script>

@@ -209,7 +209,7 @@ document.querySelector('#combo-btn').addEventListener('click',function(){
                 let backup = combo.DeepCopyComboData();
 
                 $('body').append(comboModWindow);
-                LoadDefCases();
+                LoadDefCases('#load-case');
                 document.querySelector(`option[value=${comboId}]`).remove();
                 LoadComboData(comboId);
 
@@ -259,7 +259,7 @@ document.querySelector('#combo-btn').addEventListener('click',function(){
         document.querySelector('#add-combo-btn').addEventListener("click",function(){
             if(!document.querySelector('.secondary-window')){
                 $('body').append(comboAddWindow);
-                LoadDefCases();
+                LoadDefCases('#load-case');
                 let loadCaseInfo = [];
 
                 document.querySelector('#add-add-case').addEventListener("click", function(){
@@ -344,18 +344,18 @@ function RefreshComboList() {
     LoadDefCombos();
 }
 
-function LoadDefCases() {
-    let length = $('#load-case').children().length;
+function LoadDefCases(SelectID) {
+    let length = $(SelectID).children().length;
     for (let i = length-1; i >= 0 ; i--) {
-        $('#load-case').children()[i].remove();      
+        $(SelectID).children()[i].remove();      
     }
     LoadPattern.LoadPatternsList.forEach((value,key) => {
-        $('#load-case').append(`
+        $(SelectID).append(`
             <option value=${key}>${value.Name}</option>
         `)
     });
     LoadCombo.LoadCombosList.forEach((value,key) => {
-        $('#load-case').append(`
+        $(SelectID).append(`
             <option value=${key}>${value.Name}</option>
         `)
     });
