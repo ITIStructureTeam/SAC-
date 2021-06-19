@@ -203,6 +203,7 @@ function SaveModel() {
         success: function (result) {
             document.getElementById("StatusBar").innerHTML = "Data Saved";
             console.log("Data saved");
+            console.log(result)
         },
         error: function (ex) {
             console.log(ex.responseText);

@@ -198,6 +198,14 @@ class Section {
     
     }
 
+    static ReadFromJson(jsobj) {
+        Section.SectionList.clear();
+        jsobj.forEach(section => {
+            let mat = Material.GetMaterialByName(section.Material);
+            new Section(section.Name, mat, section.SecType, section.Dimensions, section.PropModifiers);
+        });
+    }
+
     toJSON()
     {
         return{

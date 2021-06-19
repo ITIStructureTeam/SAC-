@@ -219,26 +219,26 @@
             <ul class="tabs-holder">
                 <li class="static" id="sidebar-toggle-2" style="cursor: pointer;"><a>File</a></li>
                 <!-- File-->
-                <li><a href="#Edit-Section">Edit</a></li>
+                <li><a href="#Edit-Section">Home</a></li>
                 <!-- Edit-->
                 <li><a href="#View-Section">View</a></li>
                 <!-- View-->
                 <li><a href="#Define-Section">Define</a></li>
                 <!-- Define-->
-                <li><a href="#Draw-Section">Draw</a></li>
+                <!-- <li><a href="#Draw-Section">Draw</a></li> -->
                 <!-- Draw-->
-                <li><a href="#Select-Section">Select</a></li>
+                <!-- <li><a href="#Select-Section">Select</a></li> -->
                 <!-- Select-->
                 <li><a href="#Assign-Section">Assign</a></li>
                 <!-- Assign-->
                 <li><a href="#Analyse-Section">Analysis & Results</a></li>
                 <!-- Analyse-->
-                <li><a href="#Options-Section">Options</a></li>
+                <!-- <li><a href="#Options-Section">Options</a></li> -->
                 <!-- Options-->
             </ul>
             <!-- Ribbon Pannels and Buttons -->
             <div class="content-holder">
-                <!-- Edit Tab -->
+                <!-- Home Tab -->
                 <div class="section" id="Edit-Section">
                     <!-- Actions Group (Pannel)  Tab Edit -->
                     <div class="group">
@@ -259,6 +259,18 @@
                         <span class="title">Actions</span>
                     </div>
                     <!-- Modify Group (Pannel)    Tab Edit -->
+
+                    <div class="group">
+                        <button id="Draw" class="ribbon-button" data-role="hint" data-hint-position="bottom"
+                        data-hint-text="Draw Frames">
+                            <span class="icon">
+                                <img alt="Frame" src="Assets/images/FrameIcon.jpg">
+                            </span>
+                            <span class="caption">Frame Element</span>
+                        </button>
+                        <span class="title">Draw</span>
+                    </div>
+
                     <div class="group">
 
                         <!--<button class="ribbon-button">
@@ -299,8 +311,6 @@
 
                         <button id="Delete" class="ribbon-button" data-role="hint" data-hint-position="bottom"
                             data-hint-text="Delete Element">
-
-
                             <span class="icon">
                                 <img alt="Delete" src="Assets/images/DeleteIcon.jpg">
                             </span>
@@ -346,18 +356,16 @@
                     <!-- Elements Group (Pannel)    Tab Edit -->
                     <div class="group">
                         <button class="ribbon-button" id="disp-load-btn" data-role="hint" data-hint-position="bottom"
-
-                            data-hint-text="Edit Point">
-
+                            data-hint-text="Show Loads Assigned">
                             <span class="icon">
-                                <img alt="Edit" src="Assets/images/EditPoints.png">
+                                <img alt="Edit" src="Assets/images/PointLoadIcon.png">
                             </span>
-                            <span class="caption">Edit Points</span>
+                            <span class="caption">Show Loads</span>
                         </button>
 
 
 
-                        <div>
+                        <!--<div>
                             <button class="ribbon-button dropdown-toggle">
                                 <span class="icon">
                                     <img alt="Edit Area" src="Assets/images/EditArea.png">
@@ -376,9 +384,9 @@
                                         <span>Merge Area ...</span>
                                     </a></li>
                             </ul>
-                        </div>
+                        </div>-->
 
-                        <div>
+                        <!--<div>
                             <button class="ribbon-button dropdown-toggle">
                                 <span class="icon">
                                     <img alt="Edit Line" src="Assets/images/EditLines.png">
@@ -395,9 +403,21 @@
                                         Join Frame ... </a>
                                 </li>
                             </ul>
-                        </div>
+                        </div>-->
                         <span class="title">Elements</span>
                     </div>
+
+                    <div class="group">
+                        <button id="grids-btn" class="ribbon-button" data-role="hint" data-hint-position="bottom"
+                        data-hint-text="Define Grids">
+                            <span class="icon">
+                                <img alt="Grid" src="Assets/images/GridIcon.png">
+                            </span>
+                            <span class="caption">Grids</span>
+                        </button>
+                        <span class="title">Datum</span>
+                    </div>
+                    
                     <div class="group">
                         <input data-role="checkbox" type="checkbox" id="Labels" data-caption="Show Labels"
                             onclick="Labels()">
@@ -405,13 +425,32 @@
                             onclick="Labels()">
                     </div>
 
+                    
+                    <div class="group">
+                        <button id="units-btn" class="ribbon-button">
+                            <span class="icon">
+                                <img alt="Dimensions" src="Assets/images/DimensionsIcon.png">
+                            </span>
+                            <span class="caption">Units & Dimensions</span>
+                        </button>
 
+                        <!-- <button class="ribbon-button">
+                            <span class="icon">
+                                <img alt="Colors" src="Assets/images/ColorsIcon.png">
+                            </span>
+                            <span class="caption">Colors</span>
+                        </button> -->
+
+                        <span class="title">Settings</span>
+                    </div>
+                    <div class="group"></div>
+                    
                 </div>
                 <!-- View Tab -->
                 <div class="section" id="View-Section">
 
                     <!-- Zooming Group (Pannel    Tab View) -->
-                    <div class="group">
+                    <!--<div class="group">
                         <button class="ribbon-button">
                             <span class="icon">
                                 <img alt="Zoom In" src="Assets/images/ZoomIn.png">
@@ -431,7 +470,7 @@
                             <span class="caption">Restore View</span>
                         </button>
                         <span class="title">Zooming</span>
-                    </div>
+                    </div>-->
                     <!-- UP & DOWN Group (Pannel    Tab View) -->
                     <div class="group">
                         <button id="Next" class="ribbon-button">
@@ -543,29 +582,15 @@
                         </button>
                         <span class="title">Loads Properities</span>
                     </div>
+                    
+                    <div class="group"></div>
                 </div>
                 <!-- Draw Tab -->
-                <div class="section" id="Draw-Section">
+                <!--<div class="section" id="Draw-Section">-->
                     <!-- Draw Group (Pannel)    Tab Draw -->
-                    <div class="group">
+                    <!--<div class="group">
 
-                        <button id="AddPointsOnFrame" class="ribbon-button" onclick="AddPointOnFrameWindow()">
-
-                            <span class="icon">
-                                <img alt="Point" src="Assets/images/PointIcon.png">
-                            </span>
-                            <span class="caption">Point</span>
-                        </button>
-
-                        <button id="Draw" class="ribbon-button" data-role="hint" data-hint-position="bottom"
-                        data-hint-text="Draw Frames">
-
-
-                            <span class="icon">
-                                <img alt="Frame" src="Assets/images/FrameIcon.jpg">
-                            </span>
-                            <span class="caption">Frame</span>
-                        </button>
+                        
                         <button class="ribbon-button">
                             <span class="icon">
                                 <img alt="Area" src="Assets/images/AreaIcon.png">
@@ -574,23 +599,13 @@
                         </button>
                         <span class="title">Draw</span>
                     </div>
-                    <div class="group">
-                        <button id="grids-btn" class="ribbon-button" data-role="hint" data-hint-position="bottom"
-                        data-hint-text="Define Grids">
+                    
 
-                            <span class="icon">
-                                <img alt="Grid" src="Assets/images/GridIcon.png">
-                            </span>
-                            <span class="caption">Grids</span>
-                        </button>
-                        <span class="title">Datum</span>
-                    </div>
-
-                </div>
+                </div>-->
                 <!-- Select Tab -->
-                <div class="section" id="Select-Section">
+                <!-- <div class="section" id="Select-Section"> -->
                     <!-- Select Properities Group (Pannel)    Tab Select -->
-                    <div class="group">
+                    <!-- <div class="group">
                         <button class="ribbon-button">
                             <span class="icon">
                                 <img alt="Materials" src="Assets/images/MaterialIcon.webp">
@@ -603,7 +618,7 @@
                             </span>
                             <span class="caption">Frame Section</span>
                         </button>
-                        <button class="ribbon-button">
+                        <<button class="ribbon-button">
                             <span class="icon">
                                 <img alt="Area" src="Assets/images/AreaSectionIcon.png">
                             </span>
@@ -612,12 +627,12 @@
                         <span class="title">Properities</span>
                     </div>
                     <div class="group"></div>
-                </div>
+                </div> -->
                 <!-- Assign Tab -->
                 <div class="section" id="Assign-Section">
-                    <!-- Case Properities Group (Pannel)    Tab Assign -->
-                    <div class="group">
 
+                    <!-- Joints Group (Pannel)    Tab Assign -->
+                    <div class="group">
 
                         <button id ="JointRestraints" class="ribbon-button" onclick="JointRestraint()" data-role="hint"
 
@@ -627,6 +642,21 @@
                             </span>
                             <span class="caption">Joint Restraint</span>
                         </button>
+
+                        <button id="AddPointsOnFrame" class="ribbon-button" onclick="AddPointOnFrameWindow()"
+                        data-role="hint" data-hint-position="bottom" data-hint-text="Assign Points On Frame">
+
+                            <span class="icon">
+                                <img alt="Point" src="Assets/images/PointIcon.png">
+                            </span>
+                            <span class="caption">Add Points</span>
+                        </button>
+
+                        <span class="title">Joints</span>
+                    </div>
+
+                    <!-- Frames Group (Pannel)    Tab Assign -->
+                    <div class="group">
 
                         <button id="assign-framesec-btn" class="ribbon-button" data-role="hint" data-hint-position="bottom"
                         data-hint-text="Assign Frame Section">
@@ -645,14 +675,16 @@
                             <span class="caption">Frame Axis</span>
                         </button>
 
-                        <button class="ribbon-button">
+                        <!--<button class="ribbon-button">
                             <span class="icon">
                                 <img alt="Area Section" src="Assets/images/AreaSectionIcon.png">
                             </span>
                             <span class="caption">Area Section</span>
-                        </button>
-                        <span class="title">Case Properities</span>
+                        </button>-->
+                        <span class="title">Frames</span>
                     </div>
+
+
                     <!-- Assign Loads Group (Pannel)    Tab Assign -->
                     <div class="group">
 
@@ -672,13 +704,13 @@
                             </span>
                             <span class="caption">Distributed Loads</span>
                         </button>
-                        <button class="ribbon-button">
+                        <!--<button class="ribbon-button">
                             <span class="icon">
                                 <img alt="Area Loads" src="Assets/images/AreaLoadsIcon.png">
                             </span>
                             <span class="caption">Area Loads</span>
-                        </button>
-                        <span class="title">Assign Loads</span>
+                        </button>-->
+                        <span class="title">Loads</span>
 
                     </div>
                 </div>
@@ -717,7 +749,7 @@
                             <span class="icon">
                                 <img alt="Deformed Shape" src="Assets/images/DeformedIcon.png">
                             </span>
-                            <span class="caption">Show Deformed Shape</span>
+                            <span class="caption">Deformed Shape</span>
                         </button>
                         <span class="title">Displacements</span>
                     </div>
@@ -734,65 +766,22 @@
                             </span>
                             <span class="caption">Reactions</span>
                         </button>
-                        <span class="title">Joint Reactions</span>
-                    </div>
-                    <div class="group">
+
                         <button class="ribbon-button" id="frame-forces">
                             <span class="icon">
                                 <img alt="Axial Force" src="Assets/images/NormalIcon.png">
                             </span>
-                            <span class="caption">Normal Force</span>
+                            <span class="caption">Straining Actions</span>
                         </button>
-                        <button class="ribbon-button">
-                            <span class="icon">
-                                <img alt="Moment" src="Assets/images/MomentIcon.png">
-                            </span>
-                            <span class="caption">Bending Moment 2</span>
-                        </button>
-                        <button class="ribbon-button">
-                            <span class="icon">
-                                <img alt="Moment" src="Assets/images/MomentIcon.png">
-                            </span>
-                            <span class="caption">Bending Moment 3</span>
-                        </button>
-                        <button class="ribbon-button">
-                            <span class="icon">
-                                <img alt="Moment" src="Assets/images/ShearIcon.PNG">
-                            </span>
-                            <span class="caption">Shear Force 2</span>
-                        </button>
-                        <button class="ribbon-button">
-                            <span class="icon">
-                                <img alt="Moment" src="Assets/images/ShearIcon.PNG">
-                            </span>
-                            <span class="caption">Shear Force 3</span>
-                        </button>
-                        <span class="title">Straining Actions</span>
+
+                        <span class="title">Forces</span>
                     </div>
+
 
                 </div>
 
                 <!-- Option Tab -->
-                <div class="section" id="Options-Section">
-                    <div class="group">
-                        <button id="units-btn" class="ribbon-button">
-                            <span class="icon">
-                                <img alt="Dimensions" src="Assets/images/DimensionsIcon.png">
-                            </span>
-                            <span class="caption">Units & Dimensions</span>
-                        </button>
-
-                        <button class="ribbon-button">
-                            <span class="icon">
-                                <img alt="Colors" src="Assets/images/ColorsIcon.png">
-                            </span>
-                            <span class="caption">Colors</span>
-                        </button>
-
-                        <span class="title">Settings</span>
-                    </div>
-                    <div class="group"></div>
-                </div>
+                
             </div>
 
             <button id="resizeribbonbtn" onclick="resizeribbon()" data-role="hint" data-hint-text="Resize Ribbon"
@@ -808,7 +797,7 @@
 
                 src="Assets/images/SACLOGO.png" alt="SAC Icon" />
             <span id="StatusBar">Welcome to SAC Solutions - Status Bar - </span>
-
+            <button style=" position: absolute;left: 88%;top:0px;background-color: inherit;" id="UnitsBTN" class="button light text-bold" onclick="document.getElementById('units-btn').click();">Project units: kN,m</button>
         </div>
 
 
