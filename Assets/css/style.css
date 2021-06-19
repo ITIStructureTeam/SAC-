@@ -1,5 +1,6 @@
 #xyzplansbtn {
     height: 0;
+    
 }
 
 button:disabled {
@@ -79,4 +80,8 @@ button:disabled {
 }
 #RestraintBtnGroup{
     height: 50px;
+}
+#excelDataTable tbody{
+    height: inherit;
+    width: inherit;
 }

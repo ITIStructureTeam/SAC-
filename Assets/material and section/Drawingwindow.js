@@ -61,6 +61,7 @@ function InitFramePropWindow() {
     SelectionModeActive = false;
     Unselect();
     document.querySelector('#frameprop-sec-list').addEventListener("change", GetSelectedSection);
+    document.querySelector("body").style = "cursor:crosshair";
 }
 
 function FillSectionList() {
@@ -83,4 +84,6 @@ function GetSelectedSection() {
 function ExitDrawingMode() {
     DrawingModeActive = false;
     SelectionModeActive = true;
+    StatusBar.innerHTML = '';
+    document.querySelector("body").style = "cursor:default"
 }
