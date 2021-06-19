@@ -760,7 +760,8 @@ function ThreeD() {
     camera.position.y = 25;
     camera.position.z = 45;
     controls.enableRotate = true;
-
+    controls.target = new THREE.Vector3(0, 0, 0);
+    
     document.getElementById("StatusBar").innerHTML = "3D-View";
 }
 
