@@ -135,12 +135,17 @@ class Material {
             if(isNaN(value[0]) || value[0] <=0)
                 throw new Error("material strengths must be positive numbers");
         }
-        if (this.MaterialType == EmaterialType.Steel){
+        if (this.MaterialType == EmaterialType.Steel) {
             if(value.slice(0,2).some(val => isNaN(val) || val <= 0))
                 throw new Error("material strengths must be positive numbers");
         } 
-
-        this.#_strength = value;
+        if(this.MaterialType == EmaterialType.Concrete) {
+            this.#_strength = [value[0]];
+        }
+        else{
+            this.#_strength = value;
+        }
+        
     }
 
     get Strength() {
