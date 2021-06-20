@@ -161,11 +161,11 @@ function ClickToDrawLine(event) {
             if (intersects.length > 0) {
                 if (points.length < 6) {
                     StatusBar.innerHTML = 'Select Next Point or Press -Enter- to Reset'
-                    Metro.toast.create("Specify Next Point or Press -Enter- to Reset", null, 2000,"secondary")
+        
                     pos_x = intersects[0].object.position.x;
                     pos_y = intersects[0].object.position.y;
                     pos_z = intersects[0].object.position.z;
-                    //points.push( new THREE.Vector3( pos_x, pos_y, pos_z ) );
+
                     points.push(pos_x);
                     points.push(pos_y);
                     points.push(pos_z);
@@ -175,7 +175,6 @@ function ClickToDrawLine(event) {
                 }
                 else if (points.length == 6) {
                     StatusBar.innerHTML = 'Select First Point'
-                    Metro.toast.create("Specify First Point to Draw a new Element", null, 3000,"secondary")
                     commands.excuteCommand(new DrawLine(new FrameElement(points, GetSelectedSection())));
                     points = [];
                 }
@@ -403,11 +402,6 @@ function CheckForUpdates() {
         DrawLine.DrawLinesArray.forEach(line => line.DisplayLoad());
         unitsUpdated = false;
     }
-    
-    /* if(gridsUpdated) {
-        ThreeD();
-        gridsUpdated = false;
-    } */
 
 }
 
@@ -455,6 +449,19 @@ function update(renderer, scene, camera, controls) {
     });
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 // for grids
@@ -544,65 +551,12 @@ document.querySelector('#grids-btn').addEventListener("click",function(){
     }
 });
 
-if (gridLines == null) {
-    listx = [6, 6, 6]
-    listy = [4, 4, 4]
-    listz = [3, 3, 3]
-    GridSelections()
-    group = GridPoints(listx, listy, listz, listx.length, listy.length, listz.length);
-    scene.add(group);
 
-    gridLines = GridLine(listx, listy, listz, listx.length, listy.length, listz.length);
-    gridLines.forEach(element => {
-        scene.add(element);
-    });
-}
 
-function GridSelections()
-{
-    let position = 0;
-    for (let i = 0; i <= listz.length; i++)
-    {
-        const text = "Z = "+ projUnits.LengthConvert(position, true);
-        position += listz[i];
-        $("#XY").append(`<option value=${position} >${text}</option>`);
-    }
 
-    position = 0;
-    for (let i = 0; i <= listy.length; i++)
-    {
-        const text = "Y = "+ projUnits.LengthConvert(position, true);
-        position += listy[i];
-        $("#XZ").append(`<option value=${position} >${text}</option>`);
-    }
 
-    position = 0;
-    for (let i = 0; i <= listx.length; i++)
-    {
-        const text = "X = "+ projUnits.LengthConvert(position, true);
-        position += listx[i];
-        $("#YZ").append(`<option value=${position} >${text}</option>`);
-    }
-    
-}
 
-function removeSelectionGrids()
-{
-    const xy = $('#XY').children().length;
-    for (let i = xy - 1; i >= 0; i--) {
-        $('#XY').children()[i].remove(); 
-    }
-    
-    const xz = $('#XZ').children().length;
-    for (let i = xz - 1; i >= 0; i--) {
-        $('#XZ').children()[i].remove(); 
-    }
-    
-    const yz = $('#YZ').children().length;
-    for (let i = yz - 1; i >= 0; i--) {
-        $('#YZ').children()[i].remove(); 
-    }
-}
+
 
 
 

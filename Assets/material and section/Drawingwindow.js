@@ -41,7 +41,6 @@ document.querySelector('#Draw').addEventListener("click", function () {
         $('body').append(drawWin);
        StatusBar = document.getElementById('StatusBar');
       StatusBar.innerHTML = 'Select First Point';
-      Metro.toast.create("Specify First Point to Draw an Element", null, 3000,"secondary")
     }
     document.addEventListener('keydown', function (event) {
         if (event.key === "Escape") {
