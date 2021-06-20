@@ -26,7 +26,7 @@ class Section {
 
     static #DefaultSections = (function(){
         new Section('Fsec1',Material.MaterialsList.get('1'),ESectionShape.Rectangular,[0.5,0.5],[0.7,0.5,0.01,1,1,1,1,1] );
-        new Section('Fsec2',Material.MaterialsList.get('2'),ESectionShape.ISec,[0.360,0.170,0.0127,0.008,0.170,0.0127]);
+        new Section('Fsec2',Material.MaterialsList.get('2'),ESectionShape.ISec,[0.50,0.20,0.016,0.0102,0.20,0.016]);
     })();
 
     constructor(name, material, secType, dimensions, modifiers=[1,1,1,1,1,1,1,1]) {
