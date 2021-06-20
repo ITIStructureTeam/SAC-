@@ -19,6 +19,7 @@ function DisablePostProcessBts() {
     $('#reactions')[0].disabled = true;
     $('#frame-forces')[0].disabled = true;
     $('#tables-btn')[0].disabled = true;
+    $('#deform-table-btn')[0].disabled = true;
 }
 
 function EnablePostProcessBts() {
@@ -26,7 +27,7 @@ function EnablePostProcessBts() {
     $('#reactions')[0].disabled = false;
     $('#frame-forces')[0].disabled = false;
     $('#tables-btn')[0].disabled = false;
-
+    $('#deform-table-btn')[0].disabled = false;
 }
 
 function DisaplePreProcessorButtons() {

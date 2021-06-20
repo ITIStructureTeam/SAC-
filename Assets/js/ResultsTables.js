@@ -15,13 +15,14 @@ function fillTable() {
     for (let i = 0; i < ResultantFrame.length; i++) {
         for (let j = 0; j < ResultantFrame[i].Stations.length; j++) {
             newElement = {
-                Station: projUnits.LengthConvert(parseFloat(ResultantFrame[i].Stations[j].toFixed(userPrecision)), true),
-                MomentX: projUnits.MomentConvert(parseFloat(ResultantFrame[i].MomentX[j].toFixed(userPrecision))),
-                MomentY: projUnits.MomentConvert(parseFloat(ResultantFrame[i].MomentY[j].toFixed(userPrecision))),
-                ShearX: projUnits.ForceConvert(parseFloat(ResultantFrame[i].ShearX[j].toFixed(userPrecision)), true),
-                ShearY: projUnits.ForceConvert(parseFloat(ResultantFrame[i].ShearY[j].toFixed(userPrecision)), true),
-                Normal: projUnits.ForceConvert(parseFloat(ResultantFrame[i].Normal[j].toFixed(userPrecision)), true),
-                Torsion: projUnits.MomentConvert(parseFloat(ResultantFrame[i].Torsion[j].toFixed(userPrecision)))
+
+                Station: projUnits.LengthConvert(parseFloat(ResultantFrame[i].Stations[j]), true).toFixed(userPrecision),
+                MomentX: projUnits.MomentConvert(parseFloat(ResultantFrame[i].MomentX[j])).toFixed(userPrecision),
+                MomentY: projUnits.MomentConvert(parseFloat(ResultantFrame[i].MomentY[j])).toFixed(userPrecision),
+                ShearX: projUnits.ForceConvert(parseFloat(ResultantFrame[i].ShearX[j]), true).toFixed(userPrecision),
+                ShearY: projUnits.ForceConvert(parseFloat(ResultantFrame[i].ShearY[j]), true).toFixed(userPrecision),
+                Normal: projUnits.ForceConvert(parseFloat(ResultantFrame[i].Normal[j]), true).toFixed(userPrecision),
+                Torsion: projUnits.MomentConvert(parseFloat(ResultantFrame[i].Torsion[j])).toFixed(userPrecision)
 
             };
             newTable.push(newElement);
@@ -196,36 +197,40 @@ function JSONValueIsArray(element) {
 
 function fillDeformationTable() {
     NewList.forEach(function (element) {
-        element.station=element.station.toFixed(userPrecision);
-        element.u1=element.u1.toFixed(userPrecision);
-        element.u2=element.u2.toFixed(userPrecision);
-        element.u3=element.u3.toFixed(userPrecision);
+
+        element.station=projUnits.LengthConvert(parseFloat(element.station), true).toFixed(userPrecision) ;
+        element.u1= projUnits.DeformConvert(parseFloat(element.u1)).toFixed(userPrecision) ;
+        element.u2= projUnits.DeformConvert(parseFloat(element.u2)).toFixed(userPrecision) ;
+        element.u3= projUnits.DeformConvert(parseFloat(element.u3)).toFixed(userPrecision) ;
         element.r1=element.r1.toFixed(userPrecision);
         element.r2=element.r2.toFixed(userPrecision);
         element.r3=element.r3.toFixed(userPrecision);
       });
-      
+
 }
 
 function DeformPrecisionValue() {
     userPrecision = $('#Precision')[0].value;
+    
     CaseIDChoise = $('#LoadData')[0].value;
     let frameIDChoise = $('#FrameLablesList')[0].value;
-
-        // let DeformationResultsList = DeformedShape.GetDeformsList(frameIDChoise);
-
-        let DeformationResultsList = JSON.parse('[{"caseID":"c1","details":[{"station":0,"u1":0,"u2":0,"u3":0,"r1":0,"r2":0,"r3":0},{"station":0.7999999999999998,"u1":0,"u2":0,"u3":-0.0007039999999999967,"r1":0.0014196363636363564,"r2":0,"r3":0},{"station":1.6,"u1":0,"u2":0,"u3":-0.0022900363636363524,"r1":0.002280727272727259,"r2":0,"r3":0},{"station":2.4,"u1":0,"u2":0,"u3":-0.004367127272727248,"r1":0.0027229090909090723,"r2":0,"r3":0},{"station":3.2,"u1":0,"u2":0,"u3":-0.00665599999999996,"r1":0.0028858181818181613,"r2":0,"r3":0},{"station":4,"u1":0,"u2":0,"u3":-0.008989090909090853,"r1":0.00290909090909089,"r2":0,"r3":0}]},{"caseID":"p1","details":[{"station":0,"u1":0,"u2":0,"u3":0,"r1":0,"r2":0,"r3":0},{"station":0.7999999999999998,"u1":0,"u2":0,"u3":-0.0007039999999999967,"r1":0.0014196363636363564,"r2":0,"r3":0},{"station":1.6,"u1":0,"u2":0,"u3":-0.0022900363636363524,"r1":0.002280727272727259,"r2":0,"r3":0},{"station":2.4,"u1":0,"u2":0,"u3":-0.004367127272727248,"r1":0.0027229090909090723,"r2":0,"r3":0},{"station":3.2,"u1":0,"u2":0,"u3":-0.00665599999999996,"r1":0.0028858181818181613,"r2":0,"r3":0},{"station":4,"u1":0,"u2":0,"u3":-0.008989090909090853,"r1":0.00290909090909089,"r2":0,"r3":0}]},{"caseID":"p2","details":[{"station":0,"u1":0,"u2":0,"u3":0,"r1":0,"r2":0,"r3":0},{"station":0.7999999999999998,"u1":0,"u2":0,"u3":0,"r1":0,"r2":0,"r3":0},{"station":1.6,"u1":0,"u2":0,"u3":0,"r1":0,"r2":0,"r3":0},{"station":2.4,"u1":0,"u2":0,"u3":0,"r1":0,"r2":0,"r3":0},{"station":3.2,"u1":0,"u2":0,"u3":0,"r1":0,"r2":0,"r3":0},{"station":4,"u1":0,"u2":0,"u3":0,"r1":0,"r2":0,"r3":0}]}]');
-        
-        PointsDeformationList = DeformationResultsList.filter(caseid => caseid.caseID == CaseIDChoise)[0].details;
+    let DeformationResultsList;
+        if(frameIDChoise){
+            DeformationResultsList = DeformedShape.GetDeformsList(frameIDChoise);
+            //let DeformationResultsList = JSON.parse('[{"caseID":"c1","details":[{"station":0,"u1":0,"u2":0,"u3":0,"r1":0,"r2":0,"r3":0},{"station":0.7999999999999998,"u1":0,"u2":0,"u3":-0.0007039999999999967,"r1":0.0014196363636363564,"r2":0,"r3":0},{"station":1.6,"u1":0,"u2":0,"u3":-0.0022900363636363524,"r1":0.002280727272727259,"r2":0,"r3":0},{"station":2.4,"u1":0,"u2":0,"u3":-0.004367127272727248,"r1":0.0027229090909090723,"r2":0,"r3":0},{"station":3.2,"u1":0,"u2":0,"u3":-0.00665599999999996,"r1":0.0028858181818181613,"r2":0,"r3":0},{"station":4,"u1":0,"u2":0,"u3":-0.008989090909090853,"r1":0.00290909090909089,"r2":0,"r3":0}]},{"caseID":"p1","details":[{"station":0,"u1":0,"u2":0,"u3":0,"r1":0,"r2":0,"r3":0},{"station":0.7999999999999998,"u1":0,"u2":0,"u3":-0.0007039999999999967,"r1":0.0014196363636363564,"r2":0,"r3":0},{"station":1.6,"u1":0,"u2":0,"u3":-0.0022900363636363524,"r1":0.002280727272727259,"r2":0,"r3":0},{"station":2.4,"u1":0,"u2":0,"u3":-0.004367127272727248,"r1":0.0027229090909090723,"r2":0,"r3":0},{"station":3.2,"u1":0,"u2":0,"u3":-0.00665599999999996,"r1":0.0028858181818181613,"r2":0,"r3":0},{"station":4,"u1":0,"u2":0,"u3":-0.008989090909090853,"r1":0.00290909090909089,"r2":0,"r3":0}]},{"caseID":"p2","details":[{"station":0,"u1":0,"u2":0,"u3":0,"r1":0,"r2":0,"r3":0},{"station":0.7999999999999998,"u1":0,"u2":0,"u3":0,"r1":0,"r2":0,"r3":0},{"station":1.6,"u1":0,"u2":0,"u3":0,"r1":0,"r2":0,"r3":0},{"station":2.4,"u1":0,"u2":0,"u3":0,"r1":0,"r2":0,"r3":0},{"station":3.2,"u1":0,"u2":0,"u3":0,"r1":0,"r2":0,"r3":0},{"station":4,"u1":0,"u2":0,"u3":0,"r1":0,"r2":0,"r3":0}]}]');
+            
+            PointsDeformationList = DeformationResultsList.filter(caseid => caseid.caseID == CaseIDChoise)[0].details;
+            PointsDeformationList.forEach(obj=>NewList.push({...obj}))
+    
+    
+        $('#DeformationDataTable').remove();
+        NewList=[];
         PointsDeformationList.forEach(obj=>NewList.push({...obj}))
+        fillDeformationTable()
+        $("#Deformationtableswindow").append('<table id="DeformationDataTable" class="table row-hover cell-border"> </table>')
+        buildHtmlTable(NewList, '#DeformationDataTable');
+        }
 
-
-    $('#DeformationDataTable').remove();
-    NewList=[];
-    PointsDeformationList.forEach(obj=>NewList.push({...obj}))
-    fillDeformationTable()
-    $("#Deformationtableswindow").append('<table id="DeformationDataTable" class="table row-hover cell-border"> </table>')
-    buildHtmlTable(NewList, '#DeformationDataTable');
 }
 
 let NewList=[]; 
