@@ -47,6 +47,7 @@ $.ajax({
             Project_Name = document.getElementById("Model_Name").value;
             CloseSaveAsWindow();
             SaveModel();
+            document.getElementById('Project_Name').innerHTML=Project_Name;
         }
         else{
             document.getElementById("Not_Valid").style.visibility = 'visible';
