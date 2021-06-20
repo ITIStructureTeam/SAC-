@@ -19,6 +19,7 @@ function DisablePostProcessBts() {
     $('#reactions')[0].disabled = true;
     $('#frame-forces')[0].disabled = true;
     $('#tables-btn')[0].disabled = true;
+    $('#deform-table-btn')[0].disabled = true;
 }
 
 function EnablePostProcessBts() {
@@ -26,6 +27,7 @@ function EnablePostProcessBts() {
     $('#reactions')[0].disabled = false;
     $('#frame-forces')[0].disabled = false;
     $('#tables-btn')[0].disabled = false;
+    $('#deform-table-btn')[0].disabled = false;
 }
 
 function DisaplePreProcessorButtons() {
@@ -101,6 +103,7 @@ function Unlock() {
 
 function Run() {
     document.getElementById("StatusBar").innerHTML = "Running Model";
+    Metro.toast.create("Running Model", null, 3000);
     let inPut = JSON.stringify(Project_Name);
     console.log(inPut)
     $.ajax({
@@ -144,6 +147,7 @@ function Run() {
                 let mz = InputRactions[i].mz;
                 new JointReactions(patternID, jointID, position, rx, ry, rz, mx, my, mz)
             }
+
             fillTable();
 
             DeformedShape.scaleMap = GetDefScaleMap(result.deformations);
@@ -154,10 +158,13 @@ function Run() {
             console.log(Results.ResultsList);
             console.log(JointReactions.ReactionsList);
             document.getElementById("StatusBar").innerHTML = "Run Complete";
+
+            Metro.toast.create("Run Complete", null, 5000,"success");
         },
         error: function (ex) {
             console.log(ex.responseText);
             document.getElementById("StatusBar").innerHTML = "Run Failed";
+            Metro.toast.create("Run Failed", null, 5000,"alert");
         }
     });
 }
@@ -166,6 +173,7 @@ function Run() {
 
 function SaveModelforRun(func) {
     document.getElementById("StatusBar").innerHTML = "Saving ...";
+    Metro.toast.create("Saving ...", null, 5000,"primary");
     let OutPut = JSON.stringify(new RootData());
 
     $.ajax({
@@ -181,10 +189,12 @@ function SaveModelforRun(func) {
             }
             console.log("Data saved");
             document.getElementById("StatusBar").innerHTML = "Data Saved";
+            Metro.toast.create("Data Saved", null, 5000,"primary");
         },
         error: function (ex) {
             console.log(ex.responseText);
             document.getElementById("StatusBar").innerHTML = "Could not save model";
+            Metro.toast.create("Could not save model", null, 5000,"warning");
         }
     });
 }
@@ -194,6 +204,7 @@ document.querySelector("#SaveButton").addEventListener("click", SaveModel);
 
 function SaveModel() {
     document.getElementById("StatusBar").innerHTML = "Saving ...";
+    Metro.toast.create("Saving ...", null, 5000,"primary");
     let OutPut = JSON.stringify(new RootData());
     console.log(OutPut);
     $.ajax({
@@ -205,12 +216,14 @@ function SaveModel() {
         cache: false,
         success: function (result) {
             document.getElementById("StatusBar").innerHTML = "Data Saved";
+            Metro.toast.create("Data Saved", null, 5000,"success");
             console.log("Data saved");
             console.log(result)
         },
         error: function (ex) {
             console.log(ex.responseText);
             document.getElementById("StatusBar").innerHTML = "Could not save model";
+            Metro.toast.create("Could not save model", null, 5000,"alert");
         }
     });
 }
@@ -219,6 +232,7 @@ function SaveModel() {
 
 function ImportProjectData() {
     document.getElementById("StatusBar").innerHTML = "Importing ...";
+    Metro.toast.create("Importing Data ...", null, 5000,"info");
     const input = JSON.stringify(Project_Name);
     $.ajax({
         type: "POST",
@@ -229,14 +243,17 @@ function ImportProjectData() {
         cache: false,
         success: function (result) {
             document.getElementById("StatusBar").innerHTML = "Creating model ...";
+            Metro.toast.create("Creating model ... ...", null, 5000,"primary");
             // Code goes in here
             LoadJson(result);
             console.log(result);
             document.getElementById("StatusBar").innerHTML = "Model created successfully";
+            Metro.toast.create("Model Created Successfully", null, 5000,"success");
             localStorage.setItem('ModelState', "New")
         },
         error: function (ex) {
             document.getElementById("StatusBar").innerHTML = "Failed to import model";
+            Metro.toast.create("Faild to import model ! ... ...", null, 5000,"alert");
             console.log(ex.responseText);
         }
     });

@@ -1,5 +1,4 @@
 import { MapControls } from './Assets/Three.js files/OrbitControls.js'
-import { DoubleSide } from './Assets/Three.js files/three.module.js';
 
 let PreProcessor = true;
 
@@ -162,6 +161,7 @@ function ClickToDrawLine(event) {
             if (intersects.length > 0) {
                 if (points.length < 6) {
                     StatusBar.innerHTML = 'Select Next Point or Press -Enter- to Reset'
+                    Metro.toast.create("Specify Next Point or Press -Enter- to Reset", null, 2000,"secondary")
                     pos_x = intersects[0].object.position.x;
                     pos_y = intersects[0].object.position.y;
                     pos_z = intersects[0].object.position.z;
@@ -175,6 +175,7 @@ function ClickToDrawLine(event) {
                 }
                 else if (points.length == 6) {
                     StatusBar.innerHTML = 'Select First Point'
+                    Metro.toast.create("Specify First Point to Draw a new Element", null, 3000,"secondary")
                     commands.excuteCommand(new DrawLine(new FrameElement(points, GetSelectedSection())));
                     points = [];
                 }
@@ -185,7 +186,7 @@ function ClickToDrawLine(event) {
 
 //keys
 document.addEventListener('keydown', function (event) {
-    
+
     if (event.key === "Escape") {
         points = [];
         DrawingModeActive = false;
@@ -234,6 +235,8 @@ document.addEventListener("keyup", function () {
         SelectionModeActive = true;
         document.querySelector("body").style = "cursor:default"
     }
+    if (DrawingModeActive == true) 
+    document.querySelector("body").style = "cursor:crosshair"
 });
 
 document.addEventListener('mousedown', function (event) {
@@ -420,7 +423,6 @@ function update(renderer, scene, camera, controls) {
 
 
     if (DrawingModeActive == true) {
-        
         renderer.domElement.addEventListener('click', ClickToDrawLine, false);
         hover();
         SelectionModeActive == false;
@@ -758,7 +760,8 @@ function ThreeD() {
     camera.position.y = 25;
     camera.position.z = 45;
     controls.enableRotate = true;
-
+    controls.target = new THREE.Vector3(0, 0, 0);
+    
     document.getElementById("StatusBar").innerHTML = "3D-View";
 }
 
