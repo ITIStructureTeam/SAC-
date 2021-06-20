@@ -941,6 +941,7 @@ class Point
             this.SupportIndication.geometry.dispose();
         }
     }
+    
     Highlight()
     {
         if(this.Selected == true && this.Shared.length > 0)
@@ -960,6 +961,7 @@ class Point
         scene.remove( this.SupportIndication );
         group.remove(this.obj);
     }
+
     Show()
     {
         scene.add(this.dot);
