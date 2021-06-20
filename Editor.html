@@ -78,6 +78,7 @@
             }
             // localStorage.removeItem("ProjectName");
             // localStorage.removeItem("ModelState");
+            document.getElementById('Project_Name').innerHTML=Project_Name;
         }
         // window.onunload = function (event) {
         //     event.preventDefault();
@@ -85,7 +86,7 @@
         //     //return confirm('Data will be lost .. continue without saving?');
         // }
 
-        document.getElementById('Project_Name').innerHTML=Project_Name;
+        
         function CloseOpen(event) 
         { 
             if(event.clientX<=0 && event.clientY<0) 
