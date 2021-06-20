@@ -970,6 +970,7 @@ class Point
 
     InView()
     {
+        this.Show();
         if(view == "XY")
         {
             if(this.position[2] != ViewPosition)
