@@ -150,7 +150,7 @@ document.querySelector('#grids-btn').addEventListener("click",function(){
                     closeButton: true
                 });
             }else{
-                ThreeD();
+                //ThreeD();
                 if(group != null)
                 {
                     scene.remove(group);
