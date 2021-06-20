@@ -314,7 +314,7 @@ function InitMatMainWindow() {
             //#endregion
 
             document.querySelector('#new-mat-save').addEventListener("click", function () {
-                if ($('.current-select')[0]) ModifyMaterial;
+                if ($('.current-select')[0]) ModifyMaterial();
             });
             document.querySelector('#new-mat-close').addEventListener("click", function () {
                 CloseWindow('mat-define-window');
