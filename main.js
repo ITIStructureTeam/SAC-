@@ -564,8 +564,6 @@ gridLines.forEach(element => {
 
 
 
-
-
 document.getElementById("XYSection").onclick = function () { XYSection() };
 function XYSection() {
     if(gridLines.length>0)

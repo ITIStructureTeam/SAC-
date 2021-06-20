@@ -542,7 +542,7 @@ class DrawLine
                 break;
             
             case ESectionShape.TSec:
-                let ycg = ( (dimensions[1]*dimensions[2]*(dimensions[0] - dimensions[2]/2) ) + (dimensions[3]*Math.sqrt(dimensions[0]-dimensions[2])/2) )
+                let ycg = ( (dimensions[1]*dimensions[2]*(dimensions[0] - dimensions[2]/2) ) + (dimensions[3]*Math.pow(dimensions[0]-dimensions[2],2)/2) )
                 /(dimensions[1]*dimensions[2]+dimensions[3]*(dimensions[0]-dimensions[2]));
                threeShape.moveTo(-dimensions[3]/2,-ycg);
                threeShape.lineTo(dimensions[3]/2,-ycg);
