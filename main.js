@@ -403,6 +403,11 @@ function CheckForUpdates() {
         DrawLine.DrawLinesArray.forEach(line => line.DisplayLoad());
         unitsUpdated = false;
     }
+    
+    if(gridsUpdated) {
+        ThreeD();
+        gridsUpdated = true;
+    }
 
 }
 
