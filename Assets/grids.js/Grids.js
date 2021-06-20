@@ -106,7 +106,7 @@ let gridsWind = `
     </div>
 `
 
-document.querySelector('#grids-btn').addEventListener("click",function(){
+/* document.querySelector('#grids-btn').addEventListener("click",function(){
     if(!document.querySelector('.main-window')){
         $('body').append(GetGridsWin());
         LoadGridsData('grids-x',listx,xGridsNames);
@@ -140,7 +140,9 @@ document.querySelector('#grids-btn').addEventListener("click",function(){
         
         
         document.querySelector('#grids-ok').addEventListener("click", function(){
+            console.log(listx)
             ReadGrids('grids-x',listx, xGridsNames);
+            console.log(listx)
             ReadGrids('grids-y',listy,yGridsNames);
             ReadGrids('grids-z',listz,zGridsNames);
             if(!listx.length || !listy.length || !listz.length){
@@ -150,9 +152,10 @@ document.querySelector('#grids-btn').addEventListener("click",function(){
                     closeButton: true
                 });
             }else{
-                ThreeD();
+                //ThreeD();
                 if(group != null)
                 {
+
                     scene.remove(group);
                     gridLines.forEach(element => {
                         element.material.dispose()
@@ -187,7 +190,7 @@ document.querySelector('#grids-btn').addEventListener("click",function(){
         
         
     }
-});
+}); */
 
 function GetGridsWin(){
     return `
@@ -326,8 +329,9 @@ function ReadGrids(id,gridsSpacing, gridsNames) {
     let spacings = document.querySelectorAll(`#${id} .grid-data [type="number"]`);
 
     gridsNames.length = 0;
-    gridsSpacing.length = 0
+    gridsSpacing.length = 0;
     for (let i = 0; i < spacings.length; i++) {
+
         if(!isNaN(spacings[i].valueAsNumber) && spacings[i].valueAsNumber > 0){
             if(names[i]) gridsNames.push(names[i].value);
             gridsSpacing.push( projUnits.LengthConvert(spacings[i].valueAsNumber) );
@@ -480,7 +484,7 @@ function BoxSnap(width, height, depth, materialType = 'basic',color = 'green', X
     return mesh;
 }
 
-function GridSelections()
+/* function GridSelections()
 {
     let position = 0;
     for (let i = 0; i <= listz.length; i++)
@@ -524,4 +528,4 @@ function removeSelectionGrids()
     for (let i = yz - 1; i >= 0; i--) {
         $('#YZ').children()[i].remove(); 
     }
-}
+} */

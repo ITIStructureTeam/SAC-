@@ -15,6 +15,7 @@ function fillTable() {
     for (let i = 0; i < ResultantFrame.length; i++) {
         for (let j = 0; j < ResultantFrame[i].Stations.length; j++) {
             newElement = {
+
                 Station: projUnits.LengthConvert(parseFloat(ResultantFrame[i].Stations[j]), true).toFixed(userPrecision),
                 MomentX: projUnits.MomentConvert(parseFloat(ResultantFrame[i].MomentX[j])).toFixed(userPrecision),
                 MomentY: projUnits.MomentConvert(parseFloat(ResultantFrame[i].MomentY[j])).toFixed(userPrecision),
@@ -196,6 +197,7 @@ function JSONValueIsArray(element) {
 
 function fillDeformationTable() {
     NewList.forEach(function (element) {
+
         element.station=projUnits.LengthConvert(parseFloat(element.station), true).toFixed(userPrecision) ;
         element.u1= projUnits.DeformConvert(parseFloat(element.u1)).toFixed(userPrecision) ;
         element.u2= projUnits.DeformConvert(parseFloat(element.u2)).toFixed(userPrecision) ;
@@ -204,7 +206,7 @@ function fillDeformationTable() {
         element.r2=element.r2.toFixed(userPrecision);
         element.r3=element.r3.toFixed(userPrecision);
       });
-      console.log(userPrecision)
+
 }
 
 function DeformPrecisionValue() {
