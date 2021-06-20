@@ -406,7 +406,7 @@ function CheckForUpdates() {
     
     if(gridsUpdated) {
         ThreeD();
-        gridsUpdated = true;
+        gridsUpdated = false;
     }
 
 }
