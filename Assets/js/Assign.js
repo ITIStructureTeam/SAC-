@@ -252,7 +252,7 @@ function Rotate()
 
 function AddPointOnFrameWindow() {
     $('body').append(`<div id="AddPointOnFrameElement" data-top="150" style="z-index: 3;  " data-left="150" data-role="window"
-    data-width="350" data-height="165" data-resizable="false" data-title="Rotate Frame Element"
+    data-width="350" data-height="165" data-resizable="false" data-title="Add Points Along Frame Element"
 
     <div>
         <div style="margin-top: 10px; margin-left:10px; width: 95%; font-size:12px;">

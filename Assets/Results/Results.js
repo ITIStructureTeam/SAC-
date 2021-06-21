@@ -23,13 +23,15 @@ class Results
         Results.ResultsList.push(this);
     }
 
-    Draw_Mx(pattern)
+    Draw_Mx(pattern, insertedList)
     {
         if(this.Draw != null)
         {
             scene.remove(this.Draw);
+            this.Draw.clear();
         }
-        let PatternResults = Results.ResultsList.filter(res => res.PatternID == pattern);
+
+        let PatternResults = insertedList;
         let MaxMxArray = [];
         for(let i = 0; i < PatternResults.length; i++)
         { 
@@ -38,6 +40,7 @@ class Results
             let MaxLocalMx = Math.max(...absvals);
             MaxMxArray.push(MaxLocalMx);
         }
+
         let MaxMx = Math.max(...MaxMxArray)
         if(Math.round(MaxMx) == 0){ MaxMx = 1}
 
@@ -54,13 +57,14 @@ class Results
         this.InView();
     }
 
-    Draw_My(pattern)
+    Draw_My(pattern, insertedList)
     {
         if(this.Draw != null)
         {
             scene.remove(this.Draw);
+            this.Draw.clear();
         }
-        let PatternResults = Results.ResultsList.filter(res => res.PatternID == pattern);
+        let PatternResults = insertedList;
         let MaxMyArray = [];
         for(let i = 0; i < PatternResults.length; i++)
         { 
@@ -85,13 +89,14 @@ class Results
         this.InView();
     }
 
-    Draw_Tz(pattern)
+    Draw_Tz(pattern, insertedList)
     {
         if(this.Draw != null)
-        {
+        {           
             scene.remove(this.Draw);
+            this.Draw.clear();
         }
-        let PatternResults = Results.ResultsList.filter(res => res.PatternID == pattern);
+        let PatternResults = insertedList;
         let MaxMTArray = [];
         for(let i = 0; i < PatternResults.length; i++)
         { 
@@ -111,18 +116,20 @@ class Results
         let scale = 1.25/MaxMT;
         let result = ResultsDiagram(results , stations, startPoint, endPoint, 2, rz, scale, "Moment");
         
-        this.Draw = result;
+        for(let i = 0; i < result[1].length; i++){this.Texts.add(result[1][i])}
+        this.Draw = result[0];
         Results.Pattern = pattern
         this.InView();
     }
 
-    Draw_N(pattern)
+    Draw_N(pattern, insertedList)
     {
         if(this.Draw != null)
         {
             scene.remove(this.Draw);
+            this.Draw.clear();
         }
-        let PatternResults = Results.ResultsList.filter(res => res.PatternID == pattern);
+        let PatternResults = insertedList;
         let MaxNArray = [];
         for(let i = 0; i < PatternResults.length; i++)
         { 
@@ -142,18 +149,20 @@ class Results
         let scale = 1.25/MaxN;
         let result = ResultsDiagram(results , stations, startPoint, endPoint, 2, rz, scale, "Force");
         
+        //for(let i = 0; i < result[1].length; i++){this.Texts.add(result[1][i])}
         this.Draw = result;
         Results.Pattern = pattern
         this.InView();
     }
 
-    Draw_Vx(pattern)
+    Draw_Vx(pattern, insertedList)
     {
         if(this.Draw != null)
-        {
+        {          
             scene.remove(this.Draw);
+            this.Draw.clear();
         }
-        let PatternResults = Results.ResultsList.filter(res => res.PatternID == pattern);
+        let PatternResults = insertedList;
         let MaxVxArray = [];
         for(let i = 0; i < PatternResults.length; i++)
         { 
@@ -173,18 +182,20 @@ class Results
         let scale = 1.25/MaxVx;
         let result = ResultsDiagram(results , stations, startPoint, endPoint, 2, rz, scale, "Force");
         
+        //for(let i = 0; i < result[1].length; i++){this.Texts.add(result[1][i])}
         this.Draw = result;
         Results.Pattern = pattern
         this.InView();
     }
 
-    Draw_Vy(pattern)
+    Draw_Vy(pattern, insertedList)
     {
         if(this.Draw != null)
-        {
+        {        
             scene.remove(this.Draw);
+            this.Draw.clear();
         }
-        let PatternResults = Results.ResultsList.filter(res => res.PatternID == pattern);
+        let PatternResults = insertedList;
         let MaxVyArray = [];
         for(let i = 0; i < PatternResults.length; i++)
         { 
@@ -204,6 +215,7 @@ class Results
         let scale = 1.25/MaxVy;
         let result = ResultsDiagram(results , stations, startPoint, endPoint, 3, rz, scale, "Force");
 
+        //for(let i = 0; i < result[1].length; i++){this.Texts.add(result[1][i])}
         this.Draw = result;
         Results.Pattern = pattern
         this.InView();
@@ -214,6 +226,7 @@ class Results
         if(this.Draw != null)
         {
             scene.remove(this.Draw)
+            this.Draw.clear();
         }
     }
 
@@ -340,6 +353,7 @@ function ResultsDiagram(results , stations, startPoint, endPoint, direction, rz,
     const EndPoint = new THREE.Vector3(endPoint[0], endPoint[1], endPoint[2]);
 
     const load = new THREE.Group();
+    //const texts = new THREE.Group();
     const distance = new THREE.Vector3().subVectors(StartPoint, EndPoint).length();
  
     const dX = (EndPoint.x - StartPoint.x );

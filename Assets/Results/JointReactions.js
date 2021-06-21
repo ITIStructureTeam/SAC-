@@ -20,12 +20,14 @@ class JointReactions
 
     DrawForces(pattern)
     {
-        if(this.Draw.children.length>0)
+        if(this.Draw.children.length>0 )
         {
             for (let j = this.Draw.children.length-1; j >= 0; j--) {
                 this.Draw.remove(this.Draw.children[j]);
-            }
+            }    
         }
+        if(this.Draw != null){ scene.remove(this.Draw);}
+       
 
         if(this.ReactionX[0].toFixed(3) != 0)
         {
@@ -53,6 +55,8 @@ class JointReactions
                 this.Draw.remove(this.Draw.children[j]);
             }
         }
+        if(this.Draw != null){ scene.remove(this.Draw);}
+
         if(this.MomentX[0].toFixed(3) != 0)
         {
             this.Draw.add(ResultMomentArrow(this.MomentX[0], this.Position, 3));
@@ -80,7 +84,10 @@ class JointReactions
     Show()
     {
         Standard();
-        scene.add(this.Draw);
+        if(this.Draw != null)
+        {
+            scene.add(this.Draw);
+        }
     }
 
     InView()

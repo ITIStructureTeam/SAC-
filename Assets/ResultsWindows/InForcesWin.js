@@ -159,37 +159,37 @@ function GetForcesDiagData() {
         case 'axial':
             for(let i = 0; i<results.length; i++)
             {
-                results[i].Draw_N(caseId);
+                results[i].Draw_N(caseId, results);
             }
             break;
         case 'moment3':
             for(let i = 0; i<results.length; i++)
             {
-                results[i].Draw_Mx(caseId);
+                results[i].Draw_Mx(caseId, results);
             }
             break;
         case 'moment2':
             for(let i = 0; i<results.length; i++)
             {
-                results[i].Draw_My(caseId);
+                results[i].Draw_My(caseId, results);
             }
             break;
         case 'shear2':
             for(let i = 0; i<results.length; i++)
             {
-                results[i].Draw_Vx(caseId);
+                results[i].Draw_Vx(caseId, results);
             }
             break;
         case 'shear3':
             for(let i = 0; i<results.length; i++)
             {
-                results[i].Draw_Vy(caseId);
+                results[i].Draw_Vy(caseId, results);
             }
             break;
         case 'torsion':
             for(let i = 0; i<results.length; i++)
             {
-                results[i].Draw_Tz(caseId);
+                results[i].Draw_Tz(caseId, results);
             }
             break;
         }
