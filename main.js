@@ -1,8 +1,27 @@
 import { MapControls } from './Assets/Three.js files/OrbitControls.js'
 
 let PreProcessor = true;
-
+let animationID;
 init();
+let SceneList = [];
+renderer.getContext().canvas.addEventListener("webglcontextlost", function(event) {
+    event.preventDefault();
+    // animationID would have been set by your call to requestAnimationFrame
+    cancelAnimationFrame(animationID); 
+    console.log('Hello')
+    init();
+}, false);
+
+renderer.getContext().canvas.addEventListener("webglcontextrestored", function(init) {
+   //Do something
+   for(let i = 0; i<SceneList.length; i++)
+   {
+       scene.add(SceneList[i])
+   } 
+   console.log('HeyHey')
+   SceneList = [];
+}, false);
+
 
 function init() {
     // Create scene
@@ -67,7 +86,6 @@ function init() {
     update(renderer, scene, camera, controls);
 
     return scene;
-
 }
 
 // Camera aspect in Case of window resize
@@ -89,7 +107,8 @@ function GetLight(intensity) {
 
 GetGlobalArrows();
 function resetPoints() {
-    if (group != null) {
+    if (group != null) 
+    {
         for (let i = 0; i < group.children.length; i++) {
             if (group.children[i].material) {
                 group.children[i].material.alphaTest = 0.1;
@@ -444,7 +463,7 @@ function update(renderer, scene, camera, controls) {
         ShowDefLineCircles();
     }
 
-    requestAnimationFrame(function () {
+    animationID = requestAnimationFrame(function () {
         update(renderer, scene, camera, controls);
     });
 

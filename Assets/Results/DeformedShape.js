@@ -8,7 +8,7 @@ class DeformedShape {
 
     constructor(frameLabel, backResults) {
         this.Frame = DrawLine.GetDrawnFrames().filter(frame => frame.Label == frameLabel)[0];
-        console.log(this.Frame)
+
         this.Results = backResults;
         this.DeformedLines = new Map();
         this.CreateDeformedLines();
