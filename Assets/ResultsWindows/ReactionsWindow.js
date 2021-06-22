@@ -117,10 +117,11 @@ function GetResults() {
     if (Results.ResultsMode) {
 
         Results.ResultsMode = false;
-        for(let i = 0; i< JointReactions.ReactionsList.length; i++)
-        {
-            JointReactions.ReactionsList[i].Hide();
-        }
+    }
+
+    for(let i = 0; i< JointReactions.ReactionsList.length; i++)
+    {
+        JointReactions.ReactionsList[i].Hide();
     }
     
     for(let i = 0; i<Results.ResultsList.length; i++)

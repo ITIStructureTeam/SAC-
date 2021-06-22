@@ -413,7 +413,7 @@ function GetDistLoadWin() {
     id="app-load-window"
     class="main-window"
     data-role="window"
-    data-title="Assign Frame Point Loads"
+    data-title="Assign Frame distributed Loads"
     data-btn-min="false"
     data-btn-max="false"
     data-resizable="false"

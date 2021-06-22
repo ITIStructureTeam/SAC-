@@ -67,7 +67,6 @@ function init() {
     update(renderer, scene, camera, controls);
 
     return scene;
-
 }
 
 // Camera aspect in Case of window resize
@@ -89,7 +88,8 @@ function GetLight(intensity) {
 
 GetGlobalArrows();
 function resetPoints() {
-    if (group != null) {
+    if (group != null) 
+    {
         for (let i = 0; i < group.children.length; i++) {
             if (group.children[i].material) {
                 group.children[i].material.alphaTest = 0.1;
@@ -444,7 +444,7 @@ function update(renderer, scene, camera, controls) {
         ShowDefLineCircles();
     }
 
-    requestAnimationFrame(function () {
+     requestAnimationFrame(function () {
         update(renderer, scene, camera, controls);
     });
 
@@ -949,6 +949,7 @@ function resetScene() {
             Results.ResultsList[i].InView();
         }
     }
+
     for (let i = 0; i < JointReactions.ReactionsList.length; i++)
     {
         if(JointReactions.ReactionsList[i].Draw != null)
@@ -960,7 +961,6 @@ function resetScene() {
     if(DeformedShape.deformationMode){
         DeformedShape.DeformShapesList.forEach(defshape => defshape.InView());
     }
-
 }
 
 function removeArrows() {

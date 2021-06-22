@@ -102,9 +102,9 @@ function Unlock() {
 }
 
 function Run() {
-    document.getElementById("StatusBar").innerHTML = "Running Model";
+    document.getElementById("StatusBar").innerHTML = "Running Model ...";
     let inPut = JSON.stringify(Project_Name);
-    console.log(inPut)
+    //console.log(inPut)
     $.ajax({
         type: "POST",
         url: "/api/RunAnalysis/LoadFramesData",
@@ -115,7 +115,7 @@ function Run() {
         success: function (result) {
             locked = true;
             EnablePostProcessBts();
-            console.log(result);
+            //console.log(result);
             let InputResults = [...result.strainingActions];
             for (let i = 0; i < InputResults.length; i++) {
                 let patternID = InputResults[i].patternID;
@@ -154,8 +154,8 @@ function Run() {
             for (const framedeform of result.deformations) {
                 new DeformedShape(framedeform.frameID, framedeform.deformationDetails);
             }
-            console.log(Results.ResultsList);
-            console.log(JointReactions.ReactionsList);
+            //console.log(Results.ResultsList);
+            //console.log(JointReactions.ReactionsList);
             document.getElementById("StatusBar").innerHTML = "Run Complete";
 
         },
@@ -180,11 +180,10 @@ function SaveModelforRun(func) {
         data: OutPut,
         cache: false,
         success: function (result) {
+            document.getElementById("StatusBar").innerHTML = "Data Saved";
             if (func != null) {
                 func();
             }
-            console.log("Data saved");
-            document.getElementById("StatusBar").innerHTML = "Data Saved";
         },
         error: function (ex) {
             console.log(ex.responseText);
