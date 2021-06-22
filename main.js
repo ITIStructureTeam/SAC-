@@ -463,7 +463,8 @@ function update(renderer, scene, camera, controls) {
         ShowDefLineCircles();
     }
 
-    animationID = requestAnimationFrame(function () {
+
+     requestAnimationFrame(function () {
         update(renderer, scene, camera, controls);
     });
 
@@ -968,6 +969,7 @@ function resetScene() {
             Results.ResultsList[i].InView();
         }
     }
+
     for (let i = 0; i < JointReactions.ReactionsList.length; i++)
     {
         if(JointReactions.ReactionsList[i].Draw != null)
@@ -979,7 +981,6 @@ function resetScene() {
     if(DeformedShape.deformationMode){
         DeformedShape.DeformShapesList.forEach(defshape => defshape.InView());
     }
-
 }
 
 function removeArrows() {

@@ -248,22 +248,28 @@ class Results
         {
             if(this.StartPoint[2] != ViewPosition || this.EndPoint[2] != ViewPosition)
             {
-                this.Hide();
+                //this.Hide();
+                this.Draw.visible = false;
             }
         }
         else if(view == "XZ")
         {
             if(this.StartPoint[1] != ViewPosition || this.EndPoint[1] != ViewPosition)
             {
-                this.Hide();
+                //this.Hide();
+                this.Draw.visible = false;
             }
         }
         else if(view == "YZ")
         {
             if(this.StartPoint[0] != ViewPosition || this.EndPoint[0] != ViewPosition)
             {
-                this.Hide();
+                //this.Hide();
+                this.Draw.visible = false;
             }
+        }
+        else{
+            this.Draw.visible = true;
         }
     }
 }
